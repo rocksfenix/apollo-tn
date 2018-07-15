@@ -1,0 +1,7 @@
+node_modules
+.next
+.env
+build
+notes.txt
+TODO
+TODO.todo

@@ -1,0 +1,40 @@
+type Favorite {
+  _id: ID!
+  author: User!
+  type: String!
+  text: String
+  title: String
+  image: String
+  lesson: Lesson
+  course: Course
+}
+
+input FavoriteCreate {
+  type: String!
+  # author: String! # <== ELiminar el id biene del token
+  text: String
+  title: String
+  image: String
+  lesson: String
+  course: String
+}
+
+input FavoriteSet {
+  _id: ID!
+  type: String
+  text: String
+  title: String
+  image: String
+  lesson: String
+  course: String
+}
+
+type Query {
+  favorites: [Favorite!]! # Unicamente los propios
+}
+
+type Mutation {
+  favoriteCreate(input: FavoriteCreate): Favorite
+  favoriteUpdate(input: FavoriteSet): Favorite
+  favoriteDelete(_id: ID!): Favorite
+}

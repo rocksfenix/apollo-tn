@@ -1,0 +1,29 @@
+type Lesson {
+  _id: ID!
+  title: String
+  description: String
+  slug: String
+  author: User
+}
+
+input LessonCreate {
+  title: String!
+  # author: String!  # <==  ELiminar el id biene del token
+  description: String
+}
+
+input LessonSet {
+  title: String!
+  # author: String!  # <==  ELiminar el id biene del token
+  description: String
+}
+
+type Query {
+  lessons: [Lesson!]!
+}
+
+type Mutation {
+  lessonCreate(input: LessonCreate): Lesson
+  lessonUpdate(input: LessonSet): Lesson
+  lessonDelete(_id: ID!): Lesson
+}

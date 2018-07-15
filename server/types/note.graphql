@@ -1,0 +1,40 @@
+type Note {
+  _id: ID!
+  text: String
+  author: User
+  lesson: Lesson
+  course: Course
+  tags: [String]!
+  time: Float
+}
+
+input NoteCreate {
+  text: String!
+  author: String! # <==  ELiminar el id biene del token
+  lesson: String!
+  course: String!
+  tags: [String]
+  time: Float
+}
+
+# En la entrada las lecciones son String
+# Pero en la salida es un objeti tipo Lesson
+input NoteSet {
+  _id: ID!
+  text: String
+  time: Float
+  tags: [String]
+}
+
+type Query {
+  notes: [Note!]!
+  notesByTags(tags: [String]): [Note!]!
+  notesByText(text: String): [Note!]!
+  notesByCourse(courseId: String): [Note!]!
+}
+
+type Mutation {
+  noteCreate(input: NoteCreate): Note
+  noteUpdate(input: NoteSet): Note
+  noteDelete(_id: ID!): Note
+}

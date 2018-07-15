@@ -1,0 +1,30 @@
+type Comment {
+  _id: ID!
+  text: String!
+  author: User!
+  lesson: Lesson!
+}
+
+input CommentCreate {
+  # author: String! # <==  ELiminar el id biene del token
+  text: String!
+  lesson: String
+}
+
+# En la entrada las lecciones son String
+# Pero en la salida es un objeti tipo Lesson
+input CommentSet {
+  _id: ID!
+  text: String!
+}
+
+type Query {
+  comments: [Comment!]!
+  # commentsByLesson
+}
+
+type Mutation {
+  commentCreate(input: CommentCreate): Comment
+  commentUpdate(input: CommentSet): Comment
+  commentDelete(_id: ID!): Comment
+}

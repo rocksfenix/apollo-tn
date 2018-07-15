@@ -1,0 +1,33 @@
+type Course {
+  _id: ID!
+  title: String
+  description: String
+  slug: String
+  author: User
+  lessons: [Lesson]
+}
+
+input CourseCreate {
+  title: String!
+  description: String
+  # author: String!  # <==  ELiminar el id biene del token
+}
+# En la entrada las lecciones son String
+# Pero en la salida es un objeti tipo Lesson
+input CourseSet {
+  _id: ID!
+  title: String
+  slug: String
+  description: String
+  lessons: [String]
+}
+
+type Query {
+  courses: [Course!]!
+}
+
+type Mutation {
+  courseCreate(input: CourseCreate): Course
+  courseUpdate(input: CourseSet): Course
+  courseDelete(_id: ID!): Course
+}

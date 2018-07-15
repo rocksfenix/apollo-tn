@@ -1,0 +1,37 @@
+type Issue {
+  _id: ID!
+  author: User!
+  text: String
+  status: String,
+  priority: String,
+  category: String,
+  createdAt: String,
+  completedAt: String
+}
+
+input IssueCreate {
+  # author: String! # <==  ELiminar el id biene del token
+  text: String!
+  status: String
+  priority: String
+  category: String
+}
+# En la entrada las lecciones son String
+# Pero en la salida es un objeti tipo Lesson
+input IssueSet {
+  _id: ID!
+  text: String
+  status: String
+  priority: String
+  category: String
+}
+
+type Query {
+  issues: [Issue!]!
+}
+
+type Mutation {
+  issueCreate(input: IssueCreate): Issue
+  issueUpdate(input: IssueSet): Issue
+  issueDelete(_id: ID!): Issue
+}

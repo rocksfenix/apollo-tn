@@ -1,0 +1,34 @@
+type Skill {
+  _id: ID!
+  author: User!
+  title: String
+  description: String
+  slug: String
+  courses: [Course]
+}
+
+input SkillCreate {
+  title: String!
+  # author: String!  # <==  ELiminar el id biene del token
+  description: String
+  courses: [String]
+}
+# En la entrada las lecciones son String
+# Pero en la salida es un objeti tipo Lesson
+input SkillSet {
+  _id: ID!
+  title: String
+  slug: String
+  description: String
+  courses: [String]
+}
+
+type Query {
+  skills: [Skill!]!
+}
+
+type Mutation {
+  skillCreate(input: SkillCreate): Skill
+  skillUpdate(input: SkillSet): Skill
+  skillDelete(_id: ID!): Skill
+}
