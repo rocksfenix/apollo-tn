@@ -33,12 +33,11 @@ const CourseSchema = new mongoose.Schema({
 
   // Revisar--------------------------------------
   firstLessonSlug: { type: String, default: '' },
-  seeLater: { Type: Boolean, default: false },
 
   category: { type: String, enum: [ 'Frontend', 'Backend', 'Tools' ], default: 'Frontend' },
   tags: [{ id: String, text: String }],
   tech: { type: String, default: 'TecNinja' },
-  version: String,
+  version: { type: Number, default: 1 },
   duration: String,
   role: { type: String, enum: ['pro', 'free', 'public'], default: 'pro' },
 
@@ -55,5 +54,47 @@ const CourseSchema = new mongoose.Schema({
 // Plugins
 CourseSchema.plugin(uniqueValidator, { message: 'is already taken.' })
 CourseSchema.plugin(slugify)
+
+CourseSchema.methods.getDataByRole = function (userRole) {
+  let lessons = []
+
+  lessons = this.lessons.map(l => l.getDataByRole(userRole))
+
+  if (userRole !== 'admin') {
+    // Filtramos por publicadas
+    lessons = lessons.filter(l => l.isPublished)
+  }
+
+  let fields = {};
+
+  [
+    '_id',
+    'title',
+    'slug',
+    'author',
+    'description',
+    'isPublished',
+    'isRecording',
+    'synopsis',
+    'videoSynopsis',
+    'imageSynopsis',
+    'level',
+    'firstLessonSlug',
+    'category',
+    'tags',
+    'tech',
+    'version',
+    'duration',
+    'role',
+    'color',
+    'cover',
+    'createdAt',
+    'updatedAt'
+  ].forEach(field => {
+    fields[field] = this[field]
+  })
+
+  return { ...fields, lessons }
+}
 
 export default mongoose.model('Course', CourseSchema)

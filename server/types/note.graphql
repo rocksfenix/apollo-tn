@@ -31,6 +31,7 @@ type Query {
   notesByTags(tags: [String]): [Note!]!
   notesByText(text: String): [Note!]!
   notesByCourse(courseId: String): [Note!]!
+  tagsByUser: [String]
 }
 
 type Mutation {

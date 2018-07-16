@@ -1,21 +1,78 @@
+type ImageSizes {
+  micro: String
+  small: String
+  medium: String
+  big: String
+}
+
 type Lesson {
   _id: ID!
-  title: String
-  description: String
+  title: String!
   slug: String
+  description: String
+  synopsis: String
+  transcription: String
+  screenshot: ImageSizes
+  tech: String
+  techVersion: String
+  lessonVersion: Int
+  videoSource: String
+  tags: [String]
+  duration: String
+  claps: Int
+  comments: [Comment]
   author: User
+  role: String
+  isPublished: Boolean
+  isTranscriptionPublic: Boolean
+  createdAt: String
+  updatedAt: String
 }
 
 input LessonCreate {
+  # author: String!  # <==  El id biene del token
   title: String!
-  # author: String!  # <==  ELiminar el id biene del token
+  # slug: String
   description: String
+  synopsis: String
+  transcription: String
+  # screenshot: ImageSizes Se ejecuta desde el resolver lessonUploadScreenshot
+  tech: String
+  techVersion: String
+  lessonVersion: Int
+  videoSource: String
+  tags: [String]
+  duration: String
+  # claps: Int
+  # comments: [Comment]!
+  role: String
+  isPublished: Boolean
+  isTranscriptionPublic: Boolean
+  # createdAt: String
+  # updatedAt: String
 }
 
 input LessonSet {
-  title: String!
-  # author: String!  # <==  ELiminar el id biene del token
+  _id: ID!
+  title: String
+  # slug: String
   description: String
+  synopsis: String
+  transcription: String
+  # screenshot: ImageSizes Se ejecuta desde el resolver lessonUploadScreenshot
+  tech: String
+  techVersion: String
+  lessonVersion: Int
+  videoSource: String
+  tags: [String]
+  duration: String
+  # claps: Int
+  # comments: [Comment]! Los comments bienen del resolver commentsByLesson
+  role: String
+  isPublished: Boolean
+  isTranscriptionPublic: Boolean
+  # createdAt: String
+  # updatedAt: String
 }
 
 type Query {

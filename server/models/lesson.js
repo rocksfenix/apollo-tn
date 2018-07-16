@@ -48,4 +48,85 @@ const LessonSchema = new mongoose.Schema({
 LessonSchema.plugin(uniqueValidator, {message: 'is already taken.'})
 LessonSchema.plugin(slugify)
 
+const MesssageContentPro = (title) => `
+# ${title}
+<div style="background: #dcffe5;">
+  <p>
+    <i class="ion-alert-en un círculo" />
+      Tienes que ser un suscriptor Pro para ver este contenido.
+      <a href="/pro"> Go Pro </a> para obtener:
+  </ p>
+  <ul style = "margin-top: 20px">
+    <li> Acceso ilimitado a todos los cursos & amp; contenido </ li>
+    <li> Invita a nuestro canal exclusivo de Slack </ li>
+    <li> Cursos de desarrollo de RealWorld completos </ li>
+    <li> Sin anuncios </ li>
+    <li> Prioridad Q & soporte A </ li>
+    <li> Mejores oportunidades de carrera </ li>
+    <li> Confianza &amp; experiencia </ li>
+    <li> <a href="/pro"> ¡y más! </a> </ li>
+  </ ul>
+  <p style="margin-top: 20px">
+    ¿Ya estás suscrito a Pro? <a href="/login"> Iniciar sesión </a>
+  </ p>
+</ div>
+`
+
+LessonSchema.methods.getDataByRole = function (userRole) {
+  console.log(userRole)
+  // Solo debemos proteger 2 cosas
+  // * La transcripcion
+  // * El video Source
+  let transcription = this.isTranscriptionPublic
+    ? this.transcription
+    : MesssageContentPro(this.title)
+
+  let videoSource = ''
+
+  // Limitamos el Acceso autorizado
+  if (userRole === 'pro' || userRole === 'admin') {
+    // En usuario PRO o admin si enviamos esta informacion
+    transcription = this.transcription
+    videoSource = this.videoSource
+  }
+
+  // Si la leccion es Free y es member free
+  if (userRole === 'free' && this.role === 'free') {
+    videoSource = this.videoSource
+  }
+
+  // Leccion publica
+  if (this.role === 'public') {
+    videoSource = this.videoSource
+  }
+
+  let fields = {};
+
+  [
+    '_id',
+    'title',
+    'slug',
+    'author',
+    'description',
+    'synopsis',
+    'techVersion',
+    'lessonVersion',
+    'type',
+    'tech',
+    'screenshot',
+    'tags',
+    'duration',
+    'claps',
+    'role',
+    'isPublished',
+    'isTranscriptionPublic',
+    'createdAt',
+    'updatedAt'
+  ].forEach(field => {
+    fields[field] = this[field]
+  })
+
+  return { ...fields, transcription, videoSource }
+}
+
 export default mongoose.model('Lesson', LessonSchema)

@@ -1,18 +1,43 @@
 type Skill {
   _id: ID!
-  author: User!
+  author: User # <== Se obtiene del token
   title: String
-  description: String
   slug: String
+  description: String
+  isPublished: Boolean
+  isRecording: Boolean
+  synopsis: String
+  videoSynopsis: String
+  imageSynopsis: ImageSizes
+  category: String
+  mainTech: String
+  techs: [String]
+  version: String
+  duration: String
+  role: String
+  color: String
+  logo: ImageSizes
   courses: [Course]
 }
 
 input SkillCreate {
-  title: String!
-  # author: String!  # <==  ELiminar el id biene del token
+  title: String
+  slug: String
   description: String
+  isPublished: Boolean
+  isRecording: Boolean
+  synopsis: String
+  videoSynopsis: String
+  category: String
+  mainTech: String
+  techs: [String]
+  version: String
+  duration: String
+  role: String
+  color: String
   courses: [String]
 }
+
 # En la entrada las lecciones son String
 # Pero en la salida es un objeti tipo Lesson
 input SkillSet {
@@ -20,6 +45,17 @@ input SkillSet {
   title: String
   slug: String
   description: String
+  isPublished: Boolean
+  isRecording: Boolean
+  synopsis: String
+  videoSynopsis: String
+  category: String
+  mainTech: String
+  techs: [String]
+  version: String
+  duration: String
+  role: String
+  color: String
   courses: [String]
 }
 

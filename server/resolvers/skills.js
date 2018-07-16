@@ -3,17 +3,24 @@ import { CreateSelf, UpdateSelf, DeleteSelf } from '../authorization'
 
 export default {
   Query: {
-    skills: async (_, args, ctx) => {
+    skills: async (_, args, { user = {} }) => {
       // TODO Uniamente enviar skills isPublished
-      const skills = await models.Skill.find().populate('author courses')
+      const role = user.role ? user.role : 'public'
+      let query = role !== 'admin' ? { isPublished: true } : {}
+      const skillsUnpopulated = await models.Skill.find(query).populate('author courses')
 
-      const popule = await models.Skill.populate(skills,
+      const popule = await models.Skill.populate(skillsUnpopulated,
         { path: 'courses.lessons', model: 'Lesson' })
 
-      const popule2 = await models.Skill.populate(popule,
+      const skills = await models.Skill.populate(popule,
         { path: 'courses.lessons.author', model: 'User' }
       )
-      return popule2
+
+      if (role !== 'admin') {
+        return skills.map(c => c.getDataByRole(role))
+      }
+
+      return skills
     }
   },
 

@@ -175,10 +175,13 @@ export const GetAll = ({ model, query, only, populate = '' }) => baseResolver.cr
     ctx.doc = doc
   }
 )
-
+// Regresa un documento buscado por el modelo indicado
+// se usa el _id para identificarlo
+// Este puede venir como n argumento, de lo contrario lo toma
+// de el user._id
 export const GetSingle = ({ model, query, only, populate = '' }) => baseResolver.createResolver(
   // Extract the userId from context (undefined if non-existent)
-  async (root, args, ctx, info) => {
+  async (root, args = {}, ctx, info) => {
     const { user } = ctx
     // Si no hay usuario
     if (!user) throw new AuthenticationRequiredError()
@@ -189,18 +192,17 @@ export const GetSingle = ({ model, query, only, populate = '' }) => baseResolver
 
     let _query = {}
 
-    if (typeof query === 'function') {
-      _query = query(args, ctx)
-    }
+    if (typeof query === 'function') { _query = query(args, ctx) }
 
-    if (typeof query === 'object') {
-      _query = query
-    }
+    if (typeof query === 'object') { _query = query }
 
     // Revisamos roles
     if (!hasValidRole({ only, user })) throw new ForbiddenError()
 
-    const doc = await models[model].findOne({ ..._query, _id: args._id }).populate(populate)
+    // De donde tomamos el ID
+    const _id = args._id ? args._id : user._id
+
+    const doc = await models[model].findOne({ ..._query, _id }).populate(populate)
 
     if (!doc) throw new NotFound()
 

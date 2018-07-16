@@ -1,24 +1,65 @@
 type Course {
   _id: ID!
-  title: String
-  description: String
-  slug: String
   author: User
+  title: String
+  slug: String
+  description: String
+  isPublished: Boolean
+  isRecording: Boolean
+  synopsis: String
+  videoSynopsis: String
+  imageSynopsis: ImageSizes
+  cover: ImageSizes
+  level: String
+  firstLessonSlug: String
+  category: String
+  tags: [String]
+  tech: String
+  version: Int
+  duration: String
+  role: String
+  color: String
   lessons: [Lesson]
+  createdAt: String
+  updatedAt: String
 }
 
 input CourseCreate {
   title: String!
   description: String
-  # author: String!  # <==  ELiminar el id biene del token
+  isPublished: Boolean
+  isRecording: Boolean
+  synopsis: String
+  videoSynopsis: String
+  level: String
+  firstLessonSlug: String
+  category: String
+  tags: [String]
+  tech: String
+  version: Int
+  duration: String
+  role: String
+  color: String
+  lessons: [String]
 }
-# En la entrada las lecciones son String
-# Pero en la salida es un objeti tipo Lesson
+
 input CourseSet {
   _id: ID!
   title: String
-  slug: String
   description: String
+  isPublished: Boolean
+  isRecording: Boolean
+  synopsis: String
+  videoSynopsis: String
+  level: String
+  firstLessonSlug: String
+  category: String
+  tags: [String]
+  tech: String
+  version: Int
+  duration: String
+  role: String
+  color: String
   lessons: [String]
 }
 

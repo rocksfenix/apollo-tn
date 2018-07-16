@@ -3,13 +3,24 @@ import { CreateSelf, UpdateSelf, DeleteSelf } from '../authorization'
 
 export default {
   Query: {
-    lessons: async (_, args, ctx) => {
-      // Si es admin enviar todas,
-      // TODO De lo contrario enviar solo las isPublished
-      // TODO LessonsByText
-      // TODO LessonsByTech
-      const lessons = await models.Lesson.find().populate('author')
-      return lessons
+    // TODO De lo contrario enviar solo las isPublished
+    // TODO LessonsByText
+    // TODO LessonsByTech
+
+    lessons: async (_, args, { user = {} }) => {
+      // Si no es admin
+
+      let role = user.role ? user.role : 'public'
+
+      if (role !== 'admin') {
+        const lessons = await models.Lesson.find({ isPublished: true }).populate('author')
+        return lessons.map(lesson => lesson.getDataByRole(role))
+      }
+
+      if (user.role === 'admin') {
+        // A los admin enviar todas las lecciones
+        return models.Lesson.find().populate('author')
+      }
     }
   },
 

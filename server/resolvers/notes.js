@@ -1,5 +1,5 @@
 import models from '../models'
-import { GetSelf, CreateSelf, UpdateSelf, DeleteSelf } from '../authorization'
+import { GetSelf, CreateSelf, UpdateSelf, DeleteSelf, GetSingle } from '../authorization'
 
 export default {
   Query: {
@@ -36,7 +36,15 @@ export default {
       populate: 'lesson course',
       query: ({ courseId }) => ({ course: courseId })
     })
-      .createResolver((_, args, { doc }) => doc)
+      .createResolver((_, args, { doc }) => doc),
+
+    tagsByUser: GetSingle({
+      model: 'User',
+      only: 'pro free admin'
+      // populate: 'lesson course',
+      // query: ({ courseId }) => ({ course: courseId })
+    })
+      .createResolver((_, args, { doc }) => doc.tags)
 
   },
 

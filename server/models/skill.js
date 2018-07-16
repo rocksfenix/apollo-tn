@@ -46,4 +46,46 @@ const Skillchema = new mongoose.Schema({
 Skillchema.plugin(uniqueValidator, { message: 'Ya existe otro skill con ese nombre' })
 Skillchema.plugin(slugify)
 
+Skillchema.methods.getDataByRole = function (userRole) {
+  let courses = []
+
+  courses = this.courses.map(l => l.getDataByRole(userRole))
+
+  console.log(courses)
+
+  if (userRole !== 'admin') {
+    // Filtramos por publicadas
+    courses = courses.filter(l => l.isPublished)
+  }
+
+  let fields = {};
+
+  [
+    '_id',
+    'title',
+    'slug',
+    'author',
+    'description',
+    'isPublished',
+    'isRecording',
+    'synopsis',
+    'videoSynopsis',
+    'imageSynopsis',
+    'category',
+    'mainTech',
+    'techs',
+    'version',
+    'duration',
+    'role',
+    'color',
+    'logo',
+    'createdAt',
+    'updatedAt'
+  ].forEach(field => {
+    fields[field] = this[field]
+  })
+
+  return { ...fields, courses }
+}
+
 export default mongoose.model('Skill', Skillchema)
