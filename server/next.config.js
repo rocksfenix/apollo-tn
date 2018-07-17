@@ -4,7 +4,7 @@ require('dotenv').config()
 module.exports = {
   webpack: config => {
     config.plugins.push(
-      new webpack.EnvironmentPlugin(['BLOGGER_URL', 'SAFE_ENV'])
+      new webpack.EnvironmentPlugin(['SAFE_ENV'])
     )
     return config
   }

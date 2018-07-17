@@ -1,100 +1,105 @@
 // import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import models from '../models'
+import Constants from '../../config'
 const JWT_SECRET = process.env.JWT_SECRET
+const { JWT_KEY, JWT_RFS_KEY, JWT_REHYDRATE_KEY } = Constants
 
 // EL filtro de auth pasa por 3 etapas
 // Si el token es valido, si expiro y fue remplazado
 // si es valido identifica el role
-
+// TODO Hacer el refreshtoken y que este en sinctronizacion y que funciuone
 const auth = {
   checkHeaders: async (req, res, next) => {
-    const token = req.headers['_x-jwt']
+    const jwtToken = req.headers[JWT_KEY]
+    const jwtRfs = req.headers[JWT_RFS_KEY]
 
-    if (token) {
+    if (!jwtRfs || !jwtToken) return next()
+
+    if (jwtToken) {
       try {
-        const user = jwt.verify(token, JWT_SECRET)
+        const user = jwt.verify(jwtToken, JWT_SECRET)
         req.user = user
       } catch (e) {
-        // INVALID token
+        // TOKEN EXPIRED
         if (e.message === 'jwt expired') {
-          // console.log('Token expirado', e.message)
-          const {sub} = await jwt.decode(token)
-          const user = await models.User.findById(sub)
-
+          // Obtenemos el dueño del token
+          const e = await jwt.decode(jwtToken)
+          const user = await models.User.findById(e.sub)
           // Si algun haker ingreso un sub con un id invalido
+          // De algun usuario que no exista
           if (!user) {
-            req.user = user
+            req.user = null
             return next()
           }
 
-          const newToken = auth.getToken(user)
-          res.set('Access-Control-Expose-Headers', '_x-jwt')
-          res.set('_x-jwt', newToken)
-          req.user = user
+          // Si no envia RefreshToken
+          // Creamos un nuevo token pero validamos que el Refresh Token este vigente
+          try {
+            jwt.verify(jwtRfs, JWT_SECRET)
+            // Token valido, creamos nuevo JWT
+            // Con el estado de la ultima informacion  de la DB
+            const newToken = auth.getToken(user)
+            console.log('NUEVO TOKEN ', newToken)
+            res.set('Access-Control-Expose-Headers', JWT_KEY)
+            res.set(JWT_REHYDRATE_KEY, newToken)
+            // Pasamos la info decodificada al user
+            req.user = await jwt.decode(newToken)
+          } catch (error) {
+            // Enviar encavesado de session expirada para hacer
+            // un logout en automatico en el cliente
+            // redireccionar a /?sessionExired=true
+            if (error.message === 'jwt expired') {
+              console.log('SESION EXPIRADA')
+              // req.user = null
+              res.set('x-tn-expired-session', 'true')
+              // next()
+            }
+          }
         }
-      }
-    } else {
-      req.auth = {
-        isAuth: false,
-        author: null,
-        refleshToken: false,
-        role: ''
       }
     }
     next()
   },
 
-  // refreshToken: async (token) => {
-  //   // Obtenemos el id del usuario
-  //   // Lo buscamos en DB
-  //   // generamos nuevo token
-  //   const {sub} = await jwt.decode(token)
-  //   const user = await models.User.findById(sub)
-  //   const newToken = auth.getToken(user)
-  //   return {
-  //     author: user._id,
-  //     token: newToken
-  //   }
-  // },
+  getTokens: (user) => ({
+    token: auth.getToken(user),
+    refreshToken: auth.getRefreshToken(user)
+  }),
 
-  getToken: ({ _id, role }) => {
+  getToken: ({ _id, role, acceptTermsAndPrivacy, subscriptionStatus }) => {
     const payload = {
       sub: _id,
-      role
+      role,
+      acpp: acceptTermsAndPrivacy,
+      subst: subscriptionStatus
     }
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '30s' })
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: '10s' })
+  },
+
+  getRefreshToken: ({ _id }) => {
+    const payload = { sub: _id }
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: '5h' })
+  },
+
+  getResetPasswordToken: (sub) => {
+    return jwt.sign({
+      sub
+    }, JWT_SECRET + '-recvgter', { expiresIn: '1h' })
+  },
+
+  // Valida el reseteo de password
+  verifyResetPasswordToken: (token) => {
+    try {
+      const decode = jwt.verify(token, JWT_SECRET + '-recvgter')
+      return decode
+    } catch (error) {
+      if (error.message === 'jwt expired') {
+        return 'acid expired'
+      }
+      return 'invalid acid'
+    }
   }
-
-  // login: async (email, password, models) => {
-  //   const user = await models.User.findOne({email})
-
-  //   if (!user) {
-  //     return {
-  //       success: false,
-  //       errors: [{path: 'email', message: 'El email no existe'}]
-  //     }
-  //   }
-  //   // .compare(password, user.password)
-  //   const verifyPassword = await bcrypt.compare(password, user.password)
-
-  //   if (!verifyPassword) {
-  //     return {
-  //       success: false,
-  //       errors: [{path: 'password', message: 'Pass Invalida'}]
-  //     }
-  //   }
-
-  //   const token = auth.getToken(user)
-
-  //   console.log(token, verifyPassword, password, user.password, email)
-
-  //   return {
-  //     success: true,
-  //     token,
-  //     errors: []
-  //   }
-  // }
 }
 
 export default auth

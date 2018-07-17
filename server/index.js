@@ -5,17 +5,14 @@ import mongoose from 'mongoose'
 import compression from 'compression'
 import bodyParser from 'body-parser'
 import next from 'next'
-// import csrf from 'csurf'
 import cookieParser from 'cookie-parser'
 import path from 'path'
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas'
 import { makeExecutableSchema } from 'graphql-tools'
-import { formatError } from 'apollo-errors'
+import formatError from './formatError'
 // import session from 'express-session'
 import security from './middlewares/security'
 import auth from './middlewares/auth'
-
-// import xoxo from './middlewares/xoxo'
 
 const PORT = process.env.PORT || 3000
 const dev = process.env.NODE_ENV !== 'production'
@@ -29,7 +26,7 @@ const schema = makeExecutableSchema({
 
 mongoose.Promise = global.Promise
 
-mongoose.connect(process.env.MONGO_URI).then(() => {
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }).then(() => {
   const app = next({
     dev
   })
@@ -56,6 +53,7 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
           formatError,
           schema,
           context: {
+            req,
             headers: req.headers,
             user: req.user
           }
@@ -64,15 +62,17 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
       server.get('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }))
 
       // PAGES
+      server.get('/', (req, res) => {
+        app.render(req, res, '/home', req.query)
+      })
+
       server.get('/invoice/:id/:slug', (req, res) => {
         return app.render(req, res, '/invoice')
       })
 
       // END PAGES
 
-      server.get('*', (req, res) => {
-        return handle(req, res)
-      })
+      server.get('*', (req, res) => handle(req, res))
 
       server.listen(PORT, () => {
         console.log(`

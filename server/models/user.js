@@ -63,10 +63,8 @@ const UserSchema = new mongoose.Schema({
   },
 
   // Fecha de aceptacion de politica de Privacidad
-  acceptPolicyPrivacy: { type: Boolean, default: false },
-  acceptPolicyPrivacyDate: { type: Date },
-  acceptTermsAndConditions: { type: Boolean, default: false },
-  acceptTermsAndConditionsDate: { type: Date },
+  acceptTermsAndPrivacy: { type: Boolean, default: false },
+  acceptTermsAndPrivacyUpdated: { type: Date },
 
   authProvider: { type: String, enum: [ 'facebook', 'twitter', 'email' ], default: 'email' },
   password: { type: String, minlength: [8, 'La contraseña debe tener minimo 8 caracteres'], required: [true, 'No puede estar en blanco'] },
@@ -124,6 +122,11 @@ UserSchema.pre('save', function (next) {
 
   // Actualizamos el auhtor
   user.author = user._id
+
+  // Actualizamos marca de tiempo cuando el usuario acepta los terminos y condiciones
+  if (user.isModified('acceptTermsAndPrivacy')) {
+    user.acceptTermsAndPrivacyUpdated = Date.now()
+  }
 
   if (!user.isModified('password')) return next()
 

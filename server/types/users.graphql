@@ -1,43 +1,31 @@
-
 type User {
   _id: ID!
-  fullname: String!
-  email: String!
+  fullname: String
+  email: String
   username: String
-  # password: String!
-}
-
-type UserLogin {
-  success: Boolean!
-  token: String
-  errors: [Error]
-  user: User
-}
-
-# Se usa al momento de crear un nuevo usuario
-input UserCreate {
-  fullname: String!
-  email: String!
-  password: String!
+  role: String
+  avatar: ImageSizes
+  acceptTermsAndPrivacy: Boolean
+  acceptTermsAndPrivacyUpdated: String
 }
 
 # Se usa al actualizar un usuario
 input UserSet {
-  _id: ID!
+  _id: ID
   username: String
   fullname: String
   email: String
   password: String
+  acceptTermsAndPrivacy: Boolean
 }
 
 type Query {
   user(_id: ID!): User
+  userSelf: User
   users: [User]
 }
 
 type Mutation {
-  createUser(input: UserCreate!): UserLogin
   userUpdate(input: UserSet!): User
   userDelete(_id: ID!): User
-  login(email: String! password: String!): UserLogin
 }

@@ -1,0 +1,30 @@
+type UserAccessResponse {
+  success: Boolean
+  token: String
+  refreshToken: String
+  errors: [Error]
+}
+
+# Se usa al momento de crear un nuevo usuario
+input UserCreate {
+  fullname: String!
+  email: String!
+  password: String!
+  reCaptchaResponse: String!
+}
+
+type RecoveryResponse {
+  success: Boolean
+  message: String
+}
+
+type Mutation {
+  signup(input: UserCreate!): UserAccessResponse
+  login(email: String! password: String!): UserAccessResponse
+
+  # Solicita recuperacion de contraseña
+  forgot(email: String!, reCaptchaResponse: String!, paymentProcess: Boolean): RecoveryResponse
+
+  # confirma cambio de password
+  recovery(reCaptchaResponse: String! acid: String! email: String! password: String!): RecoveryResponse
+}

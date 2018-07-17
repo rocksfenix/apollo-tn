@@ -4,12 +4,22 @@ import PropTypes from 'prop-types'
 import { getDataFromTree } from 'react-apollo'
 import Head from 'next/head'
 import initApollo from './initApollo'
+import Constants from '../config'
+
+const { JWT_KEY, JWT_RFS_KEY } = Constants
 
 function parseCookies (req, options = {}) {
   return cookie.parse(
     req ? req.headers.cookie || '' : document.cookie,
     options
   )
+}
+
+function getTokens (req) {
+  return {
+    token: parseCookies(req)[JWT_KEY],
+    refreshToken: parseCookies(req)[JWT_RFS_KEY]
+  }
 }
 
 export default App => {
@@ -34,11 +44,11 @@ export default App => {
         xoxo = req.getXoxoToken(req)
       }
 
-      console.log('MODOOOOOOOOOOOO::: ', process.env.SAFE_ENV === 'safe', csrf)
+      console.info('MODO ::: ', process.env.SAFE_ENV === 'safe', csrf)
 
       const apollo = initApollo({}, {
         // Obtenemos el Token JWT
-        getToken: () => parseCookies(req).token,
+        getTokens: () => getTokens(req),
         // Obtenemos el token de meta _csrf
         csrf,
 
@@ -103,11 +113,8 @@ export default App => {
       super(props)
       // `getDataFromTree` renders the component first, the client is passed off as a property.
       // After that rendering is done using Next's normal rendering pipeline
-      // console.log('ALL BROWSEE', props.csrf)
-
-      // setItem('csrf', props.csrf)
       this.apolloClient = initApollo(props.apolloState, {
-        getToken: () => parseCookies().token,
+        getTokens: () => getTokens(),
         csrf: props.csrf
       })
     }

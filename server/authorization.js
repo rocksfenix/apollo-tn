@@ -123,7 +123,8 @@ export const UpdateSelf = ({ model, only, populate = '' }) => baseResolver.creat
     // Revisamos roles
     if (!hasValidRole({ only, user })) throw new ForbiddenError()
 
-    const doc = await models[model].findById(input._id).populate(populate)
+    // REVISAR PAR OTROS RECURSOS TENGO DUDAS
+    const doc = await models[model].findById(user.sub).populate(populate)
 
     if (!doc) throw new NotFound()
 
@@ -133,7 +134,10 @@ export const UpdateSelf = ({ model, only, populate = '' }) => baseResolver.creat
       ? doc.author
       : doc.author._id
 
-    if (user.role !== 'admin' && userID !== user._id) throw new ForbiddenError()
+    console.log(userID, user._id)
+    // Revisar para todos, ahora no se popula el user en req.user
+    // por lo que se debe de buscar como user._id
+    if (user.role !== 'admin' && userID !== user.sub) throw new ForbiddenError()
 
     // Se actualiza
     Object.keys(input).forEach(key => {
