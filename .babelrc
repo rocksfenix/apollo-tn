@@ -4,5 +4,9 @@
         "@babel/stage-2",
         "@babel/react"
     ],
-    "plugins": ["@babel/transform-runtime", "@babel/transform-async-to-generator"]
+    "plugins": [
+        "@babel/transform-runtime",
+        "@babel/transform-async-to-generator",
+        ["styled-components", { "ssr": true, "displayName": true, "preprocess": false }]
+    ]
 }

@@ -1,16 +1,24 @@
 import React from 'react'
+import styled from 'styled-components'
 
-const Index = ({data}) => (
-  <div>
-    <h1>Hello TN-GO {data}</h1>
-  </div>
-)
+const Title = styled.h1`
+  background: orangered;
+  color: #FFF;
+`
+class PageIndex extends React.Component {
+  componentDidMount = () => {
+    // alert(process.env.BLOGGER_URL)
+    console.log(process.env.BLOGGER_URL)
+  }
 
-Index.getInitialProps = async () => {
-  // console.log(process.env.BLOGGER_URL)
-  return {
-    data: process.env.BLOGGER_URL
+  render () {
+    return (
+      <div>
+        <Title>Hello789 as</Title>
+        <h2>asfds</h2>
+      </div>
+    )
   }
 }
 
-export default Index
+export default PageIndex
