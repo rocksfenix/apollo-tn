@@ -16,7 +16,7 @@ const Box = styled.div`
   height: 55px;
   background-color: #0e1013;
   width: 100%;
-  z-index: 100000;
+  z-index: 1000;
 `
 
 const Navegation = (props) => (
