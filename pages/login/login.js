@@ -64,6 +64,9 @@ class Login extends Component {
   }
 
   onResponse = ({ login = {} }) => {
+    if (!login.token) {
+      return window.alert('Email o Contraseña son Invalidos')
+    }
     if (login.token) {
       signin(login.token, login.refreshToken)
     }
@@ -113,7 +116,7 @@ class Login extends Component {
               type='password'
               onChange={this.props.onChange}
               onValidate={this.props.onValidate}
-              onEnter={this.submit}
+              onEnter={() => { this.submit(login) }}
             />
             <SubmitButton onClick={() => { this.submit(login) }} active={this.props.allValid()}>Login</SubmitButton>
             <MiniLink href={`/forgot${paymentProcess}`}>Olvide mi contraseña</MiniLink>

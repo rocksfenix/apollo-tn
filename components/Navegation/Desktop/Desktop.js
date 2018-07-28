@@ -125,8 +125,8 @@ const Admin = ({user}) => (
 const Free = ({user}) => (
   <Bar>
     <Left>
-      <Link href='/home' as='/'><Logo /></Link>
-      <Link href='/cursos'>Cursos</Link>
+      {/* <Link href='/home' as='/'><Logo /></Link> */}
+      {/* <Link href='/cursos'>Cursos</Link> */}
     </Left>
     <Right>
       <Link href='/pro' resalt><Icon type='thunder-1' /> PRO</Link>

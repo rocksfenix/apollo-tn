@@ -125,7 +125,7 @@ const onResponse = ({ userUpdate: { acceptTermsAndPrivacy } }) => {
   if (!acceptTermsAndPrivacy) {
     return logout('/?rejected-policy=true')
   }
-  window.location = '/?welcome=true'
+  window.location = '/app?welcome=true'
 }
 
 const AcceptTerms = (props) => (

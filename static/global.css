@@ -29,6 +29,43 @@
   transform: translateY(-10%);
 }
 
+
+/*  defaultCSSTransition */
+
+.defaultCSSTransition-exit.defaultCSSTransition-exit-active {
+  opacity: 0.01;
+  /* transition: all 600ms ease-in-out; */
+  /* transform: translateY(-30%); */
+}
+
+.defaultCSSTransition-enter {
+  opacity: 0.01;
+  /* transform: translateY(30%); */
+}
+
+.defaultCSSTransition-enter.defaultCSSTransition-enter-active {
+  opacity: 1;
+  /* transition: all 900ms ease-in-out; */
+  /* transform: translateY(0); */
+}
+
+.defaultCSSTransition-exit {
+  opacity: 1;
+}
+
+/* Cuando se va */
+
+.defaultCSSTransition-exit.defaultCSSTransition-exit-active {
+  opacity: 0.01;
+  /* transition: all 600ms ease-in-out; */
+  /* transform: translateY(-10%); */
+}
+
+
+
+
+
+
 /**********************************
 * Global Resets
 ***********************************/

@@ -61,9 +61,22 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }).then(() => {
 
       server.get('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }))
 
-      // PAGES
+      // HOME PUBLIC
       server.get('/', (req, res) => {
-        app.render(req, res, '/home', req.query)
+        console.log(req.params)
+        app.render(req, res, '/home', {
+          query: req.query,
+          params: req.params
+        })
+      })
+
+      // HOME LOGGED
+      server.get('/app/:tab/:l1?/:l2?/:l3?', (req, res) => {
+        console.log(req.params)
+        app.render(req, res, '/app', {
+          query: req.query,
+          params: req.params
+        })
       })
 
       server.get('/invoice/:id/:slug', (req, res) => {

@@ -221,14 +221,14 @@ const MenuBlock = ({ show, user }) => {
       <Header user={user} />
       <Desktop>
         <Link href='/cuenta'>Cuenta</Link>
-        <Link onClick={logout}>Cerrar sesión</Link>
+        <Link href='#' onClick={logout}>Cerrar sesión</Link>
       </Desktop>
 
       <Mobile>
         <Link href='/cursos'>Cursos</Link>
         { user.role === 'free' ? <Pro /> : null }
         <Link href='/cuenta'>Cuenta</Link>
-        <Link onClick={logout}>Cerrar sesión</Link>
+        <Link href='#' onClick={logout}>Cerrar sesión</Link>
       </Mobile>
     </Options>
   )

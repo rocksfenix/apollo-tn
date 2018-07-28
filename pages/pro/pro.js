@@ -93,7 +93,6 @@ const Success = styled.img`
   
 `
 
-
 const ItemText = styled.div`
   
 `
@@ -225,11 +224,23 @@ class ProPage extends React.Component {
             <LevelUpButton>Subir de Nivel</LevelUpButton>
           </Link>
         </Row>
-        {/* Nuestro compromiso, ofrecerte lecciones de alta calidad para un aprendisaje continuo y sin dolor */}
-        {/* "No te damos el producto, te damos la formula y después tu construyes lo que quieras." */}
       </View>
     )
   }
 }
+
+// {/* Nuestro compromiso, ofrecerte lecciones de alta calidad para un aprendisaje continuo y sin dolor */}
+// {/* "No te damos el producto, te damos la formula y después tu construyes lo que quieras." */}
+// {/* Si puedo evitarde mucho dolor y frustracion y hacer que aprendas muchas cosas que creias complicadas, me doy por servido */}
+// {/* Para mi era muy frustrante querer recurdar algun concepto de otra leccion tener que navegar a otra url, la frustracion de tener
+// que buscar el cuerso y la leccion que queria repasar, abrrla en otra tab (me inundaba de tabs) y despues volver a la leccion y
+// el curso que estaba viendo inicialmente, bahh */}
+
+// Hay plataformas que te enseñas los conceptos al mismo tiempo que crean un proyecto, es componentWillMount = () => {
+//   pero lo malos de esto es que puede ser frustrante y te puedes confundir
+//   nosotros tenemos series donde aprenderas los fundamentos, la teoria llamados Cursos
+
+//   y series tutoriales donde te enseñamos a desarrollar diferentes proyectos
+// }
 
 export default ProPage

@@ -3,6 +3,8 @@ import React, { Component } from 'react'
 import Router from 'next/router'
 import NProgress from 'nprogress'
 
+console.log(Router)
+
 Router.onRouteChangeStart = (url) => {
   console.log(`Loading: ${url}`)
   NProgress.start()

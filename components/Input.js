@@ -142,7 +142,7 @@ class TextFieldComponent extends Component {
     }
   }
 
-  validate = debounce(450, () => {
+  validate = debounce(200, () => {
     // Se esta escribiendo por primera vez
     if (!this.state.isTouched) {
       if (this.hasErrors()) {

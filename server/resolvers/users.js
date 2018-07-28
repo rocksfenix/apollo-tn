@@ -7,7 +7,7 @@ export default {
       // console.log(user.sub)
       if (user) {
         const us = await models.User.findById(user.sub)
-        console.log(us)
+        // console.log(us)
         return us
       }
     },

@@ -40,8 +40,8 @@ const auth = {
             // Token valido, creamos nuevo JWT
             // Con el estado de la ultima informacion  de la DB
             const newToken = auth.getToken(user)
-            console.log('NUEVO TOKEN ', newToken)
-            res.set('Access-Control-Expose-Headers', JWT_KEY)
+            // console.log('NUEVO TOKEN ', newToken)
+            // res.set('Access-Control-Expose-Headers', JWT_KEY)
             res.set(JWT_REHYDRATE_KEY, newToken)
             // Pasamos la info decodificada al user
             req.user = await jwt.decode(newToken)

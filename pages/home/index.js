@@ -1,11 +1,12 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
-import Public from './Public'
 import Navegation from '../../components/Navegation'
 import SeoHead from '../../components/SeoHead'
 import { redirect } from '../../lib/redirect'
 import WithUser from '../../components/WithUser'
 import Expired from '../../components/Expired'
+import Public from './Public'
+import FreePage from './Free'
 
 // import { Query } from 'react-apollo'
 
@@ -18,12 +19,12 @@ class Home extends Component {
   // static getInitialProps (ctx) {
   //   return {}
   // }
-  static async getInitialProps ({ req }) {
-    console.log('PARAM-S', req.query)
-    return {
-      query: req.query
-    }
-  }
+  // static async getInitialProps ({ req }) {
+  //   console.log('PARAM-S', req)
+  //   return {
+  //     query: req.query
+  //   }
+  // }
 
   static defaultProps = {
     user: {}
@@ -43,8 +44,6 @@ class Home extends Component {
       return <Public />
     }
 
-    return <Public />
-
     // if (user.role === 'ninja admin') {
     //   return <AdminPage {...this.props} />
     // }
@@ -53,9 +52,9 @@ class Home extends Component {
     //   return <ProPage {...this.props} />
     // }
 
-    // if (user.role === 'ninja free') {
-    //   return <FreePage {...this.props} />
-    // }
+    if (this.props.user.role === 'free') {
+      return <FreePage {...this.props} />
+    }
   }
 
   render () {
