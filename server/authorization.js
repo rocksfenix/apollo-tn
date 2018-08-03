@@ -62,7 +62,7 @@ export const GetSelf = ({ model, query, only, populate = '' }) => baseResolver.c
     // Revisamos roles
     if (!hasValidRole({ only, user })) throw new ForbiddenError()
 
-    const doc = await models[model].find({ ..._query, author: user._id }).populate(populate)
+    const doc = await models[model].find({ ..._query, author: user.sub }).populate(populate)
     ctx.doc = doc
   }
 )
@@ -77,7 +77,7 @@ export const CreateSelf = ({ model, only, populate = '' }) => baseResolver.creat
     // Revisamos roles
     if (!hasValidRole({ only, user })) throw new ForbiddenError()
 
-    let doc = await models[model].create({ ...args.input, author: user._id })
+    let doc = await models[model].create({ ...args.input, author: user.sub })
 
     if (populate) {
       doc = await models[model].findOne(doc).populate(populate)
@@ -105,7 +105,7 @@ export const DeleteSelf = ({ model, only, populate = '' }) => baseResolver.creat
       ? doc.author
       : doc.author._id
 
-    if (user.role !== 'admin' && userID !== user._id) throw new ForbiddenError()
+    if (user.role !== 'admin' && userID !== user.sub) throw new ForbiddenError()
 
     await doc.remove()
 
@@ -134,9 +134,9 @@ export const UpdateSelf = ({ model, only, populate = '' }) => baseResolver.creat
       ? doc.author
       : doc.author._id
 
-    console.log(userID, user._id)
+    console.log(userID, user.sub)
     // Revisar para todos, ahora no se popula el user en req.user
-    // por lo que se debe de buscar como user._id
+    // por lo que se debe de buscar como user.sub
     if (user.role !== 'admin' && userID !== user.sub) throw new ForbiddenError()
 
     // Se actualiza
@@ -182,7 +182,7 @@ export const GetAll = ({ model, query, only, populate = '' }) => baseResolver.cr
 // Regresa un documento buscado por el modelo indicado
 // se usa el _id para identificarlo
 // Este puede venir como n argumento, de lo contrario lo toma
-// de el user._id
+// de el user.sub
 export const GetSingle = ({ model, query, only, populate = '' }) => baseResolver.createResolver(
   // Extract the userId from context (undefined if non-existent)
   async (root, args = {}, ctx, info) => {
@@ -204,7 +204,7 @@ export const GetSingle = ({ model, query, only, populate = '' }) => baseResolver
     if (!hasValidRole({ only, user })) throw new ForbiddenError()
 
     // De donde tomamos el ID
-    const _id = args._id ? args._id : user._id
+    const _id = args._id ? args._id : user.sub
 
     const doc = await models[model].findOne({ ..._query, _id }).populate(populate)
 
@@ -216,7 +216,7 @@ export const GetSingle = ({ model, query, only, populate = '' }) => baseResolver
       ? doc.author
       : doc.author._id
 
-    if (user.role !== 'admin' && userID !== user._id) throw new ForbiddenError()
+    if (user.role !== 'admin' && userID !== user.sub) throw new ForbiddenError()
 
     ctx.doc = doc
   }

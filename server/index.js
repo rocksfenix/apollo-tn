@@ -13,6 +13,7 @@ import formatError from './formatError'
 // import session from 'express-session'
 import security from './middlewares/security'
 import auth from './middlewares/auth'
+import getInstrospection from './getInstrospection'
 
 const PORT = process.env.PORT || 3000
 const dev = process.env.NODE_ENV !== 'production'
@@ -48,6 +49,8 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }).then(() => {
 
       server.use(auth.checkHeaders)
 
+      server.get('/instrospection', getInstrospection)
+
       server.use('/graphql', bodyParser.json(),
         graphqlExpress(req => ({
           formatError,
@@ -70,8 +73,8 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }).then(() => {
         })
       })
 
-      // HOME LOGGED
-      server.get('/app/:tab/:l1?/:l2?/:l3?', (req, res) => {
+      // HOME LOGGED  '/app:tab?/course?/:lesson?'
+      server.get('/app/:tab/:course?/:lesson?', (req, res) => {
         console.log(req.params)
         app.render(req, res, '/app', {
           query: req.query,
@@ -89,7 +92,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }).then(() => {
 
       server.listen(PORT, () => {
         console.log(`
-          MongoDB OK
+          MongoDB OK 🚀
           corriendo en MODO: ${process.env.NODE_ENV}
           corriendo en SAFE_ENV: ${process.env.SAFE_ENV}
           Server is Running at PORT: ${PORT}

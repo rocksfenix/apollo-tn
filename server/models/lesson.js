@@ -7,6 +7,8 @@ const screenshotDef = 'https://dxpdcvj89hnue.cloudfront.net/images/screenshot-de
 const videoSource = 'https://player.vimeo.com/video/254234671'
 
 const LessonSchema = new mongoose.Schema({
+
+  resolveType: { type: String, default: 'lesson' },
   _id: {
     type: String,
     'default': shortid.generate
@@ -43,6 +45,8 @@ const LessonSchema = new mongoose.Schema({
   isTranscriptionPublic: { type: Boolean, default: false }
 
 }, { timestamps: true })
+
+LessonSchema.index({ title: 'text', tech: 'text', transcription: 'text', synopsis: 'text' })
 
 // Plugins
 LessonSchema.plugin(uniqueValidator, {message: 'is already taken.'})

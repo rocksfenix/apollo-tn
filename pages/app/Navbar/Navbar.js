@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
 import Link from 'next/link'
+import config from '../config'
 
 const Panel = styled.div`
   position: fixed;
@@ -89,10 +90,11 @@ const Glow = styled.div`
 `
 
 const Item = ({ href, children, icon, active, onClick, theme }) => {
-  const sp = href.split('/')
-  const _href = `/app?tab=${sp[2]}&l1=${sp[3]}&l2=${sp[4]}&l3=${sp[4]}`
+  // const sp = href.split('/')
+  // const _href = `/app?tab=${sp[2]}&course=${sp[3]}&l2=${sp[4]}&l3=${sp[4]}`
+  //  href={_href} as={href}
   return (
-    <Link href={_href} as={href}>
+    <div>
       <ItemBox
         active={active}
         onClick={onClick}
@@ -109,7 +111,7 @@ const Item = ({ href, children, icon, active, onClick, theme }) => {
         </IconBox>
         <ItemText>{ children }</ItemText>
       </ItemBox>
-    </Link>
+    </div>
   )
 }
 
@@ -118,22 +120,6 @@ class Navbar extends Component {
     width: '55px',
     show: false
   }
-
-  tabs = [
-    { href: '/app/history', icon: 'history', name: 'history' },
-    { href: '/app/search', icon: 'search', name: 'search' },
-    { href: '/app/player', icon: 'play-2', name: 'player' },
-    { href: '/app/courses', icon: 'courses', name: 'courses' },
-    { href: '/app/favorites', icon: 'favorite', name: 'favorites' },
-    { href: '/app/snippets', icon: 'snippet', name: 'snippets' },
-    { href: '/app/notes', icon: 'notes', name: 'notes' },
-    { href: '/app/bookmarks', icon: 'bookmark', name: 'bookmarks' },
-    { href: '/app/home', icon: 'home', name: 'home' },
-    { href: '/app/themes', icon: 'drop', name: 'themes' }
-  ]
-
-  setTab = (tab) => this.props.onChangeTab(tab)
-
   render () {
     return (
       <Panel
@@ -151,14 +137,13 @@ class Navbar extends Component {
 
           <Tecninja show={this.state.show}>Tecninja.io</Tecninja>
         </BrandItem>
-        {this.tabs.map(t => (
+        {config.tabs.map((t, index) => (
           <Item
             {...this.props}
-            href={t.href}
             icon={t.icon}
             key={t.icon}
-            active={this.props.params.tab === t.name}
-            onClick={() => this.setTab(t.name)}
+            active={this.props.toolIndex === index}
+            onClick={() => this.props.onChangeTab(index, t.label)}
           >
             {t.name}
           </Item>

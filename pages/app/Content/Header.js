@@ -1,8 +1,17 @@
 import React from 'react'
 import styled from 'styled-components'
 import warna from 'warna'
+import getTechIcon from '../getTechIcon'
 
 const Header = styled.header`
+  margin-top: 50px;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+`
+
+const Box = styled.header`
   display:flex;
   align-items: center;
   padding: 0;
@@ -44,47 +53,21 @@ const Glow = styled.div`
   opacity: .5;
 `
 
-const getTechIcon = (tech) => {
-  const techs = {
-    angular: {
-      logo: 'angular.svg'
-    },
-    react: {
-      logo: 'react.svg'
-    },
-    vue: {
-      logo: 'vue.svg'
-    },
-    node: {
-      logo: 'node.png'
-    },
-    rxjs: {
-      logo: 'rxjs.png'
-    },
-    webpack: {
-      logo: 'webpack.svg'
-    },
-    javascript: {
-      logo: 'javascript.svg'
-    }
-  }
-
-  return techs[tech].logo
-}
-
 // linear-gradient(90deg, #0b4178, #01010b)
 const Comp = ({ lesson, course }) => (
   <Header>
-    <TechLogo src={`/static/${getTechIcon(lesson.tech)}`} />
-    <TitleBox>
-      <Title>{ lesson.title }</Title>
-      <VersionBox>
-        <Glow color={course.color} />
-        <Version
-          gradient={`linear-gradient(90deg, ${warna.darken(course.color, 0.7).hex}, #01010b)`}
-        >{ lesson.techVersion }</Version>
-      </VersionBox>
-    </TitleBox>
+    <Box>
+      <TechLogo src={getTechIcon(lesson.tech)} />
+      <TitleBox>
+        <Title>{ lesson.title }</Title>
+        <VersionBox>
+          <Glow color={course.color} />
+          <Version
+            gradient={`linear-gradient(90deg, ${warna.darken(course.color, 0.7).hex}, #01010b)`}
+          >@{ lesson.techVersion }</Version>
+        </VersionBox>
+      </TitleBox>
+    </Box>
   </Header>
 )
 

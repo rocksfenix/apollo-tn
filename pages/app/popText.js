@@ -21,8 +21,8 @@ const Pop = keyframes`
 
 const Text = styled.div`
   position: absolute;
-  left: 1em;
-  top: 200px;
+  left: 1.3em;
+  top: 300px;
   font-size: 60px;
   z-index: 1000;
   color: rgba(68, 85, 132, 0.5);

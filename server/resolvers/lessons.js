@@ -1,5 +1,6 @@
 import models from '../models'
 import { CreateSelf, UpdateSelf, DeleteSelf } from '../authorization'
+import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../errors'
 
 export default {
   Query: {
@@ -31,11 +32,25 @@ export default {
       only: 'admin'
     }).createResolver((_, args, { doc }) => doc),
 
-    lessonUpdate: UpdateSelf({
-      model: 'Lesson',
-      populate: 'author',
-      only: 'admin'
-    }).createResolver((_, args, { doc }) => doc),
+    lessonUpdate: async (_, { input }, { doc }) => {
+      const lesson = await models.Lesson.findById(input._id).populate('author lessons')
+
+      if (!lesson) throw new NotFound()
+
+      Object.keys(input).forEach(key => {
+        lesson[key] = input[key]
+      })
+
+      await lesson.save()
+
+      return lesson
+    },
+    
+    // UpdateSelf({
+    //   model: 'Lesson',
+    //   populate: 'author',
+    //   only: 'admin'
+    // }).createResolver((_, args, { doc }) => doc),
 
     lessonDelete: DeleteSelf({
       model: 'Lesson',

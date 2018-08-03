@@ -65,6 +65,7 @@ input CourseSet {
 
 type Query {
   courses: [Course!]!
+  course(slug: String!): Course!
 }
 
 type Mutation {

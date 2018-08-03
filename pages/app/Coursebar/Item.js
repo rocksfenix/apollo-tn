@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import styled, {keyframes} from 'styled-components'
 import Link from 'next/link'
 import warna from 'warna'
+import getTechIcon from '../getTechIcon'
 
 const gostColor = 'rgba(0, 0, 0, 0.2)'
 
@@ -218,12 +219,11 @@ export default class extends Component {
   }
 
   render () {
-    const { children, isWatched, next, logoTech, slug, course, active, size, ripple, index } = this.props
+    const { children, isWatched, next, tech, slug, course, active, size, ripple, index } = this.props
     const { hover } = this.state
     const { color } = this.props.course
     const colorLighten = warna.lighten(color, 0.85).hex
     const gradient = `linear-gradient(90deg, ${warna.lighten(color, 0.8).hex}, ${warna.lighten(color, 1).hex})`
-
     // Ball
     let Ball = <BallInactive />
     if (isWatched) Ball = <BallWatched color={color} isWatched={isWatched} />
@@ -232,8 +232,8 @@ export default class extends Component {
 
     return (
       <Link
-        href={`/app?tab=player&l1=${course.slug}&l2=${slug}`}
-        as={`/app/player/${course.slug}/${slug}`}
+        href={`/app?tab=curso&course=${course.slug}&lesson=${slug}`}
+        as={`/app/curso/${course.slug}/${slug}`}
       >
         <Itembox
           color={colorLighten}
@@ -258,7 +258,7 @@ export default class extends Component {
             </BallBox>
           </Advance>
           <LogoBox isHover={hover || active}>
-            <LogoImg src={`/static/${logoTech}`} />
+            <LogoImg src={getTechIcon(tech)} />
             <LogoGlow color={color} isHover={hover || active} />
           </LogoBox>
           <Text

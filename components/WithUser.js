@@ -18,15 +18,12 @@ const GET_USER_PROFILE = gql`{
 
 export default (Comp) => class extends React.Component {
   static async getInitialProps ({ req }) {
-    // console.log('PARAM-S', req.params)
-
     let query = {}
     let params = {}
     try {
       query = req.query
       params = req.params
     } catch (error) {}
-    // console.log('PARAM-S', req.query)
     return {
       query,
       params

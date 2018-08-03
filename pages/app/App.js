@@ -1,11 +1,12 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
 import Mousetrap from 'mousetrap'
+import Router from 'next/router'
 import Navbar from './Navbar'
 import SeoHead from '../../components/SeoHead'
 import WithUser from '../../components/WithUser'
 import themes from './themes'
-import PopText from './popText'
+// import PopText from './popText'
 import Themes from './Tools/Themes'
 import Bookmarks from './Tools/Bookmarks'
 import Notes from './Tools/Notes'
@@ -19,24 +20,25 @@ import Content from './Content'
 import HandlerSize from './HandlerSize'
 import MainPanel from './MainPanel'
 import TestingData from './TestingData'
+// import gpl from 'graphql-tag'
+// import {graphql, compose} from 'react-apollo'
+// import queries from './queries'
+import config from './config'
 
 const Toolbar = styled.div`
   width: 100%;
   height: 100vh;
-left: ${props => props.show ? '0' : '-100%'};
+  left: ${props => props.show ? '0;' : '-100%'};
   display: flex;
   position: absolute;
   top: 0;
-  transition: all .3s ease-in-out;
+  transition: all .2s ease-in-out;
   justify-content: center;
   align-items: center;
   z-index: 600;
-  /* box-shadow: 0 0 97px 10px rgba(0,0,0,0.6); */
-  overflow: hidden;
 `
 
 const View = styled.div`
-  overflow-x: hidden;
   position: relative;
 `
 
@@ -51,20 +53,34 @@ class App extends Component {
     coursebarHeight: '100',
     setScroll: true,
 
+    // Pocision de tool
+    toolIndex: 8,
+
+    // url
+    url: {
+      lesson: '',
+      course: '',
+      tab: 'home'
+    },
+
+    // datos de curso
+    course: { lessons: [] },
+
+    // Leccion en foco
+    lesson: {},
+
     // Course DATA
     ...TestingData
   }
 
-  // Se setea la tab por defecto
   componentWillMount = () => {
-    if (!this.props.params.tab) {
-      this.state.params = {
-        tab: 'home',
-        lessonActive: ''
+    const { course, lesson } = this.props.params
+    this.setState({
+      url: {
+        lesson: lesson || null,
+        course: course || null
       }
-    } else {
-      this.state.params = this.props.params
-    }
+    })
   }
 
   // Agregamos el evento de cambio de navegacion
@@ -75,59 +91,103 @@ class App extends Component {
 
       this.onPopState()
 
-      if (process.browser) {
-        this.setState({
-          coursebarHeight: `${window.innerHeight - 165}px`,
-          contentWidth: `${window.innerWidth - 280}px`
-        })
-        Mousetrap.bind('h h', () => this.onChangeTab('history'))
-        Mousetrap.bind('b b', () => this.onChangeTab('search'))
-        Mousetrap.bind('c c', () => this.onChangeTab('courses'))
-        Mousetrap.bind('p p', () => this.onChangeTab('player'))
-        Mousetrap.bind('f f', () => this.onChangeTab('favorites'))
-        Mousetrap.bind('s s', () => this.onChangeTab('snippets'))
-        Mousetrap.bind('n n', () => this.onChangeTab('notes'))
-        Mousetrap.bind('b m', () => this.onChangeTab('bookmarks'))
-        Mousetrap.bind('t t', () => this.onChangeTab('themes'))
-        Mousetrap.bind('esc', () => this.onChangeTab('player'))
+      this.setState({
+        coursebarHeight: `${window.innerHeight - 165}px`,
+        contentWidth: `${window.innerWidth - 300}px`
+      })
+      Mousetrap.bind('h h', () => this.onChangeTab(0, 'history'))
+      Mousetrap.bind('b', () => this.onChangeTab(1, 'search'))
+      Mousetrap.bind('f', () => this.onChangeTab(1, 'search'))
+      Mousetrap.bind('p p', () => this.onChangeTab(2, 'curso'))
+      Mousetrap.bind('c c', () => this.onChangeTab(3, 'courses'))
+      // Mousetrap.bind('f f', () => this.onChangeTab('favorites'))
+      Mousetrap.bind('s s', () => this.onChangeTab(5, 'snippets'))
+      Mousetrap.bind('n n', () => this.onChangeTab(6, 'notes'))
+      Mousetrap.bind('b m', () => this.onChangeTab(7, 'bookmarks'))
+      Mousetrap.bind('t t', () => this.onChangeTab(8, 'themes'))
+      Mousetrap.bind('esc', () => this.onChangeTab(2, 'curso'))
+      Mousetrap.bind('ctrl+up', this.toolUp)
+      Mousetrap.bind('ctrl+down', this.toolDown)
+
+      // Si hay curso se setea
+
+      if (this.state.course && this.state.course.lessons) {
+        try {
+          let slug = window.location.href.split('/')[6]
+          return this.setState({
+            lesson: TestingData.course.lessons.filter(l => l.slug === slug)[0]
+          })
+        } catch (error) {
+          this.setState({
+            lesson: TestingData.course.lessons[0]
+          })
+        }
       }
+    }
+  }
+
+  // toolTown se ejecuta al precionar CTRL + ArrowDown
+  // Resta el toolIndex hasta llegar la longitud de tabs
+  toolDown = () => {
+    const { toolIndex } = this.state
+    const newIndex = toolIndex + 1
+    if (toolIndex <= 8) {
+      this.setState({
+        toolIndex: newIndex,
+        tab: config.tabs[newIndex].label
+      })
+    }
+  }
+
+  toolUp = () => {
+    const { toolIndex } = this.state
+    const newIndex = toolIndex - 1
+    if (toolIndex > 0) {
+      this.setState({
+        toolIndex: newIndex,
+        tab: config.tabs[newIndex].label
+      })
     }
   }
 
   onLessonsSetScroll = () => this.setState({ setScroll: false })
 
-  // Metodo que parsea la URL para obtener
-  // Sus params
-  parseUrl = (href) => {
-    const s = href.split('/')
-    return {
-      tab: s[4],
-      courseSlug: s[5],
-      lessonSlug: s[6],
-      l3: s[7]
-    }
-  }
-
   // Este evento se dispara cuando
   // se navega el el historial a travez
   // de las flechaz de navegacion del navegador
   onPopState = (e) => {
-    const params = this.parseUrl(window.location.href)
-    this.setState({ params })
+    // Metodo que parsea la URL para obtener
+    // Sus params
+    const parseUrl = (href) => {
+      const s = href.split('/')
+      return {
+        course: s[5],
+        lesson: s[6] ? s[6].replace(/(#)\w+/gm, '') : null
+      }
+    }
+
+    const url = parseUrl(window.location.href)
+    const lessonSlug = window.location.href.split('/')[6]
+
+    this.setState({
+      url,
+      lesson: TestingData.course.lessons.filter(l => l.slug === lessonSlug)[0]
+    })
   }
 
   // Cuando se selecciona otra tab
-  onChangeTab = (tab) => {
-    this.setState(state => ({
-      ...state,
-      params: { ...state.params, tab }
-    }))
+  onChangeTab = (toolIndex, tab) => {
+    if (tab === 'home') {
+      return Router.push('/app')
+    }
+
+    this.setState({ toolIndex, tab })
   }
 
   onToolsLeave = (e) => {
     // TODO revisar si activamos esta opcion
     if (e.clientX >= 200) {
-      // this.onChangeTab('player')
+      // this.onChangeTab('course')
     }
   }
 
@@ -136,31 +196,35 @@ class App extends Component {
   onResize = (size, panelSize) => {
     this.setState({
       mainPanelWidth: `${size}px`,
-      contentWidth: `${window.innerWidth - size}px`,
+      contentWidth: `${window.innerWidth - size - 17}px`,
       contentLeft: `${size}px`,
       panelSize
     })
   }
 
+  showPlaying = () => {
+    this.setState({ tab: 'course', toolIndex: 2 })
+  }
+
   // Al hacer click en navegacion
   // Se usa para recargar leccion en browser
-  onChangeLesson = (lessonSlug) => {
+  onChangeLesson = (lesson) => {
     this.setState(state => ({
       ...state,
-      params: {
-        ...state.params,
-        lessonSlug
-      }
+      url: {
+        ...state.url,
+        lesson
+      },
+      lesson: TestingData.course.lessons.filter(l => l.slug === lesson.replace(/(#)\w+/gm, ''))[0]
     }))
   }
 
   render () {
     let showCourse = true
-    let showHistory = true
+    let showHistory = false
     let showTools = false
     let historyHeight = 'small'
-
-    const { tab } = this.state.params
+    const { tab } = this.state
 
     // show toolvar if tab
     if (
@@ -174,6 +238,7 @@ class App extends Component {
       tab === 'account'
     ) {
       showTools = true
+      showHistory = false
     }
 
     // histoy
@@ -186,7 +251,7 @@ class App extends Component {
       historyHeight = 'small'
     }
 
-    if (tab === 'player') {
+    if (tab === 'curso') {
       historyHeight = 'medium'
     }
 
@@ -197,18 +262,16 @@ class App extends Component {
       showTools = false
     }
 
-    /*
-     El MainPanel es el que prove el Resize
-     * Se muestra (left) cuando el CourseBar o el Toolbar esta abierto
-    */
-
     return (
       <View>
-        <SeoHead title='Dashboard Tecninja.io' />
-        <PopText text={this.state.params.tab} />
+        <SeoHead title='Tecninja.io' />
+        {/* <PopText text={this.state.url.tab} /> */}
+
         <Navbar
           {...this.state}
+          activeLesson={this.state.lesson}
           onChangeTab={this.onChangeTab}
+          toolIndex={this.state.toolIndex}
         />
         {/* Panel principal el que prove el Resize */}
         <MainPanel width={this.state.mainPanelWidth}>
@@ -220,19 +283,23 @@ class App extends Component {
             { tab === 'snippets' ? <Snippets /> : null }
             { tab === 'favorites' ? <Favorites /> : null }
             { tab === 'courses' ? <Courses /> : null }
-            { tab === 'search' ? <Search /> : null }
+            { tab === 'search' ? <Search {...this.props} onEscape={this.showPlaying} /> : null }
           </Toolbar>
           <Coursebar
             show={showCourse}
             size={this.state.panelSize}
             onChangeLesson={this.onChangeLesson}
-            lessonActive={this.state.params.lessonSlug}
+            lessonSlug={this.state.url.lesson}
             coursebarHeight={this.state.coursebarHeight}
             setScroll={this.state.setScroll}
             onLessonsSetScroll={this.onLessonsSetScroll}
             course={this.state.course}
           />
-          <History show={showHistory} height={historyHeight} />
+          <History
+            show={showHistory}
+            height={historyHeight}
+            isShowTools={showTools}
+          />
         </MainPanel>
         <Content
           show={tab !== 'home'}
@@ -245,5 +312,9 @@ class App extends Component {
     )
   }
 }
+
+// export default compose(
+//   graphql(queries.query.courses, {name: 'courses'})
+// )(WithUser(App))
 
 export default WithUser(App)

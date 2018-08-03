@@ -1,16 +1,21 @@
 import { withClientState } from 'apollo-link-state'
 import { ApolloClient } from 'apollo-client'
 import { ApolloLink } from 'apollo-link'
-import { InMemoryCache } from 'apollo-cache-inmemory'
+import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
 import { createHttpLink } from 'apollo-link-http'
 import { setContext } from 'apollo-link-context'
 import fetch from 'isomorphic-unfetch'
 import resolvers from './resolvers'
 import typeDefs from './typeDefs'
+import introspectionQueryResultData from './fragmentTypes.js'
 // import { removeCookie } from '../lib/redirect'
 import Constants from '../config'
 import cookie from 'js-cookie'
 import '../lib/session'
+
+const fragmentMatcher = new IntrospectionFragmentMatcher({
+  introspectionQueryResultData
+})
 
 const { JWT_KEY, JWT_RFS_KEY, JWT_REHYDRATE_KEY } = Constants
 
@@ -25,7 +30,7 @@ if (!process.browser) {
 }
 
 function create (initialState, { getTokens, csrf, Cookie, xoxo }) {
-  const cache = new InMemoryCache().restore(initialState || {})
+  const cache = new InMemoryCache({ fragmentMatcher }).restore(initialState || {})
 
   const httpLink = createHttpLink({
     uri: URI,

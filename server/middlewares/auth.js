@@ -74,12 +74,12 @@ const auth = {
       acpp: acceptTermsAndPrivacy,
       subst: subscriptionStatus
     }
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '10s' })
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: '30s' })
   },
 
   getRefreshToken: ({ _id }) => {
     const payload = { sub: _id }
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '5h' })
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: '30d' })
   },
 
   getResetPasswordToken: (sub) => {

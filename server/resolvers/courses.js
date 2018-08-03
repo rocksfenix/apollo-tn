@@ -1,5 +1,6 @@
 import models from '../models'
 import { CreateSelf, UpdateSelf, DeleteSelf } from '../authorization'
+import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../errors'
 
 export default {
   Query: {
@@ -14,6 +15,27 @@ export default {
       }
 
       return courses
+    },
+
+    course: async (_, { slug }, { user = {} }) => {
+      // TODO al obtener el curso obtener si el usuaro ya tiene lecciones
+      // vistas de ese curso y señalizar
+      const role = user.role ? user.role : 'public'
+
+      let query = { slug }
+
+      if (role !== 'admin') {
+        query.isPublished = true
+      }
+
+      let course = await models.Course.findOne(query).populate('author lessons')
+
+      // # TODO Si no es admin unicamente enviar los cursos isPublished
+      if (role !== 'admin') {
+        return course.getDataByRole(role)
+      }
+
+      return course
     }
   },
 
@@ -24,11 +46,19 @@ export default {
       only: 'admin'
     }).createResolver((_, args, { doc }) => doc),
 
-    courseUpdate: UpdateSelf({
-      model: 'Course',
-      populate: 'author lessons',
-      only: 'admin'
-    }).createResolver((_, args, { doc }) => doc),
+    courseUpdate: async (_, { input }, { doc }) => {
+      const course = await models.Course.findById(input._id).populate('author')
+
+      if (!course) throw new NotFound()
+
+      Object.keys(input).forEach(key => {
+        course[key] = input[key]
+      })
+
+      await course.save()
+
+      return course
+    },
 
     courseDelete: DeleteSelf({
       model: 'Course',

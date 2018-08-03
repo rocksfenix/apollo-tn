@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import styled from 'styled-components'
-import slugify from 'slugify'
 import Item from './Item'
 
 const Panel = styled.div`
@@ -68,39 +67,35 @@ export default class extends Component {
   // Regresa el indice de la leccion que es filtrada
   // Por su slug
   getScrollPos = () => {
-    const { lessonActive, course } = this.props
+    const { lessonSlug, course } = this.props
 
     let indexActive = 0
     course.lessons.forEach((l, i) => {
-      if (l.slug === lessonActive) {
+      if (l.slug === lessonSlug) {
         indexActive = i
       }
     })
 
     return indexActive
   }
+
   render () {
     const { course, coursebarHeight, show } = this.props
     const tolerance = 3
     const height = `${course.lessons.length * (50 + tolerance)}px`
-    // debugger
     return (
-      // <div>sds</div>
       <Panel ref={this.coursebar} style={{ height: `${coursebarHeight}` }} show={show}>
         <Wrap size={this.props.size} height={height}>
           {this.props.course.lessons.map((lesson, index, a) => (
             <Item
               key={lesson.title}
-              {...lesson}
-              lessons={course.lessons}
-              index={index}
               next={a[index + 1] || { isWatched: false }}
-              slug={slugify(lesson.title, { lower: true })}
-              course={this.props.course}
-              size={this.props.size}
-              active={this.props.lessonActive === lesson.slug}
-              onChangeLesson={this.props.onChangeLesson}
+              active={this.props.lessonSlug === lesson.slug}
+              index={index}
               ripple={this.state.ripple}
+              lessons={course.lessons}
+              {...lesson}
+              {...this.props}
             >
               { lesson.title }
             </Item>

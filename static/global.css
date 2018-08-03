@@ -1,3 +1,7 @@
+/* @import url('https://fonts.googleapis.com/css?family=Merriweather'); */
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
 /******** NINJA LOGO ICONO ********/
 
 .slideUpNinja-exit.slideUpNinja-exit-active {
@@ -162,4 +166,315 @@ html, body {
   100% {
       transform: rotate(360deg);
   }
+}
+
+
+/******************************************************************
+********************* PRISM CODE **********************************/
+
+.prism-code {
+  display: block;
+  white-space: pre;
+  background-color: #1D1F21;
+  color: #C5C8C6;
+  padding: 0.5rem;
+  margin: 0;
+  box-sizing: border-box;
+  vertical-align: baseline;
+  outline: none;
+  text-shadow: none;
+  -webkit-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+  word-wrap: normal;
+  word-break: normal;
+  text-align: left;
+  word-spacing: normal;
+  -moz-tab-size: 2;
+  -o-tab-size: 2;
+  tab-size: 2;
+}
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: hsl(30, 20%, 50%);
+}
+.token.comment {
+  font-style: italic;
+}
+.token.punctuation {
+  opacity: .7;
+}
+.namespace {
+  opacity: .7;
+}
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol {
+  color: hsl(350, 40%, 70%);
+}
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: hsl(75, 70%, 60%);
+}
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string,
+.token.variable {
+  color: hsl(40, 90%, 60%);
+}
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: hsl(350, 40%, 70%);
+}
+.token.regex,
+.token.important {
+  color: #e90;
+}
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+.token.italic {
+  font-style: italic;
+}
+.token.entity {
+  cursor: help;
+}
+.token.deleted {
+  color: red;
+}
+@font-face {
+  font-family: 'Merriweather';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Merriweather'), local('Merriweather-Regular'), url(https://fonts.gstatic.com/s/merriweather/v15/RFda8w1V0eDZheqfcyQ4EIjoYw3YTyktCCer_ilOlhE.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Merriweather';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Merriweather'), local('Merriweather-Regular'), url(https://fonts.gstatic.com/s/merriweather/v15/RFda8w1V0eDZheqfcyQ4EBampu5_7CjHW5spxoeN3Vs.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215;
+}
+html, body {
+  font-size: 18px;
+  line-height: 1.6;
+  font-family: ${bodyFont};
+  font-style: normal;
+  padding: 0;
+  margin: 0;
+  color: rgb(46, 68, 78);
+  -webkit-font-smoothing: subpixel-antialiased;
+  @media (max-width: 1000px) {
+    font-size: 16px;
+  }
+}
+body.sticky {
+  overflow: hidden;
+}
+.root {
+  position: relative;
+  overflow: auto;
+}
+.big {
+  color: white;
+  font-size: 1.4em;
+}
+.small {
+  color: white;
+  font-size: 0.5em;
+}
+ul li {
+  margin-bottom: 0.2em;
+  line-height: 1.7;
+}
+
+#root {
+  overflow-x: hidden;
+}
+
+/*
+Name: Duotone Dark
+Author: Simurai, adapted from DuoTone themes for Atom (http://simurai.com/projects/2016/01/01/duotone-themes)
+Conversion: Bram de Haan (http://atelierbram.github.io/Base2Tone-prism/output/prism/prism-base2tone-evening-dark.css)
+Generated with Base16 Builder (https://github.com/base16-builder/base16-builder)
+*/
+
+code[class*="language-"],
+pre[class*="language-"] {
+font-family: Consolas, Menlo, Monaco, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", "Courier New", Courier, monospace;
+font-size: 14px;
+line-height: 1.375;
+direction: ltr;
+text-align: left;
+white-space: pre;
+word-spacing: normal;
+word-break: normal;
+
+-moz-tab-size: 4;
+-o-tab-size: 4;
+tab-size: 4;
+
+-webkit-hyphens: none;
+-moz-hyphens: none;
+-ms-hyphens: none;
+hyphens: none;
+background: #2a2734;
+color: #9a86fd;
+}
+
+pre[class*="language-"]::-moz-selection, pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection, code[class*="language-"] ::-moz-selection {
+text-shadow: none;
+background: #6a51e6;
+}
+
+pre[class*="language-"]::selection, pre[class*="language-"] ::selection,
+code[class*="language-"]::selection, code[class*="language-"] ::selection {
+text-shadow: none;
+background: #6a51e6;
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+padding: 1em;
+margin: .5em 0;
+overflow: auto;
+}
+
+/* Inline code */
+:not(pre) > code[class*="language-"] {
+padding: .1em;
+border-radius: .3em;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+color: #6c6783;
+}
+
+.token.punctuation {
+color: #6c6783;
+}
+
+.token.namespace {
+opacity: .7;
+}
+
+.token.tag,
+.token.operator,
+.token.number {
+color: #e09142;
+}
+
+.token.property,
+.token.function {
+color: #ff53f8;
+}
+
+.token.tag-id,
+.token.selector,
+.token.atrule-id {
+color: #eeebff;
+}
+
+code.language-javascript,
+.token.attr-name {
+color: #c4b9fe;
+}
+
+code.language-css,
+code.language-scss,
+.token.boolean,
+.token.string,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.language-scss .token.string,
+.style .token.string,
+.token.attr-value,
+.token.keyword,
+.token.control,
+.token.directive,
+.token.unit,
+.token.statement,
+.token.regex,
+.token.atrule {
+color: #ffcc99;
+}
+
+.token.placeholder,
+.token.variable {
+color: #ffcc99;
+}
+
+.token.deleted {
+text-decoration: line-through;
+}
+
+.token.inserted {
+border-bottom: 1px dotted #eeebff;
+text-decoration: none;
+}
+
+.token.italic {
+font-style: italic;
+}
+
+.token.important,
+.token.bold {
+font-weight: bold;
+}
+
+.token.important {
+color: #c4b9fe;
+}
+
+.token.entity {
+cursor: help;
+}
+
+pre > code.highlight {
+outline: .4em solid #8a75f5;
+outline-offset: .4em;
+}
+
+/* overrides color-values for the Line Numbers plugin
+* http://prismjs.com/plugins/line-numbers/
+*/
+.line-numbers .line-numbers-rows {
+border-right-color: #2c2937;
+}
+
+.line-numbers-rows > span:before {
+color: #3c3949;
+}
+
+/* overrides color-values for the Line Highlight plugin
+* http://prismjs.com/plugins/line-highlight/
+*/
+.line-highlight {
+background: rgba(224, 145, 66, 0.2);
+background: -webkit-linear-gradient(left, rgba(224, 145, 66, 0.2) 70%, rgba(224, 145, 66, 0));
+background: linear-gradient(to right, rgba(224, 145, 66, 0.2) 70%, rgba(224, 145, 66, 0));
+}
+
+/* END THEME PRISM */
+pre {
+border-radius: 0 !important;
 }

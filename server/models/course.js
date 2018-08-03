@@ -7,6 +7,7 @@ const coverImg = 'https://dxpdcvj89hnue.cloudfront.net/CourseCovers/TecNinja.svg
 const synopsisImg = 'https://dxpdcvj89hnue.cloudfront.net/images/screenshot-default-lesson.png'
 
 const CourseSchema = new mongoose.Schema({
+  resolveType: { type: String, default: 'course' },
   _id: { type: String, 'default': shortid.generate },
 
   title: { type: String, required: [true, 'El titulo es necesario'] },
@@ -50,6 +51,8 @@ const CourseSchema = new mongoose.Schema({
     large: { type: String, default: coverImg } // 1000px
   }
 }, { timestamps: true })
+
+CourseSchema.index({ title: 'text', tech: 'text', category: 'text', description: 'text' })
 
 // Plugins
 CourseSchema.plugin(uniqueValidator, { message: 'is already taken.' })

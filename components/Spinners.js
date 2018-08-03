@@ -2,10 +2,11 @@ import React from 'react'
 import styled from 'styled-components'
 
 const Spin = styled.img`
-  display: block;
+  display: ${p => p.show ? 'block' : 'none'};
   margin: 1em auto;
+  width: {p => p.width || '100%'};
 `
 
-export const Ellipsis = () => <Spin src='/static/ellipsis.svg' />
+export const Ellipsis = (props) => <Spin src='/static/ellipsis.svg' {...props} />
 
-export const Ripple = () => <Spin src='/static/ripple.svg' />
+export const Ripple = (props) => <Spin src='/static/ripple.svg' {...props} />

@@ -2,3 +2,10 @@ type Error {
   path: String!
   message: String!
 }
+
+union Search = Course | Lesson
+
+
+type Query {
+  search(text: String): [Search]
+}
