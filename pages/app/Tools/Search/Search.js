@@ -7,6 +7,7 @@ import SearchBox from '../SearchBox'
 import getTechIcon from '../../getTechIcon'
 import CourseDatails from './CourseDetails'
 import { Ellipsis } from '../../../../components/Spinners'
+import Router from 'next/router'
 
 const ALL_COURSES = gpl`
 query search($text: String!) {
@@ -200,6 +201,7 @@ class SearchComponent extends Component {
       Mousetrap.bind('left', this.onArrowLeft)
       Mousetrap.bind('right', this.onArrowRight)
       Mousetrap.bind('f', this.focus, 'keyup')
+      Mousetrap.bind('enter', this.enter)
     }
   }
 
@@ -210,6 +212,27 @@ class SearchComponent extends Component {
 
   focus = () => {
     this.setState({ index1: 0, index2: 0, sectionInFocus: 'search' })
+  }
+
+  enter = (e) => {
+    // Ingresar a curso o leccion de curso
+    if (this.state.sectionInFocus === 'courseDetails') {
+      // if (this.state.courseDetails.less)
+      // Reproducir o continuar
+      if (this.state.index2 === 0) {
+        const courseSlug = this.state.courseDetails.slug
+        Router.push(`/app?tab=curso&curso=${courseSlug}`, `/app/curso/${courseSlug}`)
+        this.props.onChangeCourse(courseSlug)
+      }
+      if (this.state.index2 > 0) {
+        const courseSlug = this.state.courseDetails.slug
+        const lessonSlug = this.state.courseDetails.lessons[this.state.index2 - 1].slug
+        Router.push(`/app?tab=curso&curso=${courseSlug}/lesson=${lessonSlug}`, `/app/curso/${this.state.courseDetails.slug}/${lessonSlug}`)
+        this.props.onChangeCourse(courseSlug, lessonSlug)        
+      }
+    }
+    // Ingresar a leccion
+    // alert('asd')
   }
 
   onArrowDown = (e) => {
@@ -283,6 +306,32 @@ class SearchComponent extends Component {
     }
   }
 
+  onMouseOver = (index1) => {
+    console.log(index1)
+    this.setState({
+      sectionInFocus: 'search',
+      index1
+    })
+  }
+
+  onClick = () => {
+    const { index1, search } = this.state
+
+    const itemInFocus = search[index1 - 1]
+
+    if (itemInFocus.__typename === 'Course') {
+      this.setState({
+        sectionInFocus: 'courseDetails',
+        courseInFocus: itemInFocus
+      })
+
+      this.getCourseDetails(itemInFocus.slug)
+    } else {
+      // Con la leccion reproducir
+      // TODO
+    }
+  }
+
   onSearch = async (text) => {
     this.setState({ searchFetching: true, hasSearched: true })
     const result = await this.props.client.query({
@@ -338,6 +387,9 @@ class SearchComponent extends Component {
                     if (e.__typename === 'Course') {
                       return (
                         <Course
+                          onMouseOver={() => this.onMouseOver(i + 1)}
+                          onClick={() => this.onClick(i + 1)}
+                          key={e._id}
                           isInFocus={index1 === i + 1}
                           opacity={isOpenFs ? '.3' : '1'}
                           blur={isOpenFs ? 'blur(2px)' : 'blur(0px)'}
@@ -347,6 +399,8 @@ class SearchComponent extends Component {
                     }
                     return (
                       <Lesson
+                        onMouseOver={() => this.onMouseOver(i + 1)}
+                        onClick={() => this.onClick(i + 1)}
                         key={e._id}
                         isInFocus={index1 === i + 1}
                         opacity={isOpenFs ? '.3' : '1'}

@@ -17,6 +17,7 @@ const LessonSchema = new mongoose.Schema({
   // Esta propiedad no se cambia, solo se deja de registro ya que sera
   // cambiada o fusionada con el modelo LessonChecked
   isCompleted: { Type: Boolean, default: false },
+  isWatched: { Type: Boolean, default: false },
   title: { type: String, required: [true, 'El titulo es requerido'] },
   description: { type: String, default: 'Una asombrosa leccion...' },
   synopsis: { type: String, default: '' },

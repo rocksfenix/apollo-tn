@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import styled, {keyframes} from 'styled-components'
 import Link from 'next/link'
 import warna from 'warna'
-import getTechIcon from '../getTechIcon'
+import getTechIcon from '../../getTechIcon'
 
 const gostColor = 'rgba(0, 0, 0, 0.2)'
 

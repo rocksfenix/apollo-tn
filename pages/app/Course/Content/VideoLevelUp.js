@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import styled, {keyframes} from 'styled-components'
-import Icon from '../../../components/Icon'
+import Icon from '../../../../components/Icon'
 import Link from 'next/link'
 
 const Screenshot = styled.div`

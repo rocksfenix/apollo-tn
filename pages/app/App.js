@@ -4,9 +4,8 @@ import Mousetrap from 'mousetrap'
 import Router from 'next/router'
 import Navbar from './Navbar'
 import SeoHead from '../../components/SeoHead'
-import WithUser from '../../components/WithUser'
 import themes from './themes'
-// import PopText from './popText'
+import PopText from './PopText'
 import Themes from './Tools/Themes'
 import Bookmarks from './Tools/Bookmarks'
 import Notes from './Tools/Notes'
@@ -14,23 +13,20 @@ import Snippets from './Tools/Snippets'
 import Favorites from './Tools/Favorites'
 import Courses from './Tools/Courses'
 import Search from './Tools/Search'
-import Coursebar from './Coursebar/Coursebar'
 import History from './History'
-import Content from './Content'
-import HandlerSize from './HandlerSize'
-import MainPanel from './MainPanel'
 import TestingData from './TestingData'
-// import gpl from 'graphql-tag'
-// import {graphql, compose} from 'react-apollo'
-// import queries from './queries'
+import HomeApp from './HomeApp'
+import Course from './Course'
+import gpl from 'graphql-tag'
 import config from './config'
 
 const Toolbar = styled.div`
   width: 100%;
+  width: 280px;
   height: 100vh;
   left: ${props => props.show ? '0;' : '-100%'};
   display: flex;
-  position: absolute;
+  position: fixed;
   top: 0;
   transition: all .2s ease-in-out;
   justify-content: center;
@@ -41,8 +37,51 @@ const Toolbar = styled.div`
 const View = styled.div`
   position: relative;
 `
+const COURSE = gpl`
+query search($slug: String!) {
+  course(slug: $slug) {
+    title
+    slug
+    _id
+    cover {
+      medium
+    }
+    color
+    description
+    tech
+    lessons {
+      title
+      tech
+      techVersion
+      description
+      transcription
+      synopsis
+      slug
+      _id
+    }
+  }
+}`
 
 class App extends Component {
+  static async getInitialProps (ctx) {
+    let params = { lesson: null, course: null }
+    let course = null
+    try {
+      params = ctx.req.params
+      if (params.course) {
+        const result = await ctx.apolloClient.query({
+          query: COURSE,
+          variables: { slug: params.course }
+        })
+        course = result.data.course
+      }
+    } catch (error) { }
+    return {
+      params,
+      course
+    }
+  }
+
   state = {
     theme: themes['chemist'], // || user.preferences.theme,
     mainPanelWidth: '280px',
@@ -56,11 +95,16 @@ class App extends Component {
     // Pocision de tool
     toolIndex: 8,
 
+    tab: 'home',
+
+    // Solo puede ser home o course
+    // Es el contenido de la pantalla principal
+    showMainContent: 'home',
+
     // url
     url: {
       lesson: '',
-      course: '',
-      tab: 'home'
+      course: ''
     },
 
     // datos de curso
@@ -73,14 +117,22 @@ class App extends Component {
     ...TestingData
   }
 
-  componentWillMount = () => {
-    const { course, lesson } = this.props.params
-    this.setState({
-      url: {
-        lesson: lesson || null,
-        course: course || null
-      }
-    })
+  componentWillMount = async () => {
+    const { course } = this.props
+    // console.log(course)
+    if (course) {
+      this.setState({
+        showMainContent: 'course',
+        tab: 'course',
+        toolIndex: course ? 2 : 8,
+        url: this.props.params,
+        course,
+        lesson: this.props.params.lesson
+          ? course.lessons.filter(l => l.slug === this.props.params.lesson)[0]
+          : course.lessons[0]
+      })
+    }
+    // https://www.facebook.com/photo.php?fbid=10215486294212422&set=ecnf.1290584076&type=3&theater
   }
 
   // Agregamos el evento de cambio de navegacion
@@ -88,9 +140,6 @@ class App extends Component {
   componentDidMount () {
     if (process.browser) {
       window.addEventListener('popstate', this.onPopState)
-
-      this.onPopState()
-
       this.setState({
         coursebarHeight: `${window.innerHeight - 165}px`,
         contentWidth: `${window.innerWidth - 300}px`
@@ -108,21 +157,6 @@ class App extends Component {
       Mousetrap.bind('esc', () => this.onChangeTab(2, 'curso'))
       Mousetrap.bind('ctrl+up', this.toolUp)
       Mousetrap.bind('ctrl+down', this.toolDown)
-
-      // Si hay curso se setea
-
-      if (this.state.course && this.state.course.lessons) {
-        try {
-          let slug = window.location.href.split('/')[6]
-          return this.setState({
-            lesson: TestingData.course.lessons.filter(l => l.slug === slug)[0]
-          })
-        } catch (error) {
-          this.setState({
-            lesson: TestingData.course.lessons[0]
-          })
-        }
-      }
     }
   }
 
@@ -171,13 +205,14 @@ class App extends Component {
 
     this.setState({
       url,
-      lesson: TestingData.course.lessons.filter(l => l.slug === lessonSlug)[0]
+      lesson: this.state.course.lessons.filter(l => l.slug === lessonSlug)[0]
     })
   }
 
   // Cuando se selecciona otra tab
   onChangeTab = (toolIndex, tab) => {
     if (tab === 'home') {
+      this.setState({ toolIndex, tab, showMainContent: 'home' })
       return Router.push('/app')
     }
 
@@ -215,106 +250,73 @@ class App extends Component {
         ...state.url,
         lesson
       },
-      lesson: TestingData.course.lessons.filter(l => l.slug === lesson.replace(/(#)\w+/gm, ''))[0]
+      lesson: this.state.course.lessons.filter(l => l.slug === lesson)[0]
     }))
   }
 
+  onChangeCourse = async (course, lesson) => {
+    // Actualizamos curso
+    const result = await this.props.client.query({
+      query: COURSE,
+      variables: { slug: course }
+    })
+
+    this.setState({
+      showMainContent: 'course',
+      tab: 'course',
+      course: result.data.course,
+      lesson: lesson
+        ? result.data.course.lessons.filter(l => l.slug === lesson)[0]
+        : result.data.course.lessons[0],
+      url: {
+        course,
+        lesson
+      }
+    })
+  }
+
   render () {
-    let showCourse = true
-    let showHistory = false
-    let showTools = false
-    let historyHeight = 'small'
-    const { tab } = this.state
-
-    // show toolvar if tab
-    if (
-      tab === 'search' ||
-      tab === 'courses' ||
-      tab === 'favorites' ||
-      tab === 'snippets' ||
-      tab === 'notes' ||
-      tab === 'bookmarks' ||
-      tab === 'themes' ||
-      tab === 'account'
-    ) {
-      showTools = true
-      showHistory = false
-    }
-
-    // histoy
-    if (tab === 'history') {
-      historyHeight = 'big'
-      showHistory = true
-    }
-
-    if (showTools) {
-      historyHeight = 'small'
-    }
-
-    if (tab === 'curso') {
-      historyHeight = 'medium'
-    }
-
-    // hide all en tab === home
-    if (tab === 'home') {
-      showCourse = false
-      showHistory = false
-      showTools = false
-    }
-
+    const { tab, showMainContent } = this.state
     return (
       <View>
         <SeoHead title='Tecninja.io' />
-        {/* <PopText text={this.state.url.tab} /> */}
-
+        <PopText text={this.state.tab} />
         <Navbar
           {...this.state}
           activeLesson={this.state.lesson}
           onChangeTab={this.onChangeTab}
           toolIndex={this.state.toolIndex}
         />
-        {/* Panel principal el que prove el Resize */}
-        <MainPanel width={this.state.mainPanelWidth}>
-          <HandlerSize onResize={this.onResize} />
-          <Toolbar show={showTools} onMouseLeave={this.onToolsLeave}>
-            { tab === 'themes' ? <Themes themes={themes} onChangeTheme={this.onChangeTheme} /> : null }
-            { tab === 'bookmarks' ? <Bookmarks /> : null }
-            { tab === 'notes' ? <Notes /> : null }
-            { tab === 'snippets' ? <Snippets /> : null }
-            { tab === 'favorites' ? <Favorites /> : null }
-            { tab === 'courses' ? <Courses /> : null }
-            { tab === 'search' ? <Search {...this.props} onEscape={this.showPlaying} /> : null }
-          </Toolbar>
-          <Coursebar
-            show={showCourse}
-            size={this.state.panelSize}
+        { showMainContent === 'course'
+          ? <Course
+            {...this.state}
             onChangeLesson={this.onChangeLesson}
-            lessonSlug={this.state.url.lesson}
-            coursebarHeight={this.state.coursebarHeight}
-            setScroll={this.state.setScroll}
             onLessonsSetScroll={this.onLessonsSetScroll}
-            course={this.state.course}
           />
-          <History
-            show={showHistory}
-            height={historyHeight}
-            isShowTools={showTools}
-          />
-        </MainPanel>
-        <Content
-          show={tab !== 'home'}
-          width={this.state.contentWidth}
-          left={this.state.contentLeft}
-          lesson={this.state.lesson}
+          : <HomeApp />
+        }
+
+        <Toolbar show={tab !== 'home' && tab !== 'course'} onMouseLeave={this.onToolsLeave}>
+          { tab === 'themes' ? <Themes themes={themes} onChangeTheme={this.onChangeTheme} /> : null }
+          { tab === 'bookmarks' ? <Bookmarks /> : null }
+          { tab === 'notes' ? <Notes /> : null }
+          { tab === 'snippets' ? <Snippets /> : null }
+          { tab === 'favorites' ? <Favorites /> : null }
+          { tab === 'courses' ? <Courses /> : null }
+          { tab === 'search' ? <Search {...this.props} onEscape={this.showPlaying} onChangeCourse={this.onChangeCourse} /> : null }
+        </Toolbar>
+
+        <History
+          expanded={tab === 'history'}
+          isShowTools={tab !== 'home'}
+          tab={tab}
           course={this.state.course}
+          lesson={this.state.lesson}
+          hasCourse={this.state.course._id}
         />
       </View>
     )
   }
 }
 
-// export default compose(
-//   graphql(queries.query.courses, {name: 'courses'})
-// )(WithUser(App))
-
-export default WithUser(App)
+export default App

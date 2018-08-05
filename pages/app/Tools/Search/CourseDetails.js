@@ -13,6 +13,7 @@ const Panel = styled.div`
   z-index: -1;
   transition: left .25s ease-out;
   box-shadow: 0 5px 5520px #0b0d15;
+  box-shadow: 0 0 169px #505569;
 `
 
 const ButtonPlay = styled.button`

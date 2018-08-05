@@ -25,6 +25,7 @@ type Lesson {
   role: String
   isPublished: Boolean
   isTranscriptionPublic: Boolean
+  isWatched: Boolean
   createdAt: String
   updatedAt: String
 }

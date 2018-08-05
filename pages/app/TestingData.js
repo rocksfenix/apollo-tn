@@ -1,5 +1,6 @@
 export default {
   course: {
+    // _id: 'textMok1',
     lessons: [{
       title: 'Que son las props en React',
       slug: 'que-son-las-props-en-react',
@@ -170,14 +171,14 @@ export default {
     }
     ],
 
-    // color: '#FF4500',
+    color: '#FF4500',
     // color: '#dfb80b',
     // color: '#2586ff',
-    color: '#8a25ff', // morabbbbblkgjidjkkdffhaljvjdo
+    // color: '#8a25ff', // morabbbbblkgjidjkkdffhaljvjdo
     // color: '#379d18', // node
     // color: '#dd0031',
     slug: 'rxjs-elemental'
-   },
+  },
 
   // Lesson DATA
   lesson: {

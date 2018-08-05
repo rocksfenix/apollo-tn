@@ -29,5 +29,9 @@ export default (tech) => {
     }
   }
 
-  return techs[tech].logo
+  try {
+    return techs[tech].logo
+  } catch (error) {
+    return '/static/quotes-warning.svg'
+  }
 }

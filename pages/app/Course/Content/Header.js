@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import warna from 'warna'
-import getTechIcon from '../getTechIcon'
+import getTechIcon from '../../getTechIcon'
 
 const Header = styled.header`
   margin-top: 50px;
@@ -54,22 +54,24 @@ const Glow = styled.div`
 `
 
 // linear-gradient(90deg, #0b4178, #01010b)
-const Comp = ({ lesson, course }) => (
-  <Header>
-    <Box>
-      <TechLogo src={getTechIcon(lesson.tech)} />
-      <TitleBox>
-        <Title>{ lesson.title }</Title>
-        <VersionBox>
-          <Glow color={course.color} />
-          <Version
-            gradient={`linear-gradient(90deg, ${warna.darken(course.color, 0.7).hex}, #01010b)`}
-          >@{ lesson.techVersion }</Version>
-        </VersionBox>
-      </TitleBox>
-    </Box>
-  </Header>
-)
+const Comp = ({ lesson, course }) => {
+  return (
+    <Header>
+      <Box>
+        <TechLogo src={getTechIcon(lesson.tech)} />
+        <TitleBox>
+          <Title>{ lesson.title }</Title>
+          <VersionBox>
+            <Glow color={course.color} />
+            <Version
+              gradient={`linear-gradient(90deg, ${warna.darken(course.color, 0.7).hex}, #01010b)`}
+            >@{ lesson.techVersion }</Version>
+          </VersionBox>
+        </TitleBox>
+      </Box>
+    </Header>
+  )
+}
 
 // Comp.defaultProps = {
 //   title: 'Para que son las props en React.js',

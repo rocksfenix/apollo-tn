@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import VideoLevelUp from './VideoLevelUp'
 import Header from './Header'
-import Markdown from '../../../components/md/Markdown'
+import Markdown from '../../../../components/md/Markdown'
 
 const Content = styled.div`
   position: relative;
@@ -47,6 +47,9 @@ const Button = ({ children, icon, border }) => (
 )
 
 export default ({ width, left, course, lesson }) => {
+  if (!lesson) {
+    return null
+  }
   let current = 0
   course.lessons.forEach((l, index) => {
     // debugger
@@ -61,6 +64,7 @@ export default ({ width, left, course, lesson }) => {
     width,
     left
   }
+  
   return (
     <Content show style={style}>
       <VideoLevelUp />

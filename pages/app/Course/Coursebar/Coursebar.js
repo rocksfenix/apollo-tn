@@ -13,6 +13,10 @@ const Panel = styled.div`
   z-index: 500;
   border-right: 1px solid #e5e5e5;
   overflow-y: auto;
+  width: 280px;
+  position: fixed;
+  top: 150px;
+  z-index: 500;
 `
 
 const Wrap = styled.div`
@@ -90,7 +94,10 @@ export default class extends Component {
             <Item
               key={lesson.title}
               next={a[index + 1] || { isWatched: false }}
-              active={this.props.lessonSlug === lesson.slug}
+              active={
+                !this.props.lessonSlug && index === 0 ||
+                this.props.lessonSlug === lesson.slug
+              }
               index={index}
               ripple={this.state.ripple}
               lessons={course.lessons}

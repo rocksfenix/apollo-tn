@@ -21,7 +21,7 @@ const Pop = keyframes`
 
 const Text = styled.div`
   position: absolute;
-  left: 1.3em;
+  right: 1.3em;
   top: 300px;
   font-size: 60px;
   z-index: 1000;

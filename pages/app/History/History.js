@@ -1,58 +1,29 @@
 import React from 'react'
 import styled, {keyframes} from 'styled-components'
+import getTechIcon from '../getTechIcon'
 
-/* left: ${props => props.show ? '0px' : '-100%'};  */
 const History = styled.div`
-  width: 100%;
-  width: ${p => p.isShowTools ? '280px' : '100%'};
-  height: ${p => p.height};
-  background: ${p => p.isShowTools ? '#FFF' : '#FFF'};
-  /* border-right: 1px solid #e5e5e5; */
+  width: 280px;
+  padding-left: 55px;
+  background: #FFF;
   display: flex;
-  position: absolute;
+  position: fixed;
   transition: all .15s ease-in-out;
   justify-content: center;
-  justify-content: ${p => p.show ? 'flex-start' : 'flex-start'};
-  z-index: 1000;
+  z-index: 600;
   flex-direction: column;
-  /* background-color: yellow; */
   overflow: auto;
-  /* flex-wrap: wrap; */
   flex-grow: 0;
+  top: 0;
 `
 
-const CoverPanel = styled.div`
-  /* max-width: 225px; */
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding-left: 55px;
-`
-
-const CoverImg = styled.img`
-  width: ${p => p.width};
-  max-width: 150px;
-`
-
-// height: ${p => p.height};
-// float: right;
-// width: 100%;
-// display: flex;
-// align-items: center;
-// flex-direction: column;
-// transition: all .3s ease-out;
 const Item = styled.div`
-  padding-left: 55px;
   height: 55px;
   width: 100%;
-  /* background-color: tomato; */
   flex-shrink: 0;
   z-index: 500;
-  /* color: #FFF; */
   font-size: 11px;
-  border-bottom: 1px solid whitesmoke;
+  /* border-bottom: 1px solid whitesmoke; */
 `
 
 const Anima = keyframes`
@@ -67,21 +38,17 @@ const Anima = keyframes`
 `
 
 const AllItem = styled.div`
-  padding-left: 55px;
   height: 55px;
   width: 100%;
   background-color: #FFF;
   border-bottom: 1px solid whitesmoke;
-  /* color: #FFF; */
   font-size: 11px;
   animation: .4s ease-out ${Anima};
   animation-fill-mode: forwards;
   position: relative;
-  /* z-index: -1; */
   flex-shrink: 0;
   opacity: .5;
   cursor: pointer;
-  /* opacity: .8; */
   &:hover {
     opacity: 1;
     background-color: red;
@@ -100,36 +67,96 @@ const HistoryItems = ({ show, historyItems }) => {
   return null
 }
 
-const HistoryComponent = ({ show, height, historyItems, isShowTools }) => {
-  // Limpiar la logica de esta seccion solo
-  // 3 Estados disponibles
-  // * Full
-  // * Medium - En reproduccion
-  // * Small - en Toolbox show
-  let h = '55px'
-  let imgSize = '40px'
+const CoverPanel = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
 
-  if (height === 'medium') {
-    h = '165px'
-    imgSize = '100px'
+const CoverImg = styled.img`
+  width: ${p => p.width};
+  max-width: 150px;
+`
+const TitleBlock = styled.div`
+  padding-left: .3em;
+`
+
+const Title = styled.div`
+  color: #333;
+  font-weight: bold;
+`
+
+const Subtitle = styled.div`
+  color: gray;
+  display: ${p => p.show ? 'block' : 'none'};
+`
+
+const HistoryComponent = ({ historyItems, expanded, isShowTools, tab, hasCourse, course, lesson }) => {
+  let h = '55px'
+  let left = '-50%'
+  let justifyContent = 'center'
+  let imgSize = '30px'
+  let showSubtitle = true
+  let overflow = 'hidden'
+
+  const coverStyle = {
+    flexDirection: 'row',
+    fontSize: '11px',
+    textAlign: 'left',
+    padding: 0,
+    justifyContent: 'space-evenly'
   }
 
-  if (height === 'big') {
+  if (isShowTools) {
+    h = '55px'
+    left = '0'
+  }
+
+  if (expanded) {
+    justifyContent = 'flex-start'
     h = '100vh'
-    imgSize = '40px'
+    overflow = 'auto'
+  }
+
+  if (tab === 'course' && hasCourse) {
+    // Curso activo y en foco
+    // Cover debe ser grande
+    h = '155px'
+    left = '0'
+    imgSize = '100px'
+    coverStyle.flexDirection = 'column'
+    coverStyle.fontSize = '15px'
+    coverStyle.textAlign = 'center'
+    coverStyle.padding = '0 .3em'
+    // coverStyle.justifyContent = 'space-evenly'
+
+    showSubtitle = false
+  }
+
+  const HistoryStyle = {
+    height: h,
+    left,
+    overflow,
+    justifyContent
   }
 
   return (
-    <History show={show} height={h} isShowTools={isShowTools}>
-      <Item >item</Item>
-      <HistoryItems show={show} historyItems={historyItems} />
-      
-      {/* <CoverPanel>
-        <CoverImg
-          src='/static/Node-elemental - copia-medium.png'
-          width={imgSize}
-        />
-      </CoverPanel> */}
+    <History style={HistoryStyle}>
+      <Item >
+        <CoverPanel style={coverStyle}>
+          <CoverImg
+            src={getTechIcon(course.tech)} // '/static/Node-elemental - copia-medium.png'
+            width={imgSize}
+          />
+          <TitleBlock>
+            <Title>{course.title}</Title>
+            <Subtitle show={showSubtitle}>{lesson.title}</Subtitle>
+          </TitleBlock>
+        </CoverPanel>
+      </Item>
+      <HistoryItems show={expanded} historyItems={historyItems} />
     </History>
   )
 }
