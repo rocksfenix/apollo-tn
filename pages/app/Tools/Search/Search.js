@@ -26,6 +26,7 @@ query search($text: String!) {
     
     ... on Lesson {
       lessonTitle: title
+      courseSlug
       _id
       slug
       tech
@@ -79,7 +80,7 @@ const AnimaLeft = keyframes`
     left: 0;
   }
   50% {
-    left: 20px;
+    left: -20px;
   }
   100% {
     left: 0;
@@ -215,24 +216,48 @@ class SearchComponent extends Component {
   }
 
   enter = (e) => {
-    // Ingresar a curso o leccion de curso
+    // Redirige al curso o leccion de curso
+    // Si se encuenta en la ventana de courseDetails
     if (this.state.sectionInFocus === 'courseDetails') {
-      // if (this.state.courseDetails.less)
-      // Reproducir o continuar
       if (this.state.index2 === 0) {
-        const courseSlug = this.state.courseDetails.slug
-        Router.push(`/app?tab=curso&curso=${courseSlug}`, `/app/curso/${courseSlug}`)
-        this.props.onChangeCourse(courseSlug)
+        this.reDirect(this.state.courseDetails.slug)
       }
       if (this.state.index2 > 0) {
         const courseSlug = this.state.courseDetails.slug
         const lessonSlug = this.state.courseDetails.lessons[this.state.index2 - 1].slug
-        Router.push(`/app?tab=curso&curso=${courseSlug}/lesson=${lessonSlug}`, `/app/curso/${this.state.courseDetails.slug}/${lessonSlug}`)
-        this.props.onChangeCourse(courseSlug, lessonSlug)        
+        this.reDirect(courseSlug, lessonSlug)
       }
     }
-    // Ingresar a leccion
-    // alert('asd')
+    // Si se encuenta en la ventana de Busqueda
+    if (this.state.sectionInFocus === 'search') {
+      const itemInFocus = this.state.search[this.state.index1 - 1]
+      // Si es un curso, ir a la primera leccion
+      if (itemInFocus.__typename === 'Course') {
+        this.reDirect(itemInFocus.slug)
+      }
+
+      // Si es una leccion, ir al curso/leccion
+      if (itemInFocus.__typename === 'Lesson') {
+        this.reDirect(itemInFocus.courseSlug, itemInFocus.slug)
+      }
+    }
+  }
+
+  // Redirige a la leccion o curso pasados como slug
+  // Se empuja ese estado con Router.push y se setea el Stroll
+  reDirect = (courseSlug, lessonSlug) => {
+    // href para Link de Next.js
+    const href = lessonSlug
+      ? `/app?tab=curso&curso=${courseSlug}&lesson=${lessonSlug}`
+      : `/app?tab=curso&curso=${courseSlug}`
+
+    const as = lessonSlug
+      ? `/app/curso/${courseSlug}/${lessonSlug}`
+      : `/app/curso/${courseSlug}`
+
+    Router.push(href, as)
+    this.props.onChangeCourse(courseSlug, lessonSlug)
+    document.getElementsByTagName('html')[0].scrollTop = 0
   }
 
   onArrowDown = (e) => {
@@ -367,7 +392,7 @@ class SearchComponent extends Component {
     return (
       <Box>
         <Panel style={{
-          overflow: pop ? 'hidden' : 'auto'
+          // overflow: pop ? 'hidden' : 'auto'
         }}>
           <SearchBox
             onEnter={this.onSearch}

@@ -99,7 +99,11 @@ const md = (strings, ...values) => {
           return values.shift()
         }
 
-        return <Paragraph>{children}</Paragraph>
+        return (
+          <Paragraph>
+            {children}
+          </Paragraph>
+        )
       },
 
       Code ({ literal }) {

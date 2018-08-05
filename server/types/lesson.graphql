@@ -28,11 +28,13 @@ type Lesson {
   isWatched: Boolean
   createdAt: String
   updatedAt: String
+  courseSlug: String
 }
 
 input LessonCreate {
   # author: String!  # <==  El id biene del token
   title: String!
+  courseSlug: String
   # slug: String
   description: String
   synopsis: String
@@ -56,6 +58,7 @@ input LessonCreate {
 input LessonSet {
   _id: ID!
   title: String
+  courseSlug: String
   # slug: String
   description: String
   synopsis: String

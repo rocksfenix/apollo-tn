@@ -14,12 +14,12 @@ const Search = styled.input`
   font-weight: 100;
   color: #FFF;
   margin: .5em 13px;
-  transition: all .3s ease-out;
+  transition: all .2s ease-out;
   width: 93%;
 
   &:focus {
     outline: none;
-    box-shadow: 0 1px 20px #27dcff;
+    box-shadow: 0 1px 20px #FFF;
   }
 `
 

@@ -78,9 +78,9 @@ export default ({ width, left, course, lesson }) => {
         <Markdown
           markdown={`
 
-          Esto es un gran ejemplo de como una buena leccion se puede convertir en algo verdadermanete especial, al principio puedes darte cuenta que las funciones cambian al hacer una actualizacion, pero es muy importante visualizar y tener esa parte en mente.
+          Esto es un **gran ejemplo de como una buena** leccion se puede convertir en algo verdadermanete especial, al principio puedes darte cuenta que las funciones cambian al hacer una actualizacion, pero es muy importante visualizar y tener esa parte en mente.
           
-          Back in 1995, when Nicholas Negroponte wrote Being Digital, his seminal piece on technologically-driven life, facial recognition technology was still a bit of a dream. He felt it was destined to become reality.
+          Back in 1995, __when Nicholas Negroponte wrote Being Digital__, his seminal piece on technologically-driven life, facial recognition technology was still a bit of a dream. He felt it was destined to become reality.
 
           > WARNING! Captain Janeway http://github.com - automatic! [GitHub](http://github.com)
 

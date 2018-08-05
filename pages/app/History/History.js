@@ -5,7 +5,6 @@ import getTechIcon from '../getTechIcon'
 const History = styled.div`
   width: 280px;
   padding-left: 55px;
-  background: #FFF;
   display: flex;
   position: fixed;
   transition: all .15s ease-in-out;
@@ -78,6 +77,11 @@ const CoverPanel = styled.div`
 const CoverImg = styled.img`
   width: ${p => p.width};
   max-width: 150px;
+  transition: transform .2s ease-in-out;
+
+  &:hover {
+    transform: scale(1.1);
+  }
 `
 const TitleBlock = styled.div`
   padding-left: .3em;
@@ -139,7 +143,8 @@ const HistoryComponent = ({ historyItems, expanded, isShowTools, tab, hasCourse,
     height: h,
     left,
     overflow,
-    justifyContent
+    justifyContent,
+    background: 'transparent' // expanded ? '#FFF' : 'transparent'
   }
 
   return (

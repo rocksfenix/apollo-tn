@@ -86,7 +86,7 @@ class App extends Component {
     theme: themes['chemist'], // || user.preferences.theme,
     mainPanelWidth: '280px',
     contentWidth: '',
-    contentLeft: '280px',
+    contentLeft: '225px',
     panelSize: 'big',
     lessonActive: '',
     coursebarHeight: '100',
@@ -147,6 +147,10 @@ class App extends Component {
       Mousetrap.bind('h h', () => this.onChangeTab(0, 'history'))
       Mousetrap.bind('b', () => this.onChangeTab(1, 'search'))
       Mousetrap.bind('f', () => this.onChangeTab(1, 'search'))
+      Mousetrap.bind('ctrl+f', (e) => {
+        e.preventDefault()
+        this.onChangeTab(1, 'search')
+      })
       Mousetrap.bind('p p', () => this.onChangeTab(2, 'curso'))
       Mousetrap.bind('c c', () => this.onChangeTab(3, 'courses'))
       // Mousetrap.bind('f f', () => this.onChangeTab('favorites'))

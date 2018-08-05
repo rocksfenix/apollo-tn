@@ -14,6 +14,10 @@ const LessonSchema = new mongoose.Schema({
     'default': shortid.generate
   },
 
+  // TODO Revisar de que forma de debe de enlazar
+  // con el padre de la leccion
+  courseSlug: { type: String, default: '' },
+
   // Esta propiedad no se cambia, solo se deja de registro ya que sera
   // cambiada o fusionada con el modelo LessonChecked
   isCompleted: { Type: Boolean, default: false },
