@@ -268,6 +268,7 @@ class App extends Component {
     this.setState({
       showMainContent: 'course',
       tab: 'course',
+      toolIndex: 2,
       course: result.data.course,
       lesson: lesson
         ? result.data.course.lessons.filter(l => l.slug === lesson)[0]
@@ -301,13 +302,13 @@ class App extends Component {
         }
 
         <Toolbar show={tab !== 'home' && tab !== 'course'} onMouseLeave={this.onToolsLeave}>
-          { tab === 'themes' ? <Themes themes={themes} onChangeTheme={this.onChangeTheme} /> : null }
-          { tab === 'bookmarks' ? <Bookmarks /> : null }
-          { tab === 'notes' ? <Notes /> : null }
-          { tab === 'snippets' ? <Snippets /> : null }
-          { tab === 'favorites' ? <Favorites /> : null }
-          { tab === 'courses' ? <Courses /> : null }
-          { tab === 'search' ? <Search {...this.props} onEscape={this.showPlaying} onChangeCourse={this.onChangeCourse} /> : null }
+          <Themes show={tab === 'themes'} themes={themes} onChangeTheme={this.onChangeTheme} />
+          <Bookmarks show={tab === 'boomarks'} />
+          <Notes show={tab === 'notes'} />
+          <Snippets show={tab === 'snippets'} />
+          <Favorites show={tab === 'favorites'} />
+          <Courses show={tab === 'courses'} />
+          <Search show={tab === 'search'}{...this.props} onEscape={this.showPlaying} onChangeCourse={this.onChangeCourse} />
         </Toolbar>
 
         <History

@@ -3,7 +3,7 @@ import gpl from 'graphql-tag'
 import Mousetrap from 'mousetrap'
 import styled, {keyframes} from 'styled-components'
 import Box from '../Box'
-import SearchBox from '../SearchBox'
+import SearchBox from './SearchBox'
 import getTechIcon from '../../getTechIcon'
 import CourseDatails from './CourseDetails'
 import { Ellipsis } from '../../../../components/Spinners'
@@ -202,6 +202,8 @@ class SearchComponent extends Component {
       Mousetrap.bind('left', this.onArrowLeft)
       Mousetrap.bind('right', this.onArrowRight)
       Mousetrap.bind('f', this.focus, 'keyup')
+      Mousetrap.bind('b', this.focus, 'keyup')
+      Mousetrap.bind('ctrl+f', this.focus, 'keyup')
       Mousetrap.bind('enter', this.enter)
     }
   }
@@ -390,7 +392,7 @@ class SearchComponent extends Component {
     const showCourseDetails = sectionInFocus === 'courseDetails'
 
     return (
-      <Box>
+      <Box show={this.props.show}>
         <Panel style={{
           // overflow: pop ? 'hidden' : 'auto'
         }}>

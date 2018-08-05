@@ -22,4 +22,6 @@ export default styled.div`
   /* box-shadow: 0 0 97px 10px rgba(0,0,0,0.6); */
   /* padding-top: 55px; */
   margin-top: 55px;
+  display: ${p => p.show ? 'block' : 'none'};
+
 `

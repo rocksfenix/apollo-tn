@@ -2,9 +2,9 @@ import React from 'react'
 // import styled, {keyframes} from 'styled-components'
 import Box from './Box'
 
-export default ({ themes, onChangeTheme }) => {
+export default ({ themes, onChangeTheme, show }) => {
   return (
-    <Box>
+    <Box show={show}>
       <h1>Courses</h1>
     </Box>
   )

@@ -20,7 +20,7 @@ export default class extends Component {
     const _themes = Object.keys(this.props.themes)
 
     return (
-      <Box>
+      <Box show={this.props.show}>
         <ul>
           {_themes.map(t => (
             <li
