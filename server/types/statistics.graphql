@@ -1,0 +1,17 @@
+type MembersStats {
+  pro: Int
+  free: Int
+  admin: Int
+  date: String
+}
+
+type DailyStatistics {
+  today: MembersStats
+  total: MembersStats
+  last30Days: [MembersStats]
+}
+
+
+type Query {
+  statistics: DailyStatistics
+}
