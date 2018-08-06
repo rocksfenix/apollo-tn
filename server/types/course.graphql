@@ -63,8 +63,14 @@ input CourseSet {
   lessons: [String]
 }
 
+type CoursesResponse {
+  courses: [Course]
+  total: Int
+}
+
 type Query {
   courses: [Course!]!
+  allCourses(first: Int, skip: Int, text: String): CoursesResponse
   course(slug: String!): Course!
 }
 

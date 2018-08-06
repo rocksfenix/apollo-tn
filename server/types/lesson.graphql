@@ -79,8 +79,14 @@ input LessonSet {
   # updatedAt: String
 }
 
+type LessonsResponse {
+  lessons: [Lesson]
+  total: Int
+}
+
 type Query {
   lessons: [Lesson!]!
+  allLessons(first: Int, skip: Int, text: String): LessonsResponse
 }
 
 type Mutation {

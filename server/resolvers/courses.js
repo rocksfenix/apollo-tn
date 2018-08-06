@@ -4,6 +4,36 @@ import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../errors
 
 export default {
   Query: {
+    allCourses: async (_, { first, skip = 0, text }, { user = {} }) => {
+      // TODO separar isPublished para role !== admin
+      let limit = first <= 100 ? first : 100
+      const _text = text ? new RegExp(text, 'i') : null
+      let query = {}
+
+      if (_text) {
+        query = {
+          $or: [
+            {title: { $regex: _text, $options: 'i' }},
+            {description: { $regex: _text, $options: 'i' }},
+            {tech: { $regex: _text, $options: 'i' }}
+          ]
+        }
+      }
+
+      const courses = await models.Course.find(query).limit(limit).skip(skip).sort({ createdAt: -1 })
+      let total = courses.length
+
+      // SI no hay consulta de texto, el total es el total absoluto
+      if (!_text) {
+        total = await models.Course.count()
+      }
+
+      return {
+        courses,
+        total
+      }
+    },
+
     courses: async (_, args, { user = {} }) => {
       const role = user.role ? user.role : 'public'
       let query = role !== 'admin' ? { isPublished: true } : {}

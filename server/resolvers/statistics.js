@@ -73,7 +73,7 @@ export default {
         },
         {
           $sort: {
-            '_id': 1
+            'date': 1
           }
         }
       ]

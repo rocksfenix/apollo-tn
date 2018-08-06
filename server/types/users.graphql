@@ -1,12 +1,14 @@
 type User {
   _id: ID!
   fullname: String
+  slug: String
   email: String
   username: String
   role: String
   avatar: ImageSizes
   acceptTermsAndPrivacy: Boolean
   acceptTermsAndPrivacyUpdated: String
+  createdAt: String
 }
 
 # Se usa al actualizar un usuario
@@ -19,10 +21,15 @@ input UserSet {
   acceptTermsAndPrivacy: Boolean
 }
 
+type UsersResponse {
+  users: [User]
+  total: Int
+}
+
 type Query {
   user(_id: ID!): User
   userSelf: User
-  users: [User]
+  allUsers(first: Int, skip: Int, text: String): UsersResponse
 }
 
 type Mutation {

@@ -117,6 +117,8 @@ const UserSchema = new mongoose.Schema({
 UserSchema.plugin(uniqueValidator, { message: 'Ya esta esta en uso' })
 UserSchema.plugin(slugify)
 
+UserSchema.index({ fullname: 'text', email: 'text' })
+
 UserSchema.pre('save', function (next) {
   let user = this
 

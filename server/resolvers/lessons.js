@@ -4,6 +4,36 @@ import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../errors
 
 export default {
   Query: {
+    allLessons: async (_, { first, skip = 0, text }, { user = {} }) => {
+      // TODO separar isPublished para role !== admin
+      let limit = first <= 100 ? first : 100
+      const _text = text ? new RegExp(text, 'i') : null
+      let query = {}
+
+      if (_text) {
+        query = {
+          $or: [
+            {title: { $regex: _text, $options: 'i' }},
+            {description: { $regex: _text, $options: 'i' }},
+            {transcription: { $regex: _text, $options: 'i' }},
+            {tech: { $regex: _text, $options: 'i' }}
+          ]
+        }
+      }
+
+      const lessons = await models.Lesson.find(query).limit(limit).skip(skip).sort({ createdAt: -1 })
+      let total = lessons.length
+
+      // SI no hay consulta de texto, el total es el total absoluto
+      if (!_text) {
+        total = await models.Lesson.count()
+      }
+
+      return {
+        lessons,
+        total
+      }
+    },
     // TODO De lo contrario enviar solo las isPublished
     // TODO LessonsByText
     // TODO LessonsByTech

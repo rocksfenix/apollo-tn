@@ -1,14 +1,20 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
 import Router from 'next/router'
+import Statistics from './statistics'
+import Users from './users'
+import Courses from './courses'
+import Lessons from './lessons'
+
+
 
 const View = styled.section`
-  /* padding-left: 55px; */
   height: 100vh;
 `
 
 const Content = styled.div`
-  width: 10%;
+  width: 100%;
+  height: 100vh;
   padding-left: 55px;
 `
 
@@ -77,7 +83,10 @@ class DashboardPage extends Component {
           ))}
         </Nav>
         <Content>
-          <h1>Dashboard</h1>
+          <Statistics show={this.state.tab === 'statistics'} />
+          <Users show={this.state.tab === 'users'} {...this.props} />
+          <Courses show={this.state.tab === 'courses'} {...this.props} />
+          <Lessons show={this.state.tab === 'lessons'} {...this.props} />
         </Content>
       </View>
     )
