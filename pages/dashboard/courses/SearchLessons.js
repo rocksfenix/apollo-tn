@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import styled, {keyframes} from 'styled-components'
+import styled from 'styled-components'
 import gql from 'graphql-tag'
 import includes from 'lodash/includes'
 import some from 'lodash/some'
@@ -12,6 +12,7 @@ const LESSONS = gql`
       lessons {
         slug
         title
+        duration
         _id
         screenshot {
           small
@@ -24,7 +25,6 @@ const LESSONS = gql`
 `
 
 const Panel = styled.div`
-  background-color: yellow;
   position: absolute;
   width: 100%;
   top: 0;
@@ -51,9 +51,11 @@ const ItemBox = styled.li`
   justify-content: space-between;
   padding: .2em 1em;
   cursor: pointer;
+  opacity: ${p => p.isSelected ? '0.5' : '1'};
+  border-bottom: 1px solid #e3e6e7;
 `
 const Item = (props) => (
-  <ItemBox onClick={props.onClick}>
+  <ItemBox onClick={props.onClick} isSelected={props.isSelected}>
     {props.title}
 
     { props.isSelected
@@ -111,7 +113,6 @@ export default class extends Component {
     // Si existe la elimina, si no existe la agrega
     const { lessons } = this.props
 
-
     const exist = some(lessons, { _id: lesson._id })
 
     if (!exist) {
@@ -121,13 +122,6 @@ export default class extends Component {
       // Eliminar
       this.props.onClickLesson(lessons.filter(l => l._id !== lesson._id))
     }
-    // console.log(lesson, some(lessons, { _id: lesson._id }))
-    // this.setState(state => ({
-    //   ...state,
-    //   selected: [ ...state.selected, lesson._id ]
-    // }))
-
-    // this.props.onClickLesson(lesson)
   }
 
   render () {

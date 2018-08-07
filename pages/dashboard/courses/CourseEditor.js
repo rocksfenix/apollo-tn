@@ -43,6 +43,7 @@ query course($slug: String!) {
       synopsis
       slug
       _id
+      duration
     }
   }
 }`
@@ -106,11 +107,15 @@ mutation courseUpdate(
     isPublished
     isRecording
     tags
+    cover {
+      medium
+    }
     lessons {
       _id
       slug
       title
       tech
+      duration
     }
   }
 }`
@@ -166,8 +171,20 @@ const Buttons = styled.div`
 `
 
 const ButtonSave = styled.button`
-  background-color: blue;
+  background-color: #332e36;
   color: #FFF;
+  border: 1px solid transparent;
+  margin: 0 1em;
+  padding: .4em 1.5em;
+  border-radius: 3px;
+  font-family: Roboto;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all .2s ease-out;
+
+  :hover {
+    background: #3b96c0;
+  }
 `
 
 const Row = styled.div`
@@ -198,7 +215,8 @@ export default class extends Component {
       isPublished: false,
       isRecording: true,
       tags: ['javascript'],
-      lessons: []
+      lessons: [],
+      cover: {}
     }
   }
 
@@ -215,8 +233,43 @@ export default class extends Component {
   pushData = (course) => {
     // Solo actualiza la primera vez o cada que cabie de slug
     if (!this.state.course.__typename || course._id !== this.state.course._id) {
-      this.setState({ course })
+      this.setState({
+        course
+      })
     }
+  }
+
+  sumDurations = (durations) => {
+    return durations.reduce((sum, string) => {
+      var mins, secs;
+      [mins, secs] = string.split(':').slice(-2).map(n => parseInt(n, 10))
+      return sum + mins * 60 + secs
+    }, 0)
+  }
+
+  // Entrada 324
+  // Salida '5:24'
+  formatDuration = (duration) => {
+    function pad (number) {
+      return `${number}`.slice(-2)
+    }
+
+    let hours = duration / 3600 | 0
+    let minutes = duration % 3600 / 60 | 0
+    let seconds = duration % 60
+    let minsSecs = `${pad(minutes)}:${pad(seconds)}`
+    return hours > 0 ? `${hours}:${minsSecs}` : minsSecs
+  }
+
+  getTotalDuration = () => {
+    // ["4:23", "4:23", "4:23"]
+    const durations = this.state.course.lessons.map(l => l.duration)
+    // total de duration ex 132
+    const totalDuration = this.sumDurations(durations)
+    // suma de duraciones en numero
+    const duration = this.formatDuration(totalDuration)
+    // debugger
+    return duration
   }
 
   updateCourse = async () => {
@@ -224,7 +277,9 @@ export default class extends Component {
       mutation: COURSE_UPDATE,
       variables: {
         ...this.state.course,
-        lessons: this.state.course.lessons.map(l => l._id)
+        lessons: this.state.course.lessons.map(l => l._id),
+        firstLessonSlug: this.state.course.lessons[0].slug,
+        duration: this.getTotalDuration()
       }
     })
 
@@ -249,22 +304,35 @@ export default class extends Component {
   }
 
   onClickLesson = (lessons) => {
+    // hardcode
+    this.state.course.lessons = lessons
     this.setState(state => ({
       ...state,
-      course: {
-        ...state.course,
-        lessons
-      }
+      course: { ...state.course, lessons, duration: this.getTotalDuration() }
     }))
-    // Si no existe agregar
-
-    // Si existe eliminar
   }
 
   onSortEnd = (lessons) => this.setState(state => ({
     ...state,
     course: { ...state.course, lessons }
   }))
+
+  onDelete = (lesson) => {
+    // Primero actualizamos las lecciones
+    this.setState(state => ({
+      ...state,
+      course: {
+        ...state.course,
+        lessons: state.course.lessons.filter(l => l._id !== lesson._id)
+      }
+    }), () => {
+      // En el callback obtenemos la duraccion actual de la suma de las lecciones
+      this.setState(state => ({
+        ...state,
+        course: { ...state.course, duration: this.getTotalDuration() }
+      }))
+    })
+  }
 
   render () {
     if (!this.props.show || !this.props.slug) return null
@@ -281,7 +349,7 @@ export default class extends Component {
                   <TextField
                     label='title'
                     keyName='title'
-                    size='small'
+                    size='medium'
                     onChange={this.onChange}
                     value={this.state.course.title}
                   />
@@ -431,6 +499,8 @@ export default class extends Component {
                 <Preview
                   lessons={this.state.course.lessons}
                   onSortEnd={this.onSortEnd}
+                  onDelete={this.onDelete}
+                  course={this.state.course}
                 />
               </Fields>
               <Buttons>
