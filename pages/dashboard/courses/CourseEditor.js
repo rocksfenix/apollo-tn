@@ -146,7 +146,7 @@ const Panel = styled.div`
 `
 
 const Fields = styled.div`
-  width: 30%;
+  width: ${p => p.width || '30%'};
   height: 100%;
   background-color: #FFF;
   top: 55px;
@@ -305,11 +305,14 @@ export default class extends Component {
 
   onClickLesson = (lessons) => {
     // hardcode
-    this.state.course.lessons = lessons
+    // this.state.course.lessons = lessons
     this.setState(state => ({
       ...state,
-      course: { ...state.course, lessons, duration: this.getTotalDuration() }
-    }))
+      course: { ...state.course, lessons }
+    }), () => this.setState(state => ({
+      ...state,
+      course: { ...state.course, duration: this.getTotalDuration() }
+    })))
   }
 
   onSortEnd = (lessons) => this.setState(state => ({
@@ -344,7 +347,7 @@ export default class extends Component {
           }
           return (
             <Panel>
-              <Fields>
+              <Fields width='40%'>
                 <FieldsWrap>
                   <TextField
                     label='title'
@@ -488,7 +491,7 @@ export default class extends Component {
                   />
                 </FieldsWrap>
               </Fields>
-              <Fields>
+              <Fields width='25%'>
                 <SearchLessons
                   {...this.props}
                   lessons={this.state.course.lessons}
