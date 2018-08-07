@@ -80,12 +80,12 @@ export default class extends Component {
     courses: [],
     total: null,
     itemsByPage: 10,
-    showEditor: false
+    showEditor: false,
+    slugActive: null
   }
 
   showEditor = (data) => {
-    this.setState({ showEditor: true })
-    console.log(data)
+    this.setState({ showEditor: true, slugActive: data.original.slug })
   }
 
   hideEditor = () => this.setState({ showEditor: false })
@@ -192,6 +192,7 @@ export default class extends Component {
     if (!this.props.show) {
       return null
     }
+
     return (
       <Query query={COURSES} variables={{ first: 10, skip: 0 }}>
         {({ loading, error, data = {}, client, refetch, networkStatus }) => {
@@ -214,7 +215,12 @@ export default class extends Component {
                 onFetchData={this.fetchData}
                 pages={Math.ceil(this.state.total / this.state.itemsByPage, 10)}
               />
-              <CourseEditor show={this.state.showEditor} hideEditor={this.hideEditor}/>
+              <CourseEditor
+                {...this.props}
+                show={this.state.showEditor}
+                hideEditor={this.hideEditor}
+                slug={this.state.slugActive}
+              />
             </Panel>
           )
         }}

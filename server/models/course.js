@@ -7,7 +7,7 @@ const coverImg = 'https://dxpdcvj89hnue.cloudfront.net/CourseCovers/TecNinja.svg
 const synopsisImg = 'https://dxpdcvj89hnue.cloudfront.net/images/screenshot-default-lesson.png'
 
 const CourseSchema = new mongoose.Schema({
-  resolveType: { type: String, default: 'course' },
+  __typename: { type: String, default: 'course' },
   _id: { type: String, 'default': shortid.generate },
 
   title: { type: String, required: [true, 'El titulo es necesario'] },
@@ -18,9 +18,12 @@ const CourseSchema = new mongoose.Schema({
   isPublished: { type: Boolean, default: false },
   isRecording: { type: Boolean, default: true },
 
+  serieType: { type: String, enum: ['course', 'tutorial'], default: 'course' },
+
   // Sipnopsis
   synopsis: { type: String, default: 'En este curso aprenderas los fundamentos de React y como integrarlo a nuestro stack' },
-  videoSynopsis: { type: String, default: '...' },
+  trailer: { type: String, default: 'http://' },
+
   imageSynopsis: {
     micro: { type: String, default: synopsisImg }, // 60px
     medium: { type: String, default: synopsisImg } // 800px
@@ -35,11 +38,12 @@ const CourseSchema = new mongoose.Schema({
   // Revisar--------------------------------------
   firstLessonSlug: { type: String, default: '' },
 
-  category: { type: String, enum: [ 'Frontend', 'Backend', 'Tools' ], default: 'Frontend' },
-  tags: [{ id: String, text: String }],
+  category: { type: String, enum: [ 'frontend', 'backend', 'herramientas' ], default: 'frontend' },
+  tags: [String],
   tech: { type: String, default: 'TecNinja' },
   version: { type: Number, default: 1 },
-  duration: String,
+  techVersion: { type: String, default: '0.0.1' },
+  duration: { type: String, default: '124' },
   role: { type: String, enum: ['pro', 'free', 'public'], default: 'pro' },
 
   lessons: [{ type: String, ref: 'Lesson' }],
@@ -75,6 +79,9 @@ CourseSchema.methods.getDataByRole = function (userRole) {
     'title',
     'slug',
     'author',
+    'serieType',
+    'trailer',
+    'techVersion',
     'description',
     'isPublished',
     'isRecording',

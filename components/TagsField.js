@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
 import { WithContext as ReactTags } from 'react-tag-input'
-import Toggle from './Toggle'
+import LabelField from './LabelField'
 
 const Panel = styled.div`
   width: 100%;
@@ -13,37 +13,35 @@ const Panel = styled.div`
   border-bottom: 1px solid #e9f3f5;
 `
 
-const Label = styled.div`
-  width: 30%;
-  color: #151517;
-  font-size: 13px;
-  margin-bottom: 4px;
-  margin-top: 1em;
-  font-family: Roboto;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  text-align: left;
-`
-
 export default class extends Component {
   state = {
     show: false,
     tags: []
   }
 
+  componentWillMount () {
+    const { tags } = this.props
+    if (tags.length) {
+      this.setState({ tags: tags.map(t => ({ id: t, text: t })) })
+    }
+  }
+
   handleDelete = (i) => {
     const { tags } = this.state
-    this.setState({
-      tags: tags.filter((tag, index) => index !== i)
+    this.setState({ tags: tags.filter((tag, index) => index !== i) }, () => {
+      this.props.onChange(this.props.keyName, this.getTagsMaped(this.state.tags))
     })
   }
 
   handleAddition = (tag) => {
-    console.log(tag);
-    
-    this.setState(state => ({ tags: [...state.tags, tag] }))
-    // this.props.onChange(tag)
+    this.setState(state => ({ tags: [...state.tags, tag] }), () => {
+      this.props.onChange(this.props.keyName, this.getTagsMaped(this.state.tags))
+    })
   }
+
+  // Regresa las tags pero solo como un string [ 'fruta' ]
+  // En lugar de [ { id: 'text', text: 'El texto' }]
+  getTagsMaped = (tags) => tags.map(t => t.text)
 
   suggestions = [
     { id: 'javascript', text: 'javascript' },
@@ -55,10 +53,9 @@ export default class extends Component {
   ]
 
   render () {
-    console.log(this.props)
     return (
       <Panel>
-        <Label>{ this.props.label }</Label>
+        <LabelField>{ this.props.label }</LabelField>
         <ReactTags
           tags={this.state.tags}
           placeholder='Ninja Tech'

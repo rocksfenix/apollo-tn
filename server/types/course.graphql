@@ -6,8 +6,9 @@ type Course {
   description: String
   isPublished: Boolean
   isRecording: Boolean
+  serieType: String
   synopsis: String
-  videoSynopsis: String
+  trailer: String
   imageSynopsis: ImageSizes
   cover: ImageSizes
   level: String
@@ -16,6 +17,7 @@ type Course {
   tags: [String]
   tech: String
   version: Int
+  techVersion: String
   duration: String
   role: String
   color: String
@@ -29,14 +31,16 @@ input CourseCreate {
   description: String
   isPublished: Boolean
   isRecording: Boolean
+  serieType: String
   synopsis: String
-  videoSynopsis: String
+  trailer: String
   level: String
   firstLessonSlug: String
   category: String
   tags: [String]
   tech: String
   version: Int
+  techVersion: String
   duration: String
   role: String
   color: String
@@ -44,19 +48,21 @@ input CourseCreate {
 }
 
 input CourseSet {
-  _id: ID!
+  _id: ID
   title: String
   description: String
   isPublished: Boolean
   isRecording: Boolean
+  serieType: String
   synopsis: String
-  videoSynopsis: String
+  trailer: String
   level: String
   firstLessonSlug: String
   category: String
   tags: [String]
   tech: String
   version: Int
+  techVersion: String
   duration: String
   role: String
   color: String

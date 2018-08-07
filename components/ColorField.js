@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
 import { HuePicker, ChromePicker } from 'react-color'
+import LabelField from './LabelField'
 
 const Panel = styled.div`
   width: 100%;
@@ -10,19 +11,6 @@ const Panel = styled.div`
   align-items: center;
   border-bottom: 1px solid #e9f3f5;
   position: relative;
-`
-
-const Label = styled.div`
-  width: 30%;
-  color: #151517;
-  font-size: 13px;
-  font-family: Roboto;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  text-align: left;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 `
 
 const Picker = styled.div`
@@ -43,11 +31,13 @@ export default class extends Component {
     color: '#9cb6b5'
   }
 
-  componentWillMount () {
-    if (this.props.color) {
-      this.setState({ color: this.props.color })
-    }
-  }
+  // componentWillMount () {
+  //   if (this.props.color) {
+  //     this.setState({ color: this.props.color })
+  //   }
+  // }
+
+  // component
 
   toggle = () => this.setState(state => ({
     ...state,
@@ -62,12 +52,12 @@ export default class extends Component {
   render () {
     return (
       <Panel>
-        <Label>
+        <LabelField>
           { this.props.label }
-          <Box style={{background: this.state.color}} onClick={this.toggle} />
-        </Label>
+          <Box style={{background: this.props.color}} onClick={this.toggle} />
+        </LabelField>
         <HuePicker
-          color={this.state.color}
+          color={this.props.color}
           onChange={this.handleChange}
         />
         {

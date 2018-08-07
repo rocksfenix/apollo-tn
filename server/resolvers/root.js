@@ -4,11 +4,11 @@ import models from '../models'
 export default {
   Search: {
     __resolveType (obj, context, info) {
-      if (obj.resolveType === 'course') {
+      if (obj.__typename === 'course') {
         return 'Course'
       }
 
-      if (obj.resolveType === 'lesson') {
+      if (obj.__typename === 'lesson') {
         return 'Lesson'
       }
 

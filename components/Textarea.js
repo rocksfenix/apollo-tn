@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import { string, func } from 'prop-types'
 import styled from 'styled-components'
+import LabelField from './LabelField'
 
 const Input = styled.textarea`
   width: 100%;
@@ -11,7 +12,7 @@ const Input = styled.textarea`
   border-radius: 3px;
   display: block;
   font-family: Roboto;
-  font-size: 14px;
+  font-size: 12px;
   transition: .3s ease-out;
   overflow: hidden;
 
@@ -25,18 +26,6 @@ const Input = styled.textarea`
 const Panel = styled.div`
   width: 100%;
   margin: 10px auto;
-`
-const Label = styled.div`
-  width: 30%;
-  color: #151517;
-  font-size: 13px;
-  margin-bottom: 4px;
-  margin-top: 1em;
-  font-family: Roboto;
-  letter-spacing: 1px;
-  /* margin-left: 16px; */
-  text-transform: uppercase;
-  text-align: left;
 `
 
 const propTypes = {
@@ -64,7 +53,7 @@ class AreaComponent extends Component {
     const { label, value, size } = this.props
     return (
       <Panel>
-        <Label>{ label }</Label>
+        <LabelField>{ label }</LabelField>
         <Input
           onChange={this.onChange}
           spellCheck='false'

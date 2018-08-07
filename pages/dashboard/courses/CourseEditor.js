@@ -1,11 +1,114 @@
-import styled, {keyframes} from 'styled-components'
 import React, {Component} from 'react'
+import styled, {keyframes} from 'styled-components'
+import gpl from 'graphql-tag'
+import { Query } from 'react-apollo'
+import { Notification } from 'react-notification'
 import TextField from '../../../components/TextField'
 import Multioption from '../../../components/Multioption'
 import Textarea from '../../../components/Textarea'
 import ColorField from '../../../components/ColorField'
 import ToggleField from '../../../components/ToggleField'
 import TagsField from '../../../components/TagsField'
+
+const COURSE_DETAILS = gpl`
+query course($slug: String!) {
+  course(slug: $slug) {
+    _id
+    color
+    slug
+    title
+    role
+    serieType
+    category
+    tech
+    trailer
+    synopsis
+    description
+    isPublished
+    isRecording
+    tags
+    duration
+    firstLessonSlug
+    techVersion
+    duration
+    level
+    cover {
+      medium
+    }
+    lessons {
+      title
+      description
+      synopsis
+      slug
+      _id
+    }
+  }
+}`
+//  $lessons: String
+const COURSE_UPDATE = gpl`
+mutation courseUpdate(
+  $_id: ID!
+  $duration: String
+  $firstLessonSlug: String
+  $techVersion: String
+  $level: String
+  $color: String
+  $title: String
+  $role: String
+  $serieType: String
+  $category: String
+  $tech: String
+  $trailer: String
+  $synopsis: String
+  $description: String
+  $isPublished: Boolean
+  $isRecording: Boolean
+  $tags: [String]
+
+) {
+  courseUpdate(input: {
+    _id: $_id
+    duration: $duration
+    firstLessonSlug: $firstLessonSlug
+    level: $level
+    techVersion: $techVersion
+    color: $color
+    title: $title
+    role: $role
+    serieType: $serieType
+    category: $category
+    tech: $tech
+    trailer: $trailer
+    synopsis: $synopsis
+    description: $description
+    isPublished: $isPublished
+    isRecording: $isRecording
+    tags: $tags
+  }) {
+    _id
+    color
+    firstLessonSlug
+    duration
+    techVersion
+    level
+    slug
+    title
+    role
+    serieType
+    category
+    tech
+    trailer
+    synopsis
+    description
+    isPublished
+    isRecording
+    tags
+    lessons {
+      _id
+      slug
+    }
+  }
+}`
 
 const animation = keyframes`
   0%{
@@ -61,17 +164,34 @@ const ButtonSave = styled.button`
   color: #FFF;
 `
 
+const Row = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+`
+
+const Column = styled.div`
+  width: 50%;
+`
+
 export default class extends Component {
   state = {
+    notification: {
+      show: false,
+      message: 'Cambios Guardados Exitosamente'
+    },
     course: {
       title: 'The title',
+      tech: '',
       role: 'pro',
       serieType: 'course',
       description: '',
       category: 'frontend',
       color: '#333',
       isPublished: false,
-      isRecording: true
+      isRecording: true,
+      tags: ['javascript']
     }
   }
 
@@ -85,109 +205,209 @@ export default class extends Component {
     }))
   }
 
-  render () {
-    if (!this.props.show) return null
-    return (
-      <Panel>
-        <Fields>
-          <FieldsWrap>
-            <TextField
-              label='title'
-              keyName='title'
-              size='medium'
-              onChange={this.onChange}
-              value={this.state.course.title}
-            />
-            <ColorField
-              label='Color'
-              keyName='color'
-              color={this.state.course.color}
-              onChange={this.onChange}
-            />
-            <Multioption
-              label='role'
-              keyName='role'
-              active={this.state.course.role}
-              options={[
-                { value: 'pro' },
-                { value: 'free' },
-                { value: 'public' }
-              ]}
-              onChange={this.onChange}
-            />
-            <Multioption
-              label='Serie Type'
-              keyName='serieType'
-              active={this.state.course.serieType}
-              options={[
-                { value: 'course' },
-                { value: 'tutorial' }
-              ]}
-              onChange={this.onChange}
-            />
-            <Multioption
-              label='Category'
-              keyName='category'
-              active={this.state.course.category}
-              options={[
-                { value: 'frontend' },
-                { value: 'backend' },
-                { value: 'herramientas' }
-              ]}
-              onChange={this.onChange}
-            />
-            <TextField
-              label='tech'
-              keyName='tech'
-              size='medium'
-              onChange={this.onChange}
-              value={this.state.course.tech}
-            />
-            <TextField
-              label='trailer'
-              keyName='trailer'
-              size='medium'
-              onChange={this.onChange}
-              value={this.state.course.trailer}
-            />
-            <TextField
-              label='synopsis'
-              keyName='synopsis'
-              size='medium'
-              onChange={this.onChange}
-              value={this.state.course.synopsis}
-            />
-            <Textarea
-              label='Description'
-              keyName='description'
-              onChange={this.onChange}
-              value={this.state.course.description}
+  pushData = (course) => {
+    // Solo actualiza la primera vez o cada que cabie de slug
+    if (!this.state.course.__typename || course._id !== this.state.course._id) {
+      this.setState({ course })
+    }
+  }
 
-            />
-            <ToggleField
-              label='Is Published'
-              keyName='isPubliched'
-              active={this.state.course.isPublished}
-              onChange={this.onChange}
-            />
-            <ToggleField
-              label='Is Recording'
-              keyName='isRecording'
-              active={this.state.course.isRecording}
-              onChange={this.onChange}
-            />
-            <TagsField
-              label='tags'
-              tags={[]}
-            />
-          </FieldsWrap>
-        </Fields>
-        <Fields></Fields>
-        <Fields></Fields>
-        <Buttons>
-          <ButtonSave onClick={this.props.hideEditor}>Save</ButtonSave>
-        </Buttons>
-      </Panel>
+  updateCourse = async () => {
+    const response = await this.props.client.mutate({
+      mutation: COURSE_UPDATE,
+      variables: this.state.course
+    })
+
+    if (!response.data.courseUpdate) {
+      return window.alert('Error al Guardar Informacion')
+    }
+
+    this.setState({
+      course: response.data.courseUpdate,
+      notification: {
+        show: true,
+        message: 'Cambios Guardados Exitosamente'
+      }
+    })
+
+    window.setTimeout(() => this.setState(state => ({
+      notification: {
+        ...state.notification,
+        show: false
+      }}
+    )), 3000)
+  }
+
+  render () {
+    if (!this.props.show || !this.props.slug) return null
+    return (
+      <Query query={COURSE_DETAILS} variables={{ slug: this.props.slug }}>
+        {({ loading, error, data = {}, client, refetch, networkStatus }) => {
+          if (data.course) {
+            this.pushData(data.course)
+          }
+          return (
+            <Panel>
+              <Fields>
+                <FieldsWrap>
+                  <TextField
+                    label='title'
+                    keyName='title'
+                    size='small'
+                    onChange={this.onChange}
+                    value={this.state.course.title}
+                  />
+                  <ColorField
+                    label='Color'
+                    keyName='color'
+                    color={this.state.course.color}
+                    onChange={this.onChange}
+                  />
+                  <Multioption
+                    label='role'
+                    keyName='role'
+                    active={this.state.course.role}
+                    options={[
+                      { value: 'pro' },
+                      { value: 'free' },
+                      { value: 'public' }
+                    ]}
+                    onChange={this.onChange}
+                  />
+                  <Multioption
+                    label='Serie Type'
+                    keyName='serieType'
+                    active={this.state.course.serieType}
+                    options={[
+                      { value: 'course' },
+                      { value: 'tutorial' }
+                    ]}
+                    onChange={this.onChange}
+                  />
+                  <Multioption
+                    label='Category'
+                    keyName='category'
+                    active={this.state.course.category}
+                    options={[
+                      { value: 'frontend' },
+                      { value: 'backend' },
+                      { value: 'herramientas' }
+                    ]}
+                    onChange={this.onChange}
+                  />
+                  <Multioption
+                    label='Level'
+                    keyName='level'
+                    active={this.state.course.level}
+                    options={[
+                      { value: 'basico' },
+                      { value: 'intermedio' },
+                      { value: 'avanzado' }
+                    ]}
+                    onChange={this.onChange}
+                  />
+                  <TextField
+                    label='tech'
+                    keyName='tech'
+                    size='small'
+                    onChange={this.onChange}
+                    value={this.state.course.tech}
+                  />
+                  <TextField
+                    label='trailer'
+                    keyName='trailer'
+                    size='small'
+                    onChange={this.onChange}
+                    value={this.state.course.trailer}
+                  />
+                  <TextField
+                    label='synopsis'
+                    keyName='synopsis'
+                    size='small'
+                    onChange={this.onChange}
+                    value={this.state.course.synopsis}
+                  />
+                  <TextField
+                    label='First Lesson Slug'
+                    keyName='firstLessonSlug'
+                    size='small'
+                    onChange={this.onChange}
+                    value={this.state.course.firstLessonSlug}
+                  />
+                  <Row>
+                    <Column>
+                      <TextField
+                        inputWidth='80px'
+                        borderRight='1px solid #e9f3f5'
+                        label='Tech Version'
+                        keyName='techVersion'
+                        size='small'
+                        onChange={this.onChange}
+                        value={this.state.course.techVersion}
+                      />
+                    </Column>
+                    <Column>
+                      <TextField
+                        inputWidth='80px'
+                        label='Duration'
+                        keyName='duration'
+                        size='small'
+                        onChange={this.onChange}
+                        value={this.state.course.duration}
+                      />
+                    </Column>
+                  </Row>
+
+                  <Textarea
+                    label='Description'
+                    keyName='description'
+                    onChange={this.onChange}
+                    value={this.state.course.description}
+
+                  />
+                  <Row>
+                    <Column>
+                      <ToggleField
+                        label='Is Published'
+                        keyName='isPublished'
+                        active={this.state.course.isPublished}
+                        onChange={this.onChange}
+                      />
+                    </Column>
+                    <Column>
+                      <ToggleField
+                        label='Is Recording'
+                        keyName='isRecording'
+                        active={this.state.course.isRecording}
+                        onChange={this.onChange}
+                      />
+                    </Column>
+                  </Row>
+
+                  <TagsField
+                    label='tags'
+                    keyName='tags'
+                    onChange={this.onChange}
+                    tags={this.state.course.tags}
+                  />
+                </FieldsWrap>
+              </Fields>
+              <Fields />
+              <Fields />
+              <Buttons>
+                <ButtonSave onClick={this.updateCourse}>Save</ButtonSave>
+                <ButtonSave onClick={this.props.hideEditor}>Close</ButtonSave>
+                <ButtonSave onClick={() => console.log(JSON.stringify(this.state, null, 2))}>Debugg</ButtonSave>
+              </Buttons>
+              <Notification
+                isActive={this.state.notification.show}
+                dismissAfter
+                message={this.state.notification.message}
+              />
+            </Panel>
+          )
+        }}
+      </Query>
     )
   }
 }

@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import { string, func } from 'prop-types'
 import styled from 'styled-components'
+import LabelField from './LabelField'
 
 const Input = styled.input`
   width: 80%;
@@ -12,6 +13,14 @@ const Input = styled.input`
 
     if (props.size === 'medium') {
       return '4px 15px'
+    }
+
+    if (props.size === 'medium') {
+      return '2px 14px'
+    }
+
+    if (props.size === 'small') {
+      return '1px 14px'
     }
   }};
   background: #e9f3f5;
@@ -27,6 +36,10 @@ const Input = styled.input`
     if (props.size === 'medium') {
       return '14px'
     }
+
+    if (props.size === 'small') {
+      return '12px'
+    }
   }};
   transition: .25s ease-out;
 
@@ -41,18 +54,9 @@ const Input = styled.input`
 const Panel = styled.div`
   width: 100%;
   display: flex;
+  justify-content: space-around;
+  align-items: center;
   padding: .3em 0;
-`
-const Label = styled.div`
-  width: 30%;
-  color: #151517;
-  font-size: 13px;
-  margin-bottom: 4px;
-  margin-top: 1em;  
-  font-family: Roboto;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  text-align: left;
 `
 
 class TextFieldComponent extends Component {
@@ -75,10 +79,19 @@ class TextFieldComponent extends Component {
   }
 
   render () {
+    const { inputWidth, borderBottom, borderRight } = this.props
     return (
-      <Panel>
-        <Label> { this.props.label } </Label>
+      <Panel
+        style={{
+          'border-bottom': borderBottom || '',
+          'border-right': borderRight || ''
+        }}
+      >
+        <LabelField> { this.props.label } </LabelField>
         <Input
+          style={{
+            width: inputWidth || '80%'
+          }}
           onChange={this.onChange}
           spellCheck='false'
           value={this.props.value}
