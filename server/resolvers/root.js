@@ -4,11 +4,13 @@ import models from '../models'
 export default {
   Search: {
     __resolveType (obj, context, info) {
-      if (obj.__typename === 'course') {
+      console.log(obj.__typename);
+      
+      if (obj.__typename === 'Course') {
         return 'Course'
       }
 
-      if (obj.__typename === 'lesson') {
+      if (obj.__typename === 'Lesson') {
         return 'Lesson'
       }
 
@@ -35,7 +37,7 @@ export default {
         ...lessons
       ]
 
-      console.log(result.length)
+      // console.log(courses)
       return result
     }
   },
