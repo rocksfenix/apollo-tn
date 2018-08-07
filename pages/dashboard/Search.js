@@ -4,8 +4,8 @@ import styled from 'styled-components'
 import { debounce } from 'throttle-debounce'
 
 const Search = styled.input`
-  min-width: 400px;
-  padding: 11px 20px;
+  /* min-width: 400px; */
+  padding: 10px 20px;
   font-family: 'Open Sans', sans-serif;
   font-weight: 300;
   font-size: 18px;
@@ -39,7 +39,7 @@ class SearchComponent extends Component {
 
   render () {
     return (
-      <Search onKeyUp={this.handleKeyPress} ref='input' onKeyPress={this.search} />
+      <Search style={this.props.style} onKeyUp={this.handleKeyPress} ref='input' onKeyPress={this.search} />
     )
   }
 }

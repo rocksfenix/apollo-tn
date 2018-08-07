@@ -7,7 +7,7 @@ const coverImg = 'https://dxpdcvj89hnue.cloudfront.net/CourseCovers/TecNinja.svg
 const synopsisImg = 'https://dxpdcvj89hnue.cloudfront.net/images/screenshot-default-lesson.png'
 
 const CourseSchema = new mongoose.Schema({
-  __typename: { type: String, default: 'course' },
+  __typename: { type: String, default: 'Course' },
   _id: { type: String, 'default': shortid.generate },
 
   title: { type: String, required: [true, 'El titulo es necesario'] },

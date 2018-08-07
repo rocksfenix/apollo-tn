@@ -50,11 +50,19 @@ export default {
       'possibleTypes': null
     }, {
       'kind': 'OBJECT',
+      'name': 'CoursesResponse',
+      'possibleTypes': null
+    }, {
+      'kind': 'OBJECT',
       'name': 'Favorite',
       'possibleTypes': null
     }, {
       'kind': 'OBJECT',
       'name': 'Issue',
+      'possibleTypes': null
+    }, {
+      'kind': 'OBJECT',
+      'name': 'LessonsResponse',
       'possibleTypes': null
     }, {
       'kind': 'OBJECT',
@@ -70,7 +78,15 @@ export default {
       }]
     }, {
       'kind': 'OBJECT',
-      'name': 'Skill',
+      'name': 'DailyStatistics',
+      'possibleTypes': null
+    }, {
+      'kind': 'OBJECT',
+      'name': 'MembersStats',
+      'possibleTypes': null
+    }, {
+      'kind': 'OBJECT',
+      'name': 'UsersResponse',
       'possibleTypes': null
     }, {
       'kind': 'OBJECT',
@@ -143,14 +159,6 @@ export default {
     }, {
       'kind': 'INPUT_OBJECT',
       'name': 'NoteSet',
-      'possibleTypes': null
-    }, {
-      'kind': 'INPUT_OBJECT',
-      'name': 'SkillCreate',
-      'possibleTypes': null
-    }, {
-      'kind': 'INPUT_OBJECT',
-      'name': 'SkillSet',
       'possibleTypes': null
     }, {
       'kind': 'INPUT_OBJECT',

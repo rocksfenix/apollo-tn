@@ -77,7 +77,7 @@ export default {
     }).createResolver((_, args, { doc }) => doc),
 
     courseUpdate: async (_, { input }, { doc }) => {
-      const course = await models.Course.findById(input._id).populate('author lessons')
+      const course = await models.Course.findById(input._id) // .populate('author lessons')
 
       if (!course) throw new NotFound()
 
@@ -87,7 +87,11 @@ export default {
 
       await course.save()
 
-      return course
+      const coursePopulate = await models.Course.populate(course,
+        { path: 'lessons', model: 'Lesson' }
+      )
+      // popular las lecciones
+      return coursePopulate
     },
 
     courseDelete: DeleteSelf({

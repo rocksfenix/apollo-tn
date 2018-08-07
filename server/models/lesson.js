@@ -8,7 +8,7 @@ const videoSource = 'https://player.vimeo.com/video/254234671'
 
 const LessonSchema = new mongoose.Schema({
 
-  __typename: { type: String, default: 'lesson' },
+  __typename: { type: String, default: 'Lesson' },
   _id: {
     type: String,
     'default': shortid.generate

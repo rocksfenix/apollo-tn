@@ -9,6 +9,8 @@ import Textarea from '../../../components/Textarea'
 import ColorField from '../../../components/ColorField'
 import ToggleField from '../../../components/ToggleField'
 import TagsField from '../../../components/TagsField'
+import SearchLessons from './SearchLessons'
+import Preview from './Preview'
 
 const COURSE_DETAILS = gpl`
 query course($slug: String!) {
@@ -64,7 +66,7 @@ mutation courseUpdate(
   $isPublished: Boolean
   $isRecording: Boolean
   $tags: [String]
-
+  $lessons: [String]
 ) {
   courseUpdate(input: {
     _id: $_id
@@ -84,6 +86,7 @@ mutation courseUpdate(
     isPublished: $isPublished
     isRecording: $isRecording
     tags: $tags
+    lessons: $lessons
   }) {
     _id
     color
@@ -106,6 +109,8 @@ mutation courseUpdate(
     lessons {
       _id
       slug
+      title
+      tech
     }
   }
 }`
@@ -139,7 +144,8 @@ const Fields = styled.div`
   width: 30%;
   height: 100%;
   background-color: #FFF;
-  padding-top: 55px;
+  top: 55px;
+  position: relative;
 `
 
 const FieldsWrap = styled.div`
@@ -191,7 +197,8 @@ export default class extends Component {
       color: '#333',
       isPublished: false,
       isRecording: true,
-      tags: ['javascript']
+      tags: ['javascript'],
+      lessons: []
     }
   }
 
@@ -215,7 +222,10 @@ export default class extends Component {
   updateCourse = async () => {
     const response = await this.props.client.mutate({
       mutation: COURSE_UPDATE,
-      variables: this.state.course
+      variables: {
+        ...this.state.course,
+        lessons: this.state.course.lessons.map(l => l._id)
+      }
     })
 
     if (!response.data.courseUpdate) {
@@ -237,6 +247,24 @@ export default class extends Component {
       }}
     )), 3000)
   }
+
+  onClickLesson = (lessons) => {
+    this.setState(state => ({
+      ...state,
+      course: {
+        ...state.course,
+        lessons
+      }
+    }))
+    // Si no existe agregar
+
+    // Si existe eliminar
+  }
+
+  onSortEnd = (lessons) => this.setState(state => ({
+    ...state,
+    course: { ...state.course, lessons }
+  }))
 
   render () {
     if (!this.props.show || !this.props.slug) return null
@@ -392,8 +420,19 @@ export default class extends Component {
                   />
                 </FieldsWrap>
               </Fields>
-              <Fields />
-              <Fields />
+              <Fields>
+                <SearchLessons
+                  {...this.props}
+                  lessons={this.state.course.lessons}
+                  onClickLesson={this.onClickLesson}
+                />
+              </Fields>
+              <Fields>
+                <Preview
+                  lessons={this.state.course.lessons}
+                  onSortEnd={this.onSortEnd}
+                />
+              </Fields>
               <Buttons>
                 <ButtonSave onClick={this.updateCourse}>Save</ButtonSave>
                 <ButtonSave onClick={this.props.hideEditor}>Close</ButtonSave>

@@ -7,7 +7,7 @@ type ImageSizes {
 
 type Lesson {
   _id: ID!
-  title: String!
+  title: String
   slug: String
   description: String
   synopsis: String
@@ -59,7 +59,7 @@ input LessonSet {
   _id: ID!
   title: String
   courseSlug: String
-  # slug: String
+  slug: String
   description: String
   synopsis: String
   transcription: String
@@ -85,7 +85,7 @@ type LessonsResponse {
 }
 
 type Query {
-  lessons: [Lesson!]!
+  lessons: [Lesson]
   allLessons(first: Int, skip: Int, text: String): LessonsResponse
 }
 
