@@ -6,6 +6,7 @@ import gql from 'graphql-tag'
 import ReactTable from 'react-table'
 import Link from 'next/link'
 import Search from '../Search'
+import CourseEditor from './CourseEditor'
 
 const COURSES = gql`
  query allCourses($first: Int, $skip: Int, $text: String) {
@@ -31,6 +32,7 @@ const Panel = styled.div`
   background: #fbfbfb;
   overflow-y: auto;
   overflow-x: hidden;
+  position: relative;
 `
 
 const TimeAgo = styled.div`
@@ -77,8 +79,16 @@ export default class extends Component {
     isFetching: false,
     courses: [],
     total: null,
-    itemsByPage: 10
+    itemsByPage: 10,
+    showEditor: false
   }
+
+  showEditor = (data) => {
+    this.setState({ showEditor: true })
+    console.log(data)
+  }
+
+  hideEditor = () => this.setState({ showEditor: false })
 
   columns = [
     {
@@ -98,9 +108,9 @@ export default class extends Component {
       Cell: row => {
         return (
           <Box>
-            <Link href={`/curso-editor?slug=${row.original.slug}`} as={`/curso-editor/${row.original.slug}`}>
+            <div onClick={() => this.showEditor(row)}>
               <a>{row.value}</a>
-            </Link>
+            </div>
           </Box>
         )
       }
@@ -204,6 +214,7 @@ export default class extends Component {
                 onFetchData={this.fetchData}
                 pages={Math.ceil(this.state.total / this.state.itemsByPage, 10)}
               />
+              <CourseEditor show={this.state.showEditor} hideEditor={this.hideEditor}/>
             </Panel>
           )
         }}
