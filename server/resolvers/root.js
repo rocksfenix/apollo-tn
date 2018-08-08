@@ -4,8 +4,6 @@ import models from '../models'
 export default {
   Search: {
     __resolveType (obj, context, info) {
-      console.log(obj.__typename);
-      
       if (obj.__typename === 'Course') {
         return 'Course'
       }

@@ -44,7 +44,7 @@ query search($slug: String!) {
     slug
     _id
     cover {
-      medium
+      s100
     }
     color
     description

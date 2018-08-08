@@ -129,6 +129,10 @@ export default {
       'name': 'CourseSet',
       'possibleTypes': null
     }, {
+      'kind': 'SCALAR',
+      'name': 'Upload',
+      'possibleTypes': null
+    }, {
       'kind': 'INPUT_OBJECT',
       'name': 'FavoriteCreate',
       'possibleTypes': null
@@ -195,6 +199,10 @@ export default {
     }, {
       'kind': 'ENUM',
       'name': '__DirectiveLocation',
+      'possibleTypes': null
+    }, {
+      'kind': 'OBJECT',
+      'name': 'File',
       'possibleTypes': null
     }]
   }

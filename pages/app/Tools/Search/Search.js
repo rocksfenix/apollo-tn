@@ -20,7 +20,7 @@ query search($text: String!) {
       tech
       description
       cover {
-        medium
+        s100
       }
     }
     
@@ -41,7 +41,7 @@ query search($slug: String!) {
     slug
     _id
     cover {
-      medium
+      s100
     }
     description
     lessons {

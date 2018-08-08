@@ -38,7 +38,7 @@ export default class extends Component {
 
     return (
       <Panel show={this.props.show}>
-        <CoverImg src={cover.medium} />
+        <CoverImg src={cover.s100} />
         <h3>{ courseTitle }</h3>
         <p>{ description }</p>
         <ButtonPlay
