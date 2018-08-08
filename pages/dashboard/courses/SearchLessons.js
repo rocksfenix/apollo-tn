@@ -15,7 +15,7 @@ const LESSONS = gql`
         duration
         _id
         screenshot {
-          small
+          s50
         }
       }
       total

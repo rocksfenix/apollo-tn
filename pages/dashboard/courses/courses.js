@@ -17,7 +17,7 @@ const COURSES = gql`
         isPublished
         isRecording
         cover {
-          micro
+          s100
         }
       }
       total
@@ -37,7 +37,7 @@ const CREATE_COURSE = gql`
       isPublished
       isRecording
       cover {
-        micro
+        s100
       }
     }
   }
@@ -121,7 +121,7 @@ export default class extends Component {
       Cell: row => {
         return (
           <Box>
-            <Cover src={row.original.cover.micro} />
+            <Cover src={row.original.cover.s100} />
           </Box>
         )
       }

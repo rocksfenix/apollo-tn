@@ -1,3 +1,5 @@
+scalar Upload
+
 type Course {
   _id: ID!
   author: User
@@ -74,6 +76,14 @@ type CoursesResponse {
   total: Int
 }
 
+type File {
+  id: ID!
+  path: String!
+  filename: String!
+  mimetype: String!
+  encoding: String!
+}
+
 type Query {
   courses: [Course!]!
   allCourses(first: Int, skip: Int, text: String): CoursesResponse
@@ -83,5 +93,6 @@ type Query {
 type Mutation {
   courseCreate(input: CourseCreate): Course
   courseUpdate(input: CourseSet): Course
-  courseDelete(_id: ID!): Course
+  courseDelete(_id: ID!): Course,
+  uploadCover (file: Upload!, courseSlug: String!): String!
 }

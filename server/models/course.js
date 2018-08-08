@@ -49,10 +49,13 @@ const CourseSchema = new mongoose.Schema({
   lessons: [{ type: String, ref: 'Lesson' }],
   color: { type: String, default: '#9cb6b5' },
   cover: {
-    micro: { type: String, default: coverImg }, // 60px
-    small: { type: String, default: coverImg }, // 170px
-    medium: { type: String, default: coverImg }, // 500px
-    large: { type: String, default: coverImg } // 1000px
+    s30: { type: String, default: coverImg },
+    s50: { type: String, default: coverImg },
+    s100: { type: String, default: coverImg },
+    s300: { type: String, default: coverImg },
+    s500: { type: String, default: coverImg },
+    s800: { type: String, default: coverImg },
+    s1000: { type: String, default: coverImg }
   }
 }, { timestamps: true })
 

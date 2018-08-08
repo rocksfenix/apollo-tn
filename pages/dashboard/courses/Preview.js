@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import styled from 'styled-components'
 import {SortableContainer, SortableElement, arrayMove} from 'react-sortable-hoc'
 import getTechIcon from '../../../util/getTechIcon'
+import CoverDropzone from './CoverDropzone'
 
 const Panel = styled.div`
   position: absolute;
@@ -60,13 +61,6 @@ const Delete = styled.button`
 
 const IconDelete = styled.i`
   color: #fd6519;
-`
-
-const CoverImage = styled.img`
-  width: 100px;
-  margin: 0 auto;
-  display: block;
-  margin-bottom: 1em;
 `
 
 const Header = styled.div`
@@ -171,7 +165,10 @@ export default class extends Component {
     if (!this.props.lessons) return null
     return (
       <Panel>
-        <CoverImage src={this.props.course.cover.medium} />
+        <CoverDropzone
+          src={this.props.course.cover.s100}
+          courseSlug={this.props.course.slug}
+        />
         <Header color={this.props.course.color}>
           <Gradient />
           <ShadowImage src='/static/shadow-1.svg' />

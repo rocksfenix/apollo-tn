@@ -39,9 +39,11 @@ const UserSchema = new mongoose.Schema({
   },
   bio: String,
   avatar: {
-    micro: { type: String, default: avatarDefault },
-    small: { type: String, default: avatarDefault },
-    medium: { type: String, default: avatarDefault }
+    s30: { type: String, default: avatarDefault },
+    s50: { type: String, default: avatarDefault },
+    s100: { type: String, default: avatarDefault },
+    s300: { type: String, default: avatarDefault },
+    s500: { type: String, default: avatarDefault }
   },
   // Eliminar posiblemente
   availableToHire: { type: Boolean, default: false },

@@ -1,8 +1,40 @@
 import models from '../models'
-import { CreateSelf, UpdateSelf, DeleteSelf } from '../authorization'
-import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../errors'
+import { CreateSelf, DeleteSelf } from '../authorization'
+// AuthenticationRequiredError, ForbiddenError,
+import { NotFound } from '../errors'
+import { GraphQLUpload } from 'apollo-upload-server'
+import uploadImage from '../upload-image'
+
+// const uploadDir = './uploads'
+// // Ensure upload directory exists
+// mkdirp.sync(uploadDir)
+
+// const storeFS = ({ stream, filename }) => {
+//   const id = shortid.generate()
+//   const path = `${uploadDir}/${id}-${filename}`
+//   return new Promise((resolve, reject) =>
+//     stream
+//       .on('error', error => {
+//         if (stream.truncated) {
+//         // Delete the truncated file
+//           fs.unlinkSync(path)
+//         }
+//         reject(error)
+//       })
+//       .pipe(fs.createWriteStream(path))
+//       .on('error', error => reject(error))
+//       .on('finish', () => resolve({ id, path }))
+//   )
+// }
+
+// const processUpload = async upload => {
+//   const { stream, filename, mimetype, encoding } = await upload
+//   const { id, path } = await storeFS({ stream, filename })
+//   return ({ id, filename, mimetype, encoding, path })
+// }
 
 export default {
+  Upload: GraphQLUpload,
   Query: {
     allCourses: async (_, { first, skip = 0, text }, { user = {} }) => {
       // TODO separar isPublished para role !== admin
@@ -99,6 +131,32 @@ export default {
       only: 'admin',
       populate: 'author lessons'
     })
-      .createResolver((_, args, { doc }) => doc)
+      .createResolver((_, args, { doc }) => doc),
+
+    uploadCover: async (obj, { file, courseSlug }) => {
+      const course = await models.Course.findOne({ slug: courseSlug })
+
+      if (!course) throw new NotFound()
+
+      // Pasamos 3 valores, el file, un array con los tamaños y el folder S3
+      // cover.s800
+      const sizes = [
+        { size: 30, suffix: 's30' },
+        { size: 50, suffix: 's50' },
+        { size: 100, suffix: 's100' },
+        { size: 300, suffix: 's300' },
+        { size: 500, suffix: 's500' },
+        { size: 800, suffix: 's800' }
+      ]
+
+      const cover = await uploadImage(file, sizes, 'cover')
+
+      console.log('CURSO SLUIG: ' + courseSlug, cover)
+      course.cover = cover
+
+      await course.save()
+
+      return 'ok'
+    }
   }
 }

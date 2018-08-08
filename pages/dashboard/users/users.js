@@ -17,7 +17,7 @@ const USERS = gql`
         role
         createdAt
         avatar {
-          small
+          s100
         }
       }
       total
@@ -124,7 +124,7 @@ export default class extends Component {
         return (
           <Link onClick={() => this.openUser(row.original)}>
             <LeftBlock>
-              <Avatar src={row.original.avatar.small} />
+              <Avatar src={row.original.avatar.s100} />
               { row.value }
             </LeftBlock>
           </Link>

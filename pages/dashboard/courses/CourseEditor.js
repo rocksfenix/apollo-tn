@@ -35,7 +35,7 @@ query course($slug: String!) {
     duration
     level
     cover {
-      medium
+      s100
     }
     lessons {
       title
@@ -108,7 +108,7 @@ mutation courseUpdate(
     isRecording
     tags
     cover {
-      medium
+      s100
     }
     lessons {
       _id
@@ -278,7 +278,9 @@ export default class extends Component {
       variables: {
         ...this.state.course,
         lessons: this.state.course.lessons.map(l => l._id),
-        firstLessonSlug: this.state.course.lessons[0].slug,
+        firstLessonSlug: this.state.course.lessons.length
+          ? this.state.course.lessons[0].slug
+          : '__NO_LESSONS',
         duration: this.getTotalDuration()
       }
     })

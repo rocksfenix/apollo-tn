@@ -33,9 +33,13 @@ const LessonSchema = new mongoose.Schema({
   slug: { type: String, slug: 'title', unique: true },
   tech: { type: String, default: 'Javascript' },
   screenshot: {
-    small: { type: String, default: screenshotDef },
-    medium: { type: String, default: screenshotDef },
-    big: { type: String, default: screenshotDef }
+    s30: { type: String, default: screenshotDef },
+    s50: { type: String, default: screenshotDef },
+    s100: { type: String, default: screenshotDef },
+    s300: { type: String, default: screenshotDef },
+    s500: { type: String, default: screenshotDef },
+    s800: { type: String, default: screenshotDef },
+    s1000: { type: String, default: screenshotDef }
   },
   videoSource: { type: String, default: videoSource },
   tags: [{ id: String, text: String }],

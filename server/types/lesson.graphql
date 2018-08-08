@@ -1,8 +1,11 @@
 type ImageSizes {
-  micro: String
-  small: String
-  medium: String
-  big: String
+  s30: String
+  s50: String
+  s100: String
+  s300: String
+  s500: String
+  s800: String
+  s1000: String
 }
 
 type Lesson {

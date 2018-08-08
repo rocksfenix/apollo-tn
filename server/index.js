@@ -10,6 +10,7 @@ import path from 'path'
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas'
 import { makeExecutableSchema } from 'graphql-tools'
 import formatError from './formatError'
+import { apolloUploadExpress } from 'apollo-upload-server'
 // import session from 'express-session'
 import security from './middlewares/security'
 import auth from './middlewares/auth'
@@ -53,6 +54,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }).then(() => {
       server.get('/instrospection', getInstrospection)
 
       server.use('/graphql', bodyParser.json(),
+        apolloUploadExpress(),
         graphqlExpress(req => ({
           formatError,
           schema,

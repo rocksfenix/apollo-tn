@@ -15,7 +15,7 @@ const LESSONS = gql`
         title
         _id
         screenshot {
-          small
+          s100
         }
       }
       total
@@ -87,7 +87,7 @@ export default class extends Component {
       Cell: row => {
         return (
           <Box>
-            <Cover src={row.original.screenshot.small} />
+            <Cover src={row.original.screenshot.s100} />
           </Box>
         )
       }

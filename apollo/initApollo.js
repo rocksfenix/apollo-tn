@@ -1,8 +1,9 @@
 import { withClientState } from 'apollo-link-state'
 import { ApolloClient } from 'apollo-client'
 import { ApolloLink } from 'apollo-link'
+import { createUploadLink } from 'apollo-upload-client'
 import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
-import { createHttpLink } from 'apollo-link-http'
+// import { createHttpLink } from 'apollo-link-http'
 import { setContext } from 'apollo-link-context'
 import fetch from 'isomorphic-unfetch'
 import resolvers from './resolvers'
@@ -32,10 +33,15 @@ if (!process.browser) {
 function create (initialState, { getTokens, csrf, Cookie, xoxo }) {
   const cache = new InMemoryCache({ fragmentMatcher }).restore(initialState || {})
 
-  const httpLink = createHttpLink({
+  // cambiamos pooor upload
+  const httpLink = createUploadLink({
     uri: URI,
     credentials: 'same-origin'
   })
+  // const httpLink = createHttpLink({
+  //   uri: URI,
+  //   credentials: 'same-origin'
+  // })
 
   const authLink = setContext((request, ctx) => {
     let headers = {}
