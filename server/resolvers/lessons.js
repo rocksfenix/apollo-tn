@@ -52,6 +52,29 @@ export default {
         // A los admin enviar todas las lecciones
         return models.Lesson.find().populate('author')
       }
+    },
+
+    lesson: async (_, { slug }, { user = {} }) => {
+      // TODO al obtener el curso obtener si el usuaro ya tiene lecciones
+      // vistas de ese curso y señalizar
+      const role = user.role ? user.role : 'public'
+
+      let query = { slug }
+
+      if (role !== 'admin') {
+        query.isPublished = true
+      }
+
+      let lesson = await models.Lesson.findOne(query).populate('author')
+
+      console.log(lesson)
+
+      // # TODO Si no es admin unicamente enviar los cursos isPublished
+      if (role !== 'admin') {
+        return lesson.getDataByRole(role)
+      }
+
+      return lesson
     }
   },
 

@@ -4,7 +4,7 @@ import moment from 'moment'
 import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 import ReactTable from 'react-table'
-import Link from 'next/link'
+import LessonEditor from './LessonEditor'
 import Search from '../Search'
 
 const LESSONS = gql`
@@ -77,7 +77,9 @@ export default class extends Component {
     isFetching: false,
     lessons: [],
     total: null,
-    itemsByPage: 30
+    itemsByPage: 30,
+    showEditor: false,
+    activeLessonSlug: undefined
   }
 
   columns = [
@@ -98,9 +100,9 @@ export default class extends Component {
       Cell: row => {
         return (
           <Box>
-            <Link href={`/leccion-editor?slug=${row.original.slug}`} as={`/leccion-editor/${row.original.slug}`}>
+            <div onClick={() => this.showEditor(row)}>
               <a>{row.value}</a>
-            </Link>
+            </div>
           </Box>
         )
       }
@@ -161,9 +163,6 @@ export default class extends Component {
       isFetching: false,
       itemsByPage: state.pageSize
     })
-
-    // console.log(result)
-    // https://github.com/howtographql/react-apollo/blob/master/src/components/LinkList.js
   }
 
   searchUser = async (text) => {
@@ -185,6 +184,13 @@ export default class extends Component {
     })
   }
 
+  showEditor = (row) => this.setState({
+    showEditor: true,
+    activeLessonSlug: row.original.slug
+  })
+
+  hideEditor = () => this.setState({ showEditor: false })
+
   render () {
     if (!this.props.show) {
       return null
@@ -199,6 +205,11 @@ export default class extends Component {
           if (!this.state.total) return null
           return (
             <Panel>
+              <LessonEditor
+                show={this.state.showEditor}
+                hideEditor={this.hideEditor}
+                slug={this.state.activeLessonSlug}
+              />
               <SearchBox>
                 <Search onSeach={this.searchUser} />
               </SearchBox>

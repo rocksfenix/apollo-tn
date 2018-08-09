@@ -1,6 +1,6 @@
-// Este modulo parsea el Markup y retorna el marcado
+// Este modulo parsea el markdown y retorna el marcado
 import React, { Component } from 'react'
-import md from './index'
+import md from '../md'
 
 export default class extends Component {
   state = {
@@ -8,7 +8,7 @@ export default class extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.markup !== this.props.markup) {
+    if (nextProps.markdown !== this.props.markdown) {
       this.setState({ hasError: false })
     }
   }
@@ -18,13 +18,9 @@ export default class extends Component {
   }
 
   render () {
-    // console.log(this.props.children)
-    // return <div>
-    //   { this.props.children }
-    // </div>
     const { hasError } = this.state
     if (hasError) {
-      return <h1>Error en Markup</h1>
+      return <h1>Error en markdown</h1>
     }
     return md(this.props.markdown)
   }

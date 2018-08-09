@@ -84,7 +84,7 @@ function create (initialState, { getTokens, csrf, Cookie, xoxo }) {
           ${token}
           ${cookie.get(JWT_KEY)}
           `)
-          cookie.set(JWT_KEY, token)
+          cookie.set(JWT_KEY, token, { expires: 30 })
           // localStorage.setItem('token', token)
         }
       }

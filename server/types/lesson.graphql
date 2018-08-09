@@ -27,6 +27,7 @@ type Lesson {
   author: User
   role: String
   isPublished: Boolean
+  isRecording: Boolean
   isTranscriptionPublic: Boolean
   isWatched: Boolean
   createdAt: String
@@ -53,6 +54,7 @@ input LessonCreate {
   # comments: [Comment]!
   role: String
   isPublished: Boolean
+  isRecording: Boolean
   isTranscriptionPublic: Boolean
   # createdAt: String
   # updatedAt: String
@@ -77,6 +79,7 @@ input LessonSet {
   # comments: [Comment]! Los comments bienen del resolver commentsByLesson
   role: String
   isPublished: Boolean
+  isRecording: Boolean
   isTranscriptionPublic: Boolean
   # createdAt: String
   # updatedAt: String
@@ -90,6 +93,7 @@ type LessonsResponse {
 type Query {
   lessons: [Lesson]
   allLessons(first: Int, skip: Int, text: String): LessonsResponse
+  lesson(slug: String!): Lesson!
 }
 
 type Mutation {

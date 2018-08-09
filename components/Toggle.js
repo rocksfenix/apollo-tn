@@ -41,7 +41,6 @@ export default class Toggle extends Component {
   componentWillMount = () => {
     this.setState({ toggle: this.props.defaultChecked })
   }
-  
 
   componentWillReceiveProps = (nextProps) => {
     if (nextProps.defaultChecked !== this.props.defaultChecked) {

@@ -134,12 +134,12 @@ const md = (strings, ...values) => {
       Image ({ src, title, alt }) {
         return (
           <ImageZoom
-            style={{ zIndex: 1000 }}
+            style={{ zIndex: 2000 }}
             image={{
               src,
               alt,
               className: 'img',
-              style: { maxHeight: '300px', width: '100%', margin: '0 auto', display: 'block', zIndex: 1000 }
+              style: { maxHeight: '400px', width: 'initial', margin: '0 auto', display: 'block', zIndex: 3000 }
             }}
             zoomImage={{
               src,
@@ -198,6 +198,7 @@ const md = (strings, ...values) => {
   return (
     <div style={{
       width: '100%',
+      margin: '0 auto',
       maxWidth: '700px'
     }}>
       {renderer.render(ast)}

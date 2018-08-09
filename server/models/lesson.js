@@ -42,7 +42,7 @@ const LessonSchema = new mongoose.Schema({
     s1000: { type: String, default: screenshotDef }
   },
   videoSource: { type: String, default: videoSource },
-  tags: [{ id: String, text: String }],
+  tags: [String],
 
   duration: { type: String, default: '4:23' },
   claps: {type: Number, default: 0},
@@ -51,6 +51,7 @@ const LessonSchema = new mongoose.Schema({
   role: { type: String, enum: ['pro', 'free', 'public'], default: 'pro' },
 
   isPublished: { type: Boolean, default: false },
+  isRecording: { type: Boolean, default: true },
   isTranscriptionPublic: { type: Boolean, default: false }
 
 }, { timestamps: true })
@@ -132,6 +133,7 @@ LessonSchema.methods.getDataByRole = function (userRole) {
     'claps',
     'role',
     'isPublished',
+    'isRecording',
     'isTranscriptionPublic',
     'createdAt',
     'updatedAt'
