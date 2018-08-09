@@ -43,6 +43,9 @@ const Terminal = styled.div`
   margin-bottom: 2em;
   padding: 1.5em;
   font-weight: 100;
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
 
   @media (max-width: 768px) {
     width: 95%

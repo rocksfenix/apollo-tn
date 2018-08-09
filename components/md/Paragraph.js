@@ -6,12 +6,16 @@ const P = styled.p`
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
   font-size: 16px;
-    line-height: 24px;
-    margin: 24px 0;
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 400;
-    font-style: normal;
-    color: rgba(0,0,0,0.87);
+  line-height: 24px;
+  margin: 24px 0;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  color: rgba(0,0,0,0.87);
+  letter-spacing: -.003em;
+  line-height: 1.58;
+  margin-top: 38px;
+  margin-bottom: 29px;
 `
 
 function uid (len) {

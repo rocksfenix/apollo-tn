@@ -5,7 +5,7 @@ import Markdown from '../../../components/md/Markdown'
 
 const Panel = styled.div`
   width: 100%;
-  display: flex;
+  display: ${p => p.show ? 'flex' : 'none'};
   align-items: center;
   justify-content: space-around;
 `
@@ -67,10 +67,9 @@ export default class extends Component {
   }
 
   render () {
-    if (!this.props.show) return null
     const { label, transcription } = this.props
     return (
-      <Panel>
+      <Panel show={this.props.show}>
         <Textarea1
           onScroll={this.onScroll}
           onChange={this.onChange}

@@ -18,6 +18,7 @@ const Bar = styled.div`
   font-size: 15px;
   color: #706d75;
   position: relative;
+  width: 95%;
 
   @media (max-width: 768px) {
     width: 95%

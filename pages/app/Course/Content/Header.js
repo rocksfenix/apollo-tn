@@ -9,6 +9,10 @@ const Header = styled.header`
   align-items: center;
   justify-content: center;
   padding: 0;
+  justify-content: flex-start;
+  margin-left: 1em;
+  max-width: 700px;
+  margin: 0 auto;
 `
 
 const Box = styled.header`

@@ -29,7 +29,9 @@ const CodeBlock = styled((props) => {
 
   border-radius: 0;
   box-shadow: 1px 1px 20px rgba(20, 20, 20, 0.27);
-
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
   overflow-x: hidden;
 `
 export default CodeBlock
