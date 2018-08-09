@@ -53,7 +53,6 @@ query search($slug: String!) {
       title
       tech
       techVersion
-      description
       transcription
       synopsis
       slug

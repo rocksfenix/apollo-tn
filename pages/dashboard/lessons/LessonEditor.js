@@ -14,7 +14,6 @@ const LESSON = gql`
       _id
       title
       slug
-      description
       synopsis
       videoSource
       tech
@@ -38,7 +37,6 @@ const LESSON_UPDATE = gql`
       $_id: ID!
       $title: String
       $slug: String
-      $description: String
       $synopsis: String
       $videoSource: String
       $tech: String
@@ -55,7 +53,6 @@ const LESSON_UPDATE = gql`
       _id: $_id
       title: $title
       slug: $slug
-      description: $description
       synopsis: $synopsis
       videoSource: $videoSource
       tech: $tech
@@ -71,7 +68,6 @@ const LESSON_UPDATE = gql`
       _id
       title
       slug
-      description
       synopsis
       videoSource
       tech
@@ -218,7 +214,6 @@ class LessonEditor extends Component {
       _id: '',
       title: '',
       slug: undefined,
-      description: '',
       synopsis: '',
       videoSource: '',
       tech: '',

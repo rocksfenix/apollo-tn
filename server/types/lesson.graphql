@@ -12,7 +12,6 @@ type Lesson {
   _id: ID!
   title: String
   slug: String
-  description: String
   synopsis: String
   transcription: String
   screenshot: ImageSizes
@@ -39,8 +38,6 @@ input LessonCreate {
   # author: String!  # <==  El id biene del token
   title: String!
   courseSlug: String
-  # slug: String
-  description: String
   synopsis: String
   transcription: String
   # screenshot: ImageSizes Se ejecuta desde el resolver lessonUploadScreenshot
@@ -65,7 +62,6 @@ input LessonSet {
   title: String
   courseSlug: String
   slug: String
-  description: String
   synopsis: String
   transcription: String
   # screenshot: ImageSizes Se ejecuta desde el resolver lessonUploadScreenshot
