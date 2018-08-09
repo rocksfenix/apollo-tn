@@ -124,7 +124,7 @@ export default ({ show }) => {
       <Query query={STATISTICS}>
         {({ loading, error, data = {}, client, refetch, networkStatus }) => {
           const { statistics } = data
-          console.log(data, error)
+          // console.log(data, error)
 
           if (!data.statistics) {
             return null

@@ -3,35 +3,7 @@ import { CreateSelf, DeleteSelf } from '../authorization'
 // AuthenticationRequiredError, ForbiddenError,
 import { NotFound } from '../errors'
 import { GraphQLUpload } from 'apollo-upload-server'
-import uploadImage from '../upload-image'
-
-// const uploadDir = './uploads'
-// // Ensure upload directory exists
-// mkdirp.sync(uploadDir)
-
-// const storeFS = ({ stream, filename }) => {
-//   const id = shortid.generate()
-//   const path = `${uploadDir}/${id}-${filename}`
-//   return new Promise((resolve, reject) =>
-//     stream
-//       .on('error', error => {
-//         if (stream.truncated) {
-//         // Delete the truncated file
-//           fs.unlinkSync(path)
-//         }
-//         reject(error)
-//       })
-//       .pipe(fs.createWriteStream(path))
-//       .on('error', error => reject(error))
-//       .on('finish', () => resolve({ id, path }))
-//   )
-// }
-
-// const processUpload = async upload => {
-//   const { stream, filename, mimetype, encoding } = await upload
-//   const { id, path } = await storeFS({ stream, filename })
-//   return ({ id, filename, mimetype, encoding, path })
-// }
+import uploadImage from '../util/upload-image'
 
 export default {
   Upload: GraphQLUpload,
@@ -151,7 +123,6 @@ export default {
 
       const cover = await uploadImage(file, sizes, 'cover')
 
-      console.log('CURSO SLUIG: ' + courseSlug, cover)
       course.cover = cover
 
       await course.save()

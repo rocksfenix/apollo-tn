@@ -6,6 +6,7 @@ import Note from './note'
 import Comment from './comment'
 import Favorite from './favorite'
 import Bookmark from './bookmark'
+import Asset from './asset'
 
 export default {
   User,
@@ -15,5 +16,6 @@ export default {
   Note,
   Comment,
   Favorite,
-  Bookmark
+  Bookmark,
+  Asset
 }

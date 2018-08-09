@@ -1,0 +1,31 @@
+type AssetThumbnail {
+  s30: String
+  s50: String
+  s100: String
+}
+
+type Asset {
+  _id: ID!,
+  author: User
+  type: String
+  filename: String
+  mimetype: String
+  location: String
+  ext: String
+  size: Int
+  thumbnail: AssetThumbnail
+}
+
+type AssetSearch {
+  total: Int
+  assets: [Asset]
+}
+
+type Query {
+  assets(first: Int, skip: Int, text: String): AssetSearch
+}
+
+type Mutation {
+  assetUpload(file: Upload!): String
+  assetDelete(_id: ID!): String
+}
