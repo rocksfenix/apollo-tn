@@ -12,11 +12,17 @@ export default {
       }
     },
 
-    user: GetSingle({
-      model: 'User',
-      only: 'pro free admin'
-    })
-      .createResolver((_, args, { doc }) => doc),
+    // user: GetSingle({
+    //   model: 'User',
+    //   only: 'pro free admin'
+    // })
+    //   .createResolver((_, args, { doc }) => doc),
+
+    user: async (_, { _id }) => {
+      const user = await models.User.findById(_id)
+
+      return user
+    },
 
     allUsers: async (_, { first, skip = 0, text }, { doc }) => {
       // TODO unicamente admin

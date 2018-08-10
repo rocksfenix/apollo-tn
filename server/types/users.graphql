@@ -1,3 +1,9 @@
+type Card {
+  brand: String
+  country: String
+  last4: String
+}
+
 type User {
   _id: ID!
   fullname: String
@@ -6,9 +12,28 @@ type User {
   username: String
   role: String
   avatar: ImageSizes
+  status: String
+  tags: [String]
+
+  lastLoggin: String
+
+  # Subscription
+  subscriptionStatus: String
+  canceled_at: Float
+  cancel_at_period_end: Boolean
+  current_period_end: Float
+  defaultCard: Card
+
   acceptTermsAndPrivacy: Boolean
   acceptTermsAndPrivacyUpdated: String
+  emailConfirmed: Boolean
   createdAt: String
+  updatedAt: String
+
+  # Statistics
+  countViewPro: Float
+  countViewSub: Float
+  countAttemptsPaymentFailed: Float
 }
 
 # Se usa al actualizar un usuario
@@ -19,6 +44,7 @@ input UserSet {
   email: String
   password: String
   acceptTermsAndPrivacy: Boolean
+  status: String
 }
 
 type UsersResponse {

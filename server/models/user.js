@@ -37,20 +37,16 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: generateUsername
   },
-  bio: String,
+
   avatar: {
-    s30: { type: String, default: avatarDefault },
-    s50: { type: String, default: avatarDefault },
     s100: { type: String, default: avatarDefault },
     s300: { type: String, default: avatarDefault },
     s500: { type: String, default: avatarDefault }
   },
-  // Eliminar posiblemente
-  availableToHire: { type: Boolean, default: false },
-  showEmail: { type: Boolean, default: false },
+
   // Fecha de ultimo login
   lastLoggin: { type: Date, default: Date.now },
-  lastLogginIp: { type: String, default: '' },
+
   // Payments
   stripeId: String,
   subscriptionStatus: { type: String, enum: [ 'active', 'pastDue' ] },
@@ -84,7 +80,8 @@ const UserSchema = new mongoose.Schema({
   //     newLesson: { type: Boolean, default: true }
   //   }
   // },
-  avatarCache: { type: String, default: 'def' },
+  // Se depreca ahora se sustituye el avatar
+  // avatarCache: { type: String, default: 'def' },
 
   status: {
     type: String,
@@ -93,8 +90,6 @@ const UserSchema = new mongoose.Schema({
   },
 
   tags: [String],
-  // Revisar esta seccion
-  lastActivity: { type: String, default: 'Welcome Ninja Dev' },
 
   // Hooks Marketing y estadistica
   // Veces que ha accedido a pagina /pro

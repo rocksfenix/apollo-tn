@@ -5,6 +5,7 @@ import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 import ReactTable from 'react-table'
 import Search from '../Search'
+import UserEditor from './UserEditor'
 
 const USERS = gql`
  query allUsersQuery($first: Int, $skip: Int, $text: String) {
@@ -113,7 +114,8 @@ export default class extends Component {
     isFetching: false,
     users: [],
     total: null,
-    userByPage: 10
+    userByPage: 10,
+    showEditor: false
   }
 
   columns = [
@@ -122,8 +124,8 @@ export default class extends Component {
       accessor: 'fullname',
       Cell: row => {
         return (
-          <Link onClick={() => this.openUser(row.original)}>
-            <LeftBlock>
+          <Link>
+            <LeftBlock onClick={() => this.showEditor(row)}>
               <Avatar src={row.original.avatar.s100} />
               { row.value }
             </LeftBlock>
@@ -204,6 +206,17 @@ export default class extends Component {
     })
   }
 
+  showEditor = (row) => {
+    console.log(row);
+    this.setState({
+      showEditor: true,
+      usedId: row.original._id
+    })
+    
+  }
+
+  hideEditor = () => this.setState({ showEditor: false })
+
   render () {
     if (!this.props.show) {
       return null
@@ -219,7 +232,7 @@ export default class extends Component {
           return (
             <Panel>
               <SearchBox>
-                <Search onSeach={this.searchUser}/>
+                <Search onSeach={this.searchUser} />
               </SearchBox>
               <ReactTable
                 manual
@@ -229,6 +242,11 @@ export default class extends Component {
                 defaultPageSize={this.state.userByPage}
                 onFetchData={this.fetchData}
                 pages={Math.ceil(this.state.total / this.state.userByPage, 10)}
+              />
+              <UserEditor
+                show={this.state.showEditor}
+                hideEditor={this.hideEditor}
+                userId={this.state.usedId}
               />
             </Panel>
           )
