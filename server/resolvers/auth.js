@@ -1,9 +1,11 @@
+import { withFilter } from 'graphql-subscriptions'
+import request from 'request-promise'
 import models from '../models'
 import auth from '../middlewares/auth'
 import { baseResolver } from '../authorization'
-import request from 'request-promise'
 import { ValidationError } from '../errors'
 import getHash from '../util/getHash'
+import pubsub from '../pupsub'
 
 const mailgun = require('mailgun-js')({
   apiKey: process.env.MAILGUN_PRIVATE_KEY,
@@ -36,6 +38,15 @@ export default {
 
       const user = await models.User.create(input)
       const { token, refreshToken } = auth.getTokens(user)
+
+      pubsub.publish('userAccess', {
+        userAccess: {
+          fullname: user.fullname,
+          _id: user._id,
+          email: user.email,
+          access: 'signup'
+        }
+      })
 
       return {
         success: user._id && user,
@@ -71,6 +82,15 @@ export default {
       }
 
       const { token, refreshToken } = auth.getTokens(user)
+
+      pubsub.publish('userAccess', {
+        userAccess: {
+          fullname: user.fullname,
+          _id: user._id,
+          email: user.email,
+          access: 'login'
+        }
+      })
 
       return {
         success: true,
@@ -230,6 +250,15 @@ export default {
         success: true,
         message: 'Password actualizada exitosamente'
       }
+    }
+  },
+
+  Subscription: {
+    userAccess: {
+      subscribe: withFilter(() => pubsub.asyncIterator('userAccess'), (payload, variables, ctx) => {
+        // Solo usuarios Admin
+        return ctx.user.role === 'admin'
+      })
     }
   }
 }

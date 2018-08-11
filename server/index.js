@@ -11,11 +11,17 @@ import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas'
 import { makeExecutableSchema } from 'graphql-tools'
 import formatError from './formatError'
 import { apolloUploadExpress } from 'apollo-upload-server'
-// import session from 'express-session'
+
+// Subscriptions
+import { SubscriptionServer } from 'subscriptions-transport-ws'
+import { execute, subscribe } from 'graphql'
+import { createServer } from 'http'
+
 import security from './middlewares/security'
 import auth from './middlewares/auth'
 import getInstrospection from './getInstrospection'
 import models from './models'
+import onConnect from './middlewares/onConnect'
 
 const PORT = process.env.PORT || 3000
 const dev = process.env.NODE_ENV !== 'production'
@@ -65,11 +71,10 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }).then(() => {
           }
         })))
 
-      server.get('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }))
+      server.get('/graphiql', graphiqlExpress({ endpointURL: '/graphql', subscriptionsEndpoint: '/subscriptions' }))
 
       // HOME PUBLIC
       server.get('/', (req, res) => {
-        console.log(req.params)
         app.render(req, res, '/home', {
           query: req.query,
           params: req.params
@@ -78,7 +83,6 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }).then(() => {
 
       // HOME LOGGED  '/app:tab?/course?/:lesson?'
       server.get('/app/:tab/:course?/:lesson?', (req, res) => {
-        console.log(req.params)
         app.render(req, res, '/app', {
           query: req.query,
           params: req.params
@@ -87,7 +91,6 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }).then(() => {
 
       // Dashboard admin
       server.get('/dashboard/:tab/:course?/:lesson?', (req, res) => {
-        console.log(req.params)
         app.render(req, res, '/app', {
           query: req.query,
           params: req.params
@@ -194,13 +197,27 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }).then(() => {
 
       server.get('*', (req, res) => handle(req, res))
 
-      server.listen(PORT, () => {
+      // Wrap the Express Server => WS
+      const ws = createServer(server)
+
+      ws.listen(PORT, () => {
         console.log(`
           MongoDB OK 🚀
           corriendo en MODO: ${process.env.NODE_ENV}
           corriendo en SAFE_ENV: ${process.env.SAFE_ENV}
+          OK: WS SUBSCRIPTIONS
           Server is Running at PORT: ${PORT}
       `)
+        // eslint-disable-next-line no-new
+        new SubscriptionServer({
+          execute,
+          subscribe,
+          schema,
+          onConnect
+        }, {
+          server: ws,
+          path: '/subscriptions'
+        })
       })
     })
     .catch(error => {

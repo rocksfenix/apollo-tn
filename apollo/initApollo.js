@@ -1,17 +1,22 @@
-import { withClientState } from 'apollo-link-state'
-import { ApolloClient } from 'apollo-client'
-import { ApolloLink } from 'apollo-link'
-import { createUploadLink } from 'apollo-upload-client'
-import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
-// import { createHttpLink } from 'apollo-link-http'
-import { setContext } from 'apollo-link-context'
 import fetch from 'isomorphic-unfetch'
+import cookie from 'js-cookie'
+// import ws from 'ws'
+// import { SubscriptionClient, addGraphQLSubscriptions } from 'subscriptions-transport-ws'
+// import 'subscriptions-transport-ws'
+
+import { withClientState } from 'apollo-link-state'
+import { InMemoryCache, IntrospectionFragmentMatcher } from 'apollo-cache-inmemory'
+import { createUploadLink } from 'apollo-upload-client'
+import { ApolloClient } from 'apollo-client'
+import { ApolloLink, split } from 'apollo-link'
+import { getMainDefinition } from 'apollo-utilities'
+import { WebSocketLink } from 'apollo-link-ws'
+import { setContext } from 'apollo-link-context'
+
 import resolvers from './resolvers'
 import typeDefs from './typeDefs'
 import introspectionQueryResultData from './fragmentTypes.js'
-// import { removeCookie } from '../lib/redirect'
 import Constants from '../config'
-import cookie from 'js-cookie'
 import '../lib/session'
 
 const fragmentMatcher = new IntrospectionFragmentMatcher({
@@ -31,17 +36,30 @@ if (!process.browser) {
 }
 
 function create (initialState, { getTokens, csrf, Cookie, xoxo }) {
-  const cache = new InMemoryCache({ fragmentMatcher }).restore(initialState || {})
 
-  // cambiamos pooor upload
+  // Cambiamos por upload
   const httpLink = createUploadLink({
     uri: URI,
     credentials: 'same-origin'
   })
-  // const httpLink = createHttpLink({
-  //   uri: URI,
-  //   credentials: 'same-origin'
-  // })
+
+  let wsLink = null
+
+  if (process.browser) {
+    // Create a WebSocket link:
+    const { token, refreshToken } = getTokens()
+
+    wsLink = new WebSocketLink({
+      uri: `ws://192.168.1.96:8080/subscriptions`,
+      options: {
+        reconnect: true,
+        connectionParams: {
+          token: token,
+          refreshToken: refreshToken
+        }
+      }
+    })
+  }
 
   const authLink = setContext((request, ctx) => {
     let headers = {}
@@ -81,11 +99,10 @@ function create (initialState, { getTokens, csrf, Cookie, xoxo }) {
 
         if (token) {
           console.log(`REHYDRATE TOKEN
-          ${token}
-          ${cookie.get(JWT_KEY)}
+            ${token}
+            ${cookie.get(JWT_KEY)}
           `)
           cookie.set(JWT_KEY, token, { expires: 30 })
-          // localStorage.setItem('token', token)
         }
       }
       if (response.errors && response.errors.length) {
@@ -97,6 +114,8 @@ function create (initialState, { getTokens, csrf, Cookie, xoxo }) {
       return response
     })
   })
+
+  const cache = new InMemoryCache({ fragmentMatcher }).restore(initialState || {})
 
   const stateLink = withClientState({
     defaults: {
@@ -112,10 +131,28 @@ function create (initialState, { getTokens, csrf, Cookie, xoxo }) {
     resolvers
   })
 
+  // Existen 2 Links finales
+  // El httpLinkWithAuth
+  // El wsLink
+  const httpLinkWithAuth = authAfterware.concat(
+    stateLink.concat(authLink.concat(httpLink))
+  )
+
+  // using the ability to split links, you can send data to each link
+  // depending on what kind of operation is being sent
+  const link = !process.browser ? httpLinkWithAuth : split(
+    ({ query }) => {
+      const { kind, operation } = getMainDefinition(query)
+      return kind === 'OperationDefinition' && operation === 'subscription'
+    },
+    wsLink,
+    httpLinkWithAuth
+  )
+
   return new ApolloClient({
     connectToDevTools: true,
     ssrMode: !process.browser, // Disables forceFetch on the server (so queries are only run once)
-    link: authAfterware.concat(stateLink.concat(authLink.concat(httpLink))),
+    link,
     cache,
     credentials: 'same-origin'
   })

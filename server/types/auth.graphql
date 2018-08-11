@@ -5,6 +5,19 @@ type UserAccessResponse {
   errors: [Error]
 }
 
+# Subscriptions
+type UserAccess {
+  _id: String
+  email: String
+  fullname: String,
+  access: String
+}
+
+type Subscription {
+  userAccess: UserAccess!
+  newNum: Int!
+}
+
 # Se usa al momento de crear un nuevo usuario
 input UserCreate {
   fullname: String!

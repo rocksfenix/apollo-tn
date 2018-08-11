@@ -5,8 +5,7 @@ import Statistics from './statistics'
 import Users from './users'
 import Courses from './courses'
 import Lessons from './lessons'
-
-
+import Issues from './issues'
 
 const View = styled.section`
   height: 100vh;
@@ -87,6 +86,7 @@ class DashboardPage extends Component {
           <Users show={this.state.tab === 'users'} {...this.props} />
           <Courses show={this.state.tab === 'courses'} {...this.props} />
           <Lessons show={this.state.tab === 'lessons'} {...this.props} />
+          <Issues show={this.state.tab === 'tickets'} />
         </Content>
       </View>
     )
