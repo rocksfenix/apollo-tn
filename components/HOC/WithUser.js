@@ -9,7 +9,7 @@ const GET_USER_PROFILE = gql`{
     email
     role
     avatar {
-      small
+      s100
     }
     acceptTermsAndPrivacy
   }

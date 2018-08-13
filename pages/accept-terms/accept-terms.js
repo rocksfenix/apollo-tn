@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import { Mutation } from 'react-apollo'
 import { logout } from '../../lib/session'
 import Title from '../../components/Title'
-import WithUser from '../../components/WithUser'
+import WithUser from '../../components/HOC/WithUser'
 
 const ACCEPT = gql`
   mutation acceptTerms($acceptTermsAndPrivacy: Boolean!) {

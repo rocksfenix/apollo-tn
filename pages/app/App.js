@@ -17,8 +17,9 @@ import History from './History'
 import TestingData from './TestingData'
 import HomeApp from './HomeApp'
 import Course from './Course'
-import gpl from 'graphql-tag'
+import gql from 'graphql-tag'
 import config from './config'
+import Chat from './Chat'
 
 const Toolbar = styled.div`
   width: 100%;
@@ -37,7 +38,7 @@ const Toolbar = styled.div`
 const View = styled.div`
   position: relative;
 `
-const COURSE = gpl`
+const COURSE = gql`
 query search($slug: String!) {
   course(slug: $slug) {
     title
@@ -59,12 +60,28 @@ query search($slug: String!) {
       _id
     }
   }
-}`
+}
+`
+
+const USER_SELF = gql`{
+  userSelf {
+    _id
+    fullname
+    email
+    role
+    avatar {
+      s100
+    }
+    acceptTermsAndPrivacy
+  }
+}
+`
 
 class App extends Component {
   static async getInitialProps (ctx) {
     let params = { lesson: null, course: null }
     let course = null
+    let user = {}
     try {
       params = ctx.req.params
       if (params.course) {
@@ -74,10 +91,17 @@ class App extends Component {
         })
         course = result.data.course
       }
-    } catch (error) { }
+
+      const result = await ctx.apolloClient.query({
+        query: USER_SELF
+      })
+
+      user = result.data.userSelf || {}
+    } catch (error) { console.log(error) }
     return {
       params,
-      course
+      course,
+      user
     }
   }
 
@@ -281,6 +305,8 @@ class App extends Component {
 
   render () {
     const { tab, showMainContent } = this.state
+    // console.log(this.props);
+    
     return (
       <View>
         <SeoHead title='Tecninja.io' />
@@ -318,6 +344,7 @@ class App extends Component {
           lesson={this.state.lesson}
           hasCourse={this.state.course._id}
         />
+        <Chat {...this.props} />
       </View>
     )
   }

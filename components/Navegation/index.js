@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import _Headroom from 'react-headroom'
 import MobileMenu from './Mobile'
 import Desktop from './Desktop'
-import WithUser from '../WithUser'
+import WithUser from '../HOC/WithUser'
 
 const Headroom = styled(_Headroom)`
   width: 100%;

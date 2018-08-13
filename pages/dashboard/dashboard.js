@@ -1,11 +1,41 @@
 import React, {Component} from 'react'
+import ReactDOM from 'react-dom'
 import styled from 'styled-components'
 import Router from 'next/router'
+import gql from 'graphql-tag'
+import { graphql, compose } from 'react-apollo'
 import Statistics from './statistics'
 import Users from './users'
 import Courses from './courses'
 import Lessons from './lessons'
 import Issues from './issues'
+import Chats from './chats'
+import withUser from '../../components/HOC/WithUser'
+
+const NEW_CHAT = gql`
+  subscription {
+    newChat {
+      _id
+      fullname
+      email
+      avatar {
+        s100
+      }
+    }
+  }
+`
+
+const NEW_MESSAGE_SUBSCRIPTION = gql`
+  subscription {
+    newMessage {
+      _id
+      text
+      sender
+      receiver
+      createdAt
+    }
+  }
+`
 
 const View = styled.section`
   height: 100vh;
@@ -22,6 +52,7 @@ const Tabs = [
   { title: 'users', icon: 'icon-ninja-4' },
   { title: 'courses', icon: 'icon-courses' },
   { title: 'lessons', icon: 'icon-notes' },
+  { title: 'chats', icon: 'icon-help' },
   { title: 'issues', icon: 'icon-success' }
 ]
 
@@ -35,6 +66,7 @@ const Nav = styled.nav`
 `
 
 const NavItem = styled.li`
+  position: relative;
   list-style: none;
   width: 100%;
   height: 55px;
@@ -56,20 +88,62 @@ const Icon = styled.i`
   color: gray;
 `
 
+const Notify = styled.div`
+  position: absolute;
+  right: .2em;
+  top: 0.2em;
+  background-color: orangered;
+  border-radius: 3px;
+  color: #FFF;
+  font-size: 13px;
+  padding: 0 .4em;
+`
+
 class DashboardPage extends Component {
   state = {
-    tab: 'statistics'
+    tab: 'statistics',
+    lastChat: '',
+    chats: [],
+    unreadChats: 0,
+    conversationActive: {}
+  }
+
+  static getDerivedStateFromProps (nextProps, prevState) {
+    if (nextProps.newChat.newChat) {
+      if (nextProps.newChat.newChat._id !== prevState.lastChat) {
+        const incomming = document.getElementById('audio-incoming')
+        incomming.play()
+        return {
+          lastChat: nextProps.newChat.newChat._id,
+          chats: [ ...prevState.chats, nextProps.newChat.newChat ],
+          unreadChats: prevState.unreadChats + 1
+        }
+      }
+    }
+    return null
   }
 
   onChangeTab = (tab) => {
     this.setState({ tab })
     Router.push(`/dashboard?tab=${tab}`)
+
+    if (tab === 'chats') {
+      this.setState({ unreadChats: 0 })
+    }
+  }
+
+  onChatClick = (chat) => {
+    this.setState({ conversationActive: chat })
   }
 
   render () {
+    // console.log(this.state)
+
     return (
       <View>
         <Nav>
+          <audio src='/static/audio/incoming_chat.mp3' id='audio-incoming' />
+          <audio src='/static/audio/pop.mp3' id='audio-pop' />
           {Tabs.map(item => (
             <NavItem
               key={item.title}
@@ -77,6 +151,11 @@ class DashboardPage extends Component {
               onClick={() => this.onChangeTab(item.title)}
               active={item.title === this.state.tab}
             >
+              {
+                item.title === 'chats' && this.state.unreadChats
+                  ? <Notify>{this.state.unreadChats}</Notify>
+                  : null
+              }
               <Icon className={item.icon} />
             </NavItem>
           ))}
@@ -87,10 +166,13 @@ class DashboardPage extends Component {
           <Courses show={this.state.tab === 'courses'} {...this.props} />
           <Lessons show={this.state.tab === 'lessons'} {...this.props} />
           <Issues show={this.state.tab === 'tickets'} />
+          <Chats show={this.state.tab === 'chats'} {...this.props} {...this.state} onChatClick={this.onChatClick} />
         </Content>
       </View>
     )
   }
 }
 
-export default DashboardPage
+export default compose(
+  graphql(NEW_CHAT, {name: 'newChat'})
+)(withUser(DashboardPage))

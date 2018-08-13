@@ -1,0 +1,31 @@
+type Message {
+  _id: ID!
+  text: String
+  sender: String
+  receiver: String
+  createdAt: String
+}
+
+type Subscription {
+  newMessage: Message
+
+  # Retorna el usuario que solicita el chat enformato de string
+  newChat: User!
+
+  # Cuando un agente se pone como disponible
+  agentConnected: User
+}
+
+type Query {
+  messages(sender: String!, receiver: String!): [Message]!
+
+  # Revisa si hay algun agente conectado para chatear
+  agentAvailable: User
+}
+
+type Mutation {
+  messageCreate(text: String!, receiver: ID!): Message
+  newChat(agent: String!): String
+  # Cuando un usuario se conecta o desconecta como disponible
+  availability(connection: Boolean!): String!
+}

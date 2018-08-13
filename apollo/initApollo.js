@@ -28,7 +28,7 @@ const { JWT_KEY, JWT_RFS_KEY, JWT_REHYDRATE_KEY } = Constants
 let apolloClient = null
 let URI = process.env.NODE_ENV === 'production'
   ? 'https://whispering-stream-39142.herokuapp.com/graphql'
-  : 'http://192.168.1.96:8080/graphql'
+  : 'http://192.168.1.96:3000/graphql'
 
 // Polyfill fetch() on the server (used by apollo-client)
 if (!process.browser) {
@@ -50,7 +50,7 @@ function create (initialState, { getTokens, csrf, Cookie, xoxo }) {
     const { token, refreshToken } = getTokens()
 
     wsLink = new WebSocketLink({
-      uri: `ws://192.168.1.96:8080/subscriptions`,
+      uri: `ws://192.168.1.96:3000/subscriptions`,
       options: {
         reconnect: true,
         connectionParams: {
