@@ -85,7 +85,7 @@ const Wrap = styled.div`
 
 const NameBox = styled.div`
   text-align: ${p => p.itsMe ? 'right' : 'left'};
-  width: 90%;
+  width: 200%;
   font-size: 10px;
   margin: 0 .5em;
 `
@@ -104,11 +104,15 @@ const Text = styled.div`
   border-style: initial;
   border-color: initial;
   border-image: initial;
-  border-radius: 20px 0 20px 20px;
-  background: ${p => p.active ? '#4a5ec3' : '#FFF'};
+  border-radius: ${p => p.active ? '20px 0 20px 20px' : '0 20px 20px 20px'};
+  background: ${p => p.active ? 'linear-gradient(20deg, #283a90, #7b9de2)' : '#f2f3f4'};
   color: ${p => p.active ? '#FFF' : '#000'};
   animation: .3s ease-out ${Anima};
 `
+// background: ${p => p.active ? '#4a5ec3' : '#f2f3f4'};
+//     background: linear-gradient(20deg, #4a5ec3, #85bbe4);
+
+// background: linear-gradient(20deg, #283a90, #7b9de2);
 
 const MessageText = styled.div`
   white-space: pre-line;

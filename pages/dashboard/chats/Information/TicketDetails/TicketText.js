@@ -1,12 +1,9 @@
-
 import React, { Component } from 'react'
 import styled from 'styled-components'
 import DOM from 'react-dom'
-
 import Icon from '../Icon'
 
 const Text = styled.div`
-  /* background-color: #f6edff; */
   margin: 1em;
   padding: 1em;
   border-radius: 5px;

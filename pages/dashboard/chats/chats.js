@@ -5,7 +5,7 @@ import { graphql, compose } from 'react-apollo'
 import gql from 'graphql-tag'
 import ChatList from './chatList'
 import Conversation from './Conversation'
-import Information from './information'
+import Information from './Information'
 import { NEW_MESSAGE_SUBSCRIPTION, NEW_CHAT } from './chat-queries'
 
 const USER = gql`
@@ -126,7 +126,30 @@ class ChatComponent extends Component {
     }
 
     if (this.state.lastMessageId !== prevState.lastMessageId) {
-      // no es necesario momentaneamente
+      const msgPanel = document.getElementById('x-messages-panel')
+      const messages = document.getElementById('x-messages')
+
+      if (msgPanel && messages) {
+        // animacion de scroll
+        // Calculamos la differiencia, cuanto scroll vamos a mover
+        const diff = messages.clientHeight - msgPanel.scrollTop
+        // const diff = messages.clientHeight
+        // milisecons
+        let totalTime = 500
+        let step = diff * 10 / totalTime
+
+        let i = 0
+        const move = () => {
+          if (i < diff) {
+            msgPanel.scrollTop = msgPanel.scrollTop + step
+            i += step
+            window.requestAnimationFrame(move)
+          }
+        }
+        move()
+      }
+
+      // TODO hacer que se muestro tooltip con nuevos mensajes
       // this.props.onNewMessage()
     }
 

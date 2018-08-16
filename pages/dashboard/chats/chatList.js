@@ -13,7 +13,7 @@ const Avatar = styled.img`
 const Item = styled.li`
   list-style: none;
   padding: .3em .5em;
-  background-color: ${p => p.active ? 'yellow' : '#FFF'};
+  background-color: ${p => p.active ? '#3d53a5' : '#FFF'};
   position: relative;
 `
 
@@ -32,6 +32,10 @@ const Notify = styled.div`
   transition: all .3s ease-in-out;
 `
 
+const Items = styled.ul`
+  padding: 0;
+`
+
 export default ({ chats, onChatClick, conversationActive, messagesUnread }) => (
   <div>
     <Mutation mutation={SET_DISPONIBILITY}>
@@ -45,7 +49,7 @@ export default ({ chats, onChatClick, conversationActive, messagesUnread }) => (
         )
       }}
     </Mutation>
-    <ul>
+    <Items>
       {chats.map((chat, i) => (
         <Item
           key={chat._id}
@@ -58,6 +62,6 @@ export default ({ chats, onChatClick, conversationActive, messagesUnread }) => (
           >{ messagesUnread[`user-${chat._id}`] }</Notify>
         </Item>
       ))}
-    </ul>
+    </Items>
   </div>
 )

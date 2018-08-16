@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
 import { Query, withApollo } from 'react-apollo'
-import Textarea from '../../../components/Textarea'
-import Multioption from '../../../components/Multioption'
+import Textarea from '../../../../components/Textarea'
+import Multioption from '../../../../components/Multioption'
 import TicketDetails from './TicketDetails'
-import { TICKETS, NEW_TICKET } from './chat-queries'
+import { TICKETS, NEW_TICKET } from '../chat-queries'
 
 const Panel = styled.div`
   width: 100%;

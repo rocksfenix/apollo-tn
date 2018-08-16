@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { withApollo, Query } from 'react-apollo'
 import NoteInput from './NoteInput'
 import Note from './Note'
-import { DELETE_TICKET_NOTE, UPDATE_TICKET_NOTE, CREATE_TICKET_NOTE, TICKET_NOTES } from '../chat-queries'
+import { DELETE_TICKET_NOTE, UPDATE_TICKET_NOTE, CREATE_TICKET_NOTE, TICKET_NOTES } from '../../chat-queries'
 
 const Notes = styled.div`
   background-color: #FFF;

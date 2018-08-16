@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { withApollo } from 'react-apollo'
 import TicketText from './TicketText'
 import Notes from './Notes'
-import { TICKET_UPDATE, DELETE_TICKET, CREATE_TICKET_NOTE, TICKET_NOTES, TICKETS } from '../chat-queries'
+import { TICKET_UPDATE, DELETE_TICKET, CREATE_TICKET_NOTE, TICKET_NOTES, TICKETS } from '../../chat-queries'
 
 const Header = styled.div`
   width: 100%;

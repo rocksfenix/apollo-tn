@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Query } from 'react-apollo'
 import moment from 'moment'
 import Tickets from './Tickets'
-import { USER } from './chat-queries'
+import { USER } from '../chat-queries'
 
 const Panel = styled.div`
   width: 35%;

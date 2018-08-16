@@ -1,45 +1,16 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
-import { Mutation } from 'react-apollo'
 import Messages from './messages'
-import { CREATE_MESSAGE } from './chat-queries'
+import ChatInput from './ChatInput'
 
 const ChatActive = styled.div`
   width: 100%;
-  height: 80%;
-  background-color: #e5eaf0;
-`
-
-const InputPanel = styled.div`
-  width: 100%;
-  height: 20%;
+  height: 100%;
   background-color: #FFF;
+  position: relative;
+  border-left: 1px solid #f2f2f2;
+  border-right: 1px solid #f2f2f2;
 `
-
-const Input = ({ receiver }) => {
-  let input
-  return (
-    <Mutation mutation={CREATE_MESSAGE}>
-      {(createMessage, { data }) => (
-        <InputPanel>
-          <form
-            onSubmit={e => {
-              e.preventDefault()
-              console.log(input.value, receiver)
-              createMessage({ variables: { text: input.value, receiver } })
-              input.value = ''
-            }}
-          >
-            <input
-              ref={node => { input = node }}
-            />
-            <button type='submit'>Add Message</button>
-          </form>
-        </InputPanel>
-      )}
-    </Mutation>
-  )
-}
 
 class ConversarionComponent extends Component {
   render () {
@@ -57,7 +28,7 @@ class ConversarionComponent extends Component {
           receiver={this.props.conversationActive}
           sender={sender}
         />
-        <Input receiver={this.props.conversationActive._id} />
+        <ChatInput receiver={this.props.conversationActive._id} />
       </ChatActive>
     )
   }
