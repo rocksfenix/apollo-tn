@@ -92,7 +92,10 @@ class ChatComponent extends Component {
       const hasChat = prevState.chats.filter(chat => chat._id === nextProps.newMessage.newMessage.sender)
 
       // Si no tiene chat traer los datos del servidor
-      const fetchUser = hasChat.length ? false : nextProps.newMessage.newMessage.sender
+      // Si es diferente al usuario admin activo
+      const fetchUser = hasChat.length || nextProps.user._id === nextProps.newMessage.newMessage.sender
+        ? false
+        : nextProps.newMessage.newMessage.sender
 
       // Nuevo Mensaje
       document.getElementById('audio-pop').play()
@@ -142,6 +145,8 @@ class ChatComponent extends Component {
       fetchUser: false,
       chats: [ ...state.chats, res.data.user ]
     }))
+
+    document.getElementById('audio-incoming').play()
 
     this.props.onNewChat()
   }
