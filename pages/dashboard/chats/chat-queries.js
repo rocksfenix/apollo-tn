@@ -6,6 +6,19 @@ export const SET_DISPONIBILITY = gql`
   }
 `
 
+export const NEW_CHAT = gql`
+  subscription {
+    newChat {
+      _id
+      fullname
+      email
+      avatar {
+        s100
+      }
+    }
+  }
+`
+
 export const NEW_MESSAGE_SUBSCRIPTION = gql`
   subscription {
     newMessage {

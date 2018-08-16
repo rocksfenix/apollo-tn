@@ -102,25 +102,7 @@ const Notify = styled.div`
 class DashboardPage extends Component {
   state = {
     tab: 'statistics',
-    lastChat: '',
-    chats: [],
-    unreadChats: 0,
-    conversationActive: {}
-  }
-
-  static getDerivedStateFromProps (nextProps, prevState) {
-    if (nextProps.newChat.newChat) {
-      if (nextProps.newChat.newChat._id !== prevState.lastChat) {
-        const incomming = document.getElementById('audio-incoming')
-        incomming.play()
-        return {
-          lastChat: nextProps.newChat.newChat._id,
-          chats: [ ...prevState.chats, nextProps.newChat.newChat ],
-          unreadChats: prevState.unreadChats + 1
-        }
-      }
-    }
-    return null
+    unreadChats: 0
   }
 
   onChangeTab = (tab) => {
@@ -132,13 +114,14 @@ class DashboardPage extends Component {
     }
   }
 
-  onChatClick = (chat) => {
-    this.setState({ conversationActive: chat })
+  onNewChat = () => {
+    this.setState(state => ({
+      ...state,
+      unreadChats: state.unreadChats + 1
+    }))
   }
 
   render () {
-    // console.log(this.state)
-
     return (
       <View>
         <Nav>
@@ -166,13 +149,15 @@ class DashboardPage extends Component {
           <Courses show={this.state.tab === 'courses'} {...this.props} />
           <Lessons show={this.state.tab === 'lessons'} {...this.props} />
           <Issues show={this.state.tab === 'tickets'} />
-          <Chats show={this.state.tab === 'chats'} {...this.props} {...this.state} onChatClick={this.onChatClick} />
+          <Chats show={this.state.tab === 'chats'} {...this.props} onNewChat={this.onNewChat} />
         </Content>
       </View>
     )
   }
 }
 
-export default compose(
-  graphql(NEW_CHAT, {name: 'newChat'})
-)(withUser(DashboardPage))
+export default withUser(DashboardPage)
+
+// export default compose(
+//   graphql(NEW_CHAT, {name: 'newChat'})
+// )(withUser(DashboardPage))
