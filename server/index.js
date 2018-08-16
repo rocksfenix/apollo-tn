@@ -58,6 +58,12 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }).then(() => {
 
       server.use(auth.checkHeaders)
 
+      server.get('/remote', (req, res) => {
+        const ip = req.connection.remoteAddress
+        const ip2 = req.headers['x-real-ip']
+
+        res.send(`<h1>${ip} - ${ip2}</h1>`)
+      })
       server.get('/instrospection', getInstrospection)
 
       server.use('/graphql', bodyParser.json(),

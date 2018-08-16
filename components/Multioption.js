@@ -23,7 +23,7 @@ const Option = styled.button`
   color: ${p => p.active ? '#FFF' : '#000'};
   padding: 0 1em;
   border-radius: 3px;
-  font-size: 11px;
+  font-size: ${p => p.size || '11px'};
   cursor: pointer;
   height: 25px;
 `
@@ -36,6 +36,7 @@ export default class extends Component {
           {this.props.options.map(option => (
             <Option
               key={option.value}
+              size={this.props.size}
               onClick={() => this.props.onChange(this.props.keyName, option.value)}
               active={this.props.active === option.value}>
               { option.value }

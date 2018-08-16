@@ -1,0 +1,37 @@
+type Ticket {
+  _id: ID!
+  author: User
+  customer: User
+  text: String
+  status: String,
+  priority: String,
+  category: String,
+  createdAt: String,
+  completedAt: String
+}
+
+input TicketCreate {
+  text: String!
+  customer: ID!
+  status: String
+  priority: String
+  category: String
+}
+
+input TicketUpdate {
+  _id: ID!
+  text: String
+  status: String
+  priority: String
+  category: String
+}
+
+type Query {
+  tickets(first: Int, skip: Int, customer: ID): [Ticket]!
+}
+
+type Mutation {
+  ticketCreate(input: TicketCreate): Ticket
+  ticketUpdate(input: TicketUpdate): Ticket
+  ticketDelete(_id: ID!): Ticket
+}

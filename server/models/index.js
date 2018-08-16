@@ -1,7 +1,8 @@
 import User from './user'
 import Course from './course'
 import Lesson from './lesson'
-import Issue from './issue'
+import Ticket from './ticket'
+import TicketNote from './ticket-note'
 import Note from './note'
 import Comment from './comment'
 import Favorite from './favorite'
@@ -13,7 +14,8 @@ export default {
   User,
   Course,
   Lesson,
-  Issue,
+  Ticket,
+  TicketNote,
   Note,
   Comment,
   Favorite,

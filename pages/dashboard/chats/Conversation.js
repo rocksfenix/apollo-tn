@@ -1,20 +1,8 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
-import gql from 'graphql-tag'
 import { Mutation } from 'react-apollo'
 import Messages from './messages'
-
-const CREATE_MESSAGE = gql`
-  mutation messageCreate($text: String!, $receiver: ID!) {
-    messageCreate(text: $text, receiver: $receiver) {
-      _id
-      text
-      sender
-      receiver
-      createdAt
-    }
-  }
-`
+import { CREATE_MESSAGE } from './chat-queries'
 
 const ChatActive = styled.div`
   width: 100%;
@@ -59,6 +47,7 @@ class ConversarionComponent extends Component {
     const { messages, sender, conversationActive } = this.props
 
     // Filtramos solo por sender y receiver activo
+    // eslint-disable-next-line no-mixed-operators
     const messagesFiltered = messages.filter(m => m.sender === sender._id && m.receiver === conversationActive._id || m.sender === conversationActive._id && m.receiver === sender._id)
 
     return (

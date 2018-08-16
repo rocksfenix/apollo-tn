@@ -1,36 +1,10 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
-import gql from 'graphql-tag'
 import { graphql, compose } from 'react-apollo'
 import ChatList from './chatList'
 import Conversation from './Conversation'
-
-const NEW_MESSAGE_SUBSCRIPTION = gql`
-  subscription {
-    newMessage {
-      _id
-      text
-      sender
-      receiver
-      createdAt
-    }
-  }
-`
-
-// const MESSAGES = gql`
-//   # Obtener el perfil de chat de cada usuario
-//   # Obtener perfil de chat
-//   # receiver
-//   query messages($sender: String!, $receiver: String!) {
-//     messages(sender: $sender, receiver: $receiver){
-//       _id
-//       text
-//       sender
-//       receiver
-//       createdAt
-//     }
-//   }
-// `
+import Information from './information'
+import { NEW_MESSAGE_SUBSCRIPTION } from './chat-queries'
 
 const Panel = styled.div`
   position: fixed;
@@ -59,11 +33,6 @@ const ChatActive = styled.div`
   width: 40%;
   height: 100%;
   background-color: pink;
-`
-const ChatDetails = styled.div`
-  width: 35%;
-  height: 100%;
-  background-color: yellow;
 `
 
 class ChatComponent extends Component {
@@ -137,9 +106,7 @@ class ChatComponent extends Component {
             messages={this.state.messages}
           />
         </ChatActive>
-        <ChatDetails>
-          <button onClick={() => console.log(this.state)}>DEBUGG</button>
-        </ChatDetails>
+        <Information _id={this.props.conversationActive._id} />
       </Panel>
     )
   }

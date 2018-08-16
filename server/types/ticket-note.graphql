@@ -1,0 +1,18 @@
+type TicketNote {
+  _id: ID!
+  author: User
+  ticket: ID
+  text: String
+  createdAt: String,
+  updatedAt: String
+}
+
+type Query {
+  ticketNotes(first: Int, skip: Int, ticket: ID): [TicketNote]!
+}
+
+type Mutation {
+  ticketNoteCreate(text: String!, ticket: ID!): TicketNote
+  ticketNoteUpdate(_id: ID! text: String!, ticket: ID!): TicketNote
+  ticketNoteDelete(_id: ID!): TicketNote
+}

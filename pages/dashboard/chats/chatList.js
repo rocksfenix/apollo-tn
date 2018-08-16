@@ -2,13 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import ToggleField from '../../../components/ToggleField'
 import { Mutation } from 'react-apollo'
-import gql from 'graphql-tag'
-
-const SET_DISPONIBILITY = gql`
-  mutation availability ($connection: Boolean!) {
-    availability(connection: $connection)
-  }
-`
+import { SET_DISPONIBILITY } from './chat-queries'
 
 const Avatar = styled.img`
   width: 25px;

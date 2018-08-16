@@ -12,7 +12,7 @@ const Input = styled.textarea`
   border-radius: 3px;
   display: block;
   font-family: Roboto;
-  font-size: 12px;
+  font-size: ${p => p.size || '12px'};
   transition: .3s ease-out;
   overflow: hidden;
 
