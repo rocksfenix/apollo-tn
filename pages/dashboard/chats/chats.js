@@ -3,9 +3,10 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { graphql, compose } from 'react-apollo'
 import gql from 'graphql-tag'
-import ChatList from './chatList'
+import ChatList from './ChatList'
 import Conversation from './Conversation'
 import Information from './Information'
+
 import { NEW_MESSAGE_SUBSCRIPTION, NEW_CHAT } from './chat-queries'
 
 const USER = gql`
@@ -201,6 +202,7 @@ class ChatComponent extends Component {
             onChatClick={this.onChatClick}
             conversationActive={this.state.conversationActive}
             messagesUnread={this.state.messagesUnread}
+            messages={this.state.messages}
           />
         </Chats>
         <ChatActive>
