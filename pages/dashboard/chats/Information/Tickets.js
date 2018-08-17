@@ -42,7 +42,7 @@ const TicketStatus = styled.span`
   }};
   color: #FFF;
   font-size: 12px;
-  padding: .2em .5em;
+  padding: .2em .9em;
   height: 20px;
   display: flex;
   justify-content: center;
@@ -66,7 +66,7 @@ const Priority = styled.span`
 `
 
 const TicketText = styled.span`
-  font-size: 15px;
+  font-size: 12px;
 `
 
 const Ticket = ({ ticket, onClick }) => (
@@ -82,14 +82,14 @@ const Title = styled.div`
   font-family: 'Open Sans',sans-serif;
   letter-spacing: -.003em;
   line-height: 1.58;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 16px;
   color: #4b4c65;
-  background: linear-gradient(90deg, #d8bcf7, #cfd5ff);
   padding: .2em 0 .2em 1em;
   display: flex;
   justify-content: space-between;
+  background: linear-gradient(90deg, #d8bcf7, #cfd5ff);
   background: linear-gradient(90deg,#4f22da,#9effe9);
+  background: linear-gradient(90deg,rgb(35, 67, 89),rgb(0, 0, 0));
   color: #FFF;
 `
 
@@ -111,11 +111,27 @@ const Buttons = styled.div`
 `
 
 const Button = styled.div`
-  background: ${p => p.active ? '#4a5ec3' : '#e5eaf0'};
+  background: ${p => p.active ? 'linear-gradient(90deg,rgb(28, 36, 41),rgb(0, 0, 0))' : '#e5eaf0'};
   color: ${p => p.active ? '#FFF' : '#222'};
   padding: .2em 1em;
   border-radius: 2px;
   font-size: 14px;
+  margin: 0 .5em;
+  opacity: .8;
+  transition: all .2s ease-out;
+  cursor: pointer;
+
+  :hover {
+    opacity: 1;
+  }
+`
+
+const ButtonNewTicket = styled.div`
+  background: #FFF;
+  padding: .2em 1em;
+  border-radius: 2px;
+  font-size: 14px;
+  color: #222;
   margin: 0 .5em;
   opacity: .8;
   transition: all .2s ease-out;
@@ -143,8 +159,6 @@ const NewTicket = styled.div`
 class TicketsComponent extends Component {
   state = {
     show: '',
-    // tickets: [],
-    notes: [],
     ticketInFocus: { notes: [] },
     newTicket: { text: '', priority: 'normal' }
   }
@@ -257,7 +271,7 @@ class TicketsComponent extends Component {
                   onHidden={this.hidde}
                 />
 
-                <Title>Tickets <Button onClick={this.showNew}>Create New</Button></Title>
+                <Title>Tickets <ButtonNewTicket onClick={this.showNew}>Create New</ButtonNewTicket></Title>
                 <Tickets>
                   {data.tickets.map(ticket => (
                     <Ticket onClick={() => this.showDetails(ticket)} ticket={ticket} />

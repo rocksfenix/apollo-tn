@@ -23,7 +23,7 @@ const Buttons = styled.div`
 `
 
 const Button = styled.div`
-  background: ${p => p.active ? '#4a5ec3' : '#e5eaf0'};
+  background: ${p => p.active ? 'linear-gradient(90deg,rgb(28, 36, 41),rgb(0, 0, 0))' : '#e5eaf0'};
   color: ${p => p.active ? '#FFF' : '#222'};
   padding: .2em 1em;
   border-radius: 2px;

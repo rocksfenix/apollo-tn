@@ -8,7 +8,7 @@ import { DELETE_TICKET_NOTE, UPDATE_TICKET_NOTE, CREATE_TICKET_NOTE, TICKET_NOTE
 
 const Notes = styled.div`
   background-color: #FFF;
-  height: 100%;
+  height: 157px;
   overflow-y: auto;
 `
 

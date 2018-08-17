@@ -32,10 +32,10 @@ const Panel = styled.div`
   align-items: center;
   justify-content: space-around;
   z-index: 1000;
-  transition: all .3s ease-in-out;
+  transition: all .2s ease-in-out;
   overflow: hidden;
   opacity: ${p => p.show ? '1' : '0'};
-  transform: ${p => p.show ? 'scale(1)' : 'scale(.8)'};
+  transform: ${p => p.show ? 'scale(1)' : 'scale(.93)'};
   z-index: ${p => p.show ? '1000' : '-1'};
 `
 
@@ -43,12 +43,6 @@ const Chats = styled.div`
   width: 25%;
   height: 100%;
   background-color: #FFF;
-`
-
-const ChatActive = styled.div`
-  width: 40%;
-  height: 100%;
-  background-color: pink;
 `
 
 class ChatComponent extends Component {
@@ -182,6 +176,8 @@ class ChatComponent extends Component {
     //   variables: { sender: this.props.user._id, receiver: receiver._id }
     // })
 
+    // debugger
+
     // limpiamos los unreads
     this.setState(state => ({
       ...state,
@@ -205,13 +201,11 @@ class ChatComponent extends Component {
             messages={this.state.messages}
           />
         </Chats>
-        <ChatActive>
-          <Conversation
-            conversationActive={this.state.conversationActive}
-            sender={this.props.user}
-            messages={this.state.messages}
-          />
-        </ChatActive>
+        <Conversation
+          conversationActive={this.state.conversationActive}
+          sender={this.props.user}
+          messages={this.state.messages}
+        />
         <Information _id={this.state.conversationActive._id} />
       </Panel>
     )
