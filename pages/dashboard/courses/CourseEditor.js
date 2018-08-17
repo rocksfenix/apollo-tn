@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import styled, {keyframes} from 'styled-components'
-import gpl from 'graphql-tag'
+import gql from 'graphql-tag'
 import { Query } from 'react-apollo'
 import { Notification } from 'react-notification'
 import TextField from '../../../components/TextField'
@@ -12,7 +12,7 @@ import TagsField from '../../../components/TagsField'
 import SearchLessons from './SearchLessons'
 import Preview from './Preview'
 
-const COURSE_DETAILS = gpl`
+const COURSE_DETAILS = gql`
 query course($slug: String!) {
   course(slug: $slug) {
     _id
@@ -39,7 +39,6 @@ query course($slug: String!) {
     }
     lessons {
       title
-      description
       synopsis
       slug
       _id
@@ -48,7 +47,7 @@ query course($slug: String!) {
   }
 }`
 //  $lessons: String
-const COURSE_UPDATE = gpl`
+const COURSE_UPDATE = gql`
 mutation courseUpdate(
   $_id: ID!
   $duration: String

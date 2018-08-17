@@ -14,6 +14,9 @@ const LESSONS = gql`
         slug
         title
         _id
+        role
+        isTranscriptionPublic
+        duration
         screenshot {
           s100
         }
@@ -46,32 +49,32 @@ const TimeAgo = styled.div`
 
 const Box = styled.div`
   width: 100%;
-  height: 100%;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
 `
 
 const SearchBox = styled.div`
-width: 100%;
-height: 100px;
-display: flex;
-align-items: center;
-justify-content: center;
-background-color: #0f141b;
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0f141b;
 `
 
 const Cover = styled.img`
   width: 60px;
 `
+
 const Ball = styled.div`
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: ${props => props.published ? 'green' : 'orange'};
+  background: ${props => props.published ? '#6bcf00' : '#dcdcdc'};
   display: inline-block;
 `
-
 export default class extends Component {
   state = {
     isFetching: false,
@@ -122,15 +125,22 @@ export default class extends Component {
       )
     },
     {
-      Header: 'UID',
-      accessor: 'uid',
+      Header: 'Role',
+      accessor: 'role',
       Cell: row => (
         <TimeAgo>{row.value}</TimeAgo>
       )
     },
     {
       Header: 'Published',
-      accessor: 'published',
+      accessor: 'isPublished',
+      Cell: row => (
+        <TimeAgo>{row.value} <Ball published={row.value} /></TimeAgo>
+      )
+    },
+    {
+      Header: 'Transcription Public',
+      accessor: 'isTranscriptionPublic',
       Cell: row => (
         <TimeAgo>{row.value} <Ball published={row.value} /></TimeAgo>
       )

@@ -16,6 +16,8 @@ const COURSES = gql`
         _id
         isPublished
         isRecording
+        duration
+        createdAt
         cover {
           s100
         }
@@ -66,7 +68,7 @@ const TimeAgo = styled.div`
 
 const Box = styled.div`
   width: 100%;
-  height: 100%;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,10 +87,10 @@ const Cover = styled.img`
   width: 60px;
 `
 const Ball = styled.div`
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: ${props => props.published ? 'green' : 'orange'};
+  background: ${props => props.published ? '#6bcf00' : '#dcdcdc'};
   display: inline-block;
 `
 
@@ -155,7 +157,7 @@ export default class extends Component {
     },
     {
       Header: 'Published',
-      accessor: 'published',
+      accessor: 'isPublished',
       Cell: row => (
         <TimeAgo>{row.value} <Ball published={row.value} /></TimeAgo>
       )
@@ -164,6 +166,7 @@ export default class extends Component {
 
   pushData = (data) => {
     if (!this.state.firstFetch) {
+      console.log(data)
       this.setState({
         courses: data.allCourses.courses,
         total: data.allCourses.total,
