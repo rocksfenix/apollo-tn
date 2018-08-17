@@ -17,6 +17,7 @@ const LESSONS = gql`
         role
         isTranscriptionPublic
         duration
+        createdAt
         screenshot {
           s100
         }

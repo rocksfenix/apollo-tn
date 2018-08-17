@@ -1,10 +1,10 @@
 import styled from 'styled-components'
 import React, {Component} from 'react'
 import moment from 'moment'
-import { Query } from 'react-apollo'
+import { withApollo } from 'react-apollo'
 import gql from 'graphql-tag'
 import ReactTable from 'react-table'
-import Search from '../Search'
+import Search from './Search'
 import CourseEditor from './CourseEditor'
 
 const COURSES = gql`
@@ -25,7 +25,6 @@ const COURSES = gql`
       total
     }
   }
-
 `
 
 const CREATE_COURSE = gql`
@@ -38,6 +37,8 @@ const CREATE_COURSE = gql`
       _id
       isPublished
       isRecording
+      duration
+      createdAt
       cover {
         s100
       }
@@ -94,7 +95,7 @@ const Ball = styled.div`
   display: inline-block;
 `
 
-export default class extends Component {
+class CoursesComponent extends Component {
   state = {
     isFetching: false,
     courses: [],
@@ -164,22 +165,9 @@ export default class extends Component {
     }
   ]
 
-  pushData = (data) => {
-    if (!this.state.firstFetch) {
-      console.log(data)
-      this.setState({
-        courses: data.allCourses.courses,
-        total: data.allCourses.total,
-        isFetching: false,
-        firstFetch: true
-      })
-    }
-  }
-
   fetchData = async (state) => {
-    if (this.state.mounted) {
+    if (process.browser) {
       const skip = state.page * state.pageSize
-
       this.setState({ isFetching: true })
 
       const result = await this.props.client.query({
@@ -193,9 +181,6 @@ export default class extends Component {
         isFetching: false,
         itemsByPage: state.pageSize
       })
-
-      // console.log(result)
-      // https://github.com/howtographql/react-apollo/blob/master/src/components/LinkList.js
     }
   }
 
@@ -225,46 +210,58 @@ export default class extends Component {
       variables: { title: text }
     })
 
-    this.setState({ courses: [ {...result.data.courseCreate} ], total: 1, isFetching: false })
+    // Actualizamos cache de Apollo
+    const { allCourses } = this.props.client.cache.readQuery({
+      query: COURSES,
+      variables: { first: 10, skip: 0 }
+    })
 
-    window.setTimeout(() => console.log(this.state), 1000)
+    this.props.client.cache.writeQuery({
+      query: COURSES,
+      variables: { first: 10, skip: 0 },
+      data: {
+        allCourses: {
+          ...allCourses,
+          courses: [ result.data.courseCreate, ...allCourses.courses ]
+        }
+      }
+    })
+
+    this.setState({ courses: [ result.data.courseCreate ], total: 1, isFetching: false })
   }
 
   render () {
+    console.log('RENDER', this.props)
     if (!this.props.show) return null
     return (
       <Panel>
         <SearchBox>
-          <Search onSeach={this.search} onEnter={this.createCourse} />
+          <Search
+            onSearch={this.search}
+            onCreate={this.createCourse}
+          />
         </SearchBox>
-        <Query query={COURSES} variables={{ first: 10, skip: 0 }}>
-          {({ loading, error, data = {}, client, refetch, networkStatus }) => {
-            if (data.allCourses && !this.state.total) {
-              this.pushData(data)
-            }
-            if (!this.state.total) return null
-            return (
-              <div>
-                <ReactTable
-                  manual
-                  loading={this.state.isFetching}
-                  data={this.state.courses}
-                  columns={this.columns}
-                  defaultPageSize={this.state.itemsByPage}
-                  onFetchData={this.fetchData}
-                  pages={Math.ceil(this.state.total / this.state.itemsByPage, 10)}
-                />
-                <CourseEditor
-                  {...this.props}
-                  show={this.state.showEditor}
-                  hideEditor={this.hideEditor}
-                  slug={this.state.slugActive}
-                />
-              </div>
-            )
-          }}
-        </Query>
+
+        <ReactTable
+          manual
+          loading={this.state.isFetching}
+          data={this.state.courses}
+          columns={this.columns}
+          defaultPageSize={this.state.itemsByPage}
+          onFetchData={this.fetchData}
+          pages={Math.ceil(this.state.total / this.state.itemsByPage, 10)}
+        />
+
+        <CourseEditor
+          {...this.props}
+          show={this.state.showEditor}
+          hideEditor={this.hideEditor}
+          slug={this.state.slugActive}
+        />
+
       </Panel>
     )
   }
 }
+
+export default withApollo(CoursesComponent)

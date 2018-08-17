@@ -12,6 +12,26 @@ import TagsField from '../../../components/TagsField'
 import SearchLessons from './SearchLessons'
 import Preview from './Preview'
 
+const COURSES = gql`
+ query allCourses($first: Int, $skip: Int, $text: String) {
+    allCourses (first: $first, skip: $skip, text: $text) {
+      courses {
+        slug
+        title
+        _id
+        isPublished
+        isRecording
+        duration
+        createdAt
+        cover {
+          s100
+        }
+      }
+      total
+    }
+  }
+`
+
 const COURSE_DETAILS = gql`
 query course($slug: String!) {
   course(slug: $slug) {
@@ -287,6 +307,23 @@ export default class extends Component {
     if (!response.data.courseUpdate) {
       return window.alert('Error al Guardar Informacion')
     }
+
+    // Actualizamos cache de Apollo
+    const { allCourses } = this.props.client.cache.readQuery({
+      query: COURSES,
+      variables: { first: 10, skip: 0 }
+    })
+
+    this.props.client.cache.writeQuery({
+      query: COURSES,
+      variables: { first: 10, skip: 0 },
+      data: {
+        allCourses: {
+          ...allCourses,
+          courses: allCourses.courses.map(c => c._id === response.data.courseUpdate._id ? response.data.courseUpdate : c)
+        }
+      }
+    })
 
     this.setState({
       course: response.data.courseUpdate,
