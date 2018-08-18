@@ -139,6 +139,16 @@ mutation courseUpdate(
   }
 }`
 
+const COURSE_DELETE = gql`
+  mutation courseDelete($_id: ID!) {
+    courseDelete(_id: $_id) {
+      slug
+      _id
+      title
+    }
+  }
+`
+
 const animation = keyframes`
   0%{
     transform: scale(.9);
@@ -358,7 +368,7 @@ export default class extends Component {
     course: { ...state.course, lessons }
   }))
 
-  onDelete = (lesson) => {
+  onDeleteLesson = (lesson) => {
     // Primero actualizamos las lecciones
     this.setState(state => ({
       ...state,
@@ -373,6 +383,40 @@ export default class extends Component {
         course: { ...state.course, duration: this.getTotalDuration() }
       }))
     })
+  }
+
+  deleteCourse = async () => {
+    const title = window.prompt('Para eliminar ingresar el nombre')
+
+    if (!title) return
+
+    if (this.state.course.title !== title) {
+      return window.alert('El nombre ingresado no es valido')
+    }
+
+    const res = await this.props.client.mutate({
+      mutation: COURSE_DELETE,
+      variables: { _id: this.state.course._id }
+    })
+
+    // Actualizamos cache de Apollo
+    const { allCourses } = this.props.client.cache.readQuery({
+      query: COURSES,
+      variables: { first: 10, skip: 0 }
+    })
+
+    this.props.client.cache.writeQuery({
+      query: COURSES,
+      variables: { first: 10, skip: 0 },
+      data: {
+        allCourses: {
+          ...allCourses,
+          courses: allCourses.courses.filter(c => c._id !== res.data.courseDelete._id)
+        }
+      }
+    })
+
+    this.props.hideEditor()
   }
 
   render () {
@@ -540,13 +584,14 @@ export default class extends Component {
                 <Preview
                   lessons={this.state.course.lessons}
                   onSortEnd={this.onSortEnd}
-                  onDelete={this.onDelete}
+                  onDelete={this.onDeleteLesson}
                   course={this.state.course}
                 />
               </Fields>
               <Buttons>
                 <ButtonSave onClick={this.updateCourse}>Save</ButtonSave>
                 <ButtonSave onClick={this.props.hideEditor}>Close</ButtonSave>
+                <ButtonSave onClick={this.deleteCourse}>Delete</ButtonSave>
                 <ButtonSave onClick={() => console.log(JSON.stringify(this.state, null, 2))}>Debugg</ButtonSave>
               </Buttons>
               <Notification

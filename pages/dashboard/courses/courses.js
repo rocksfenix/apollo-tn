@@ -1,11 +1,12 @@
 import styled from 'styled-components'
 import React, {Component} from 'react'
 import moment from 'moment'
-import { withApollo } from 'react-apollo'
+import { Query, withApollo } from 'react-apollo'
 import gql from 'graphql-tag'
 import ReactTable from 'react-table'
 import Search from './Search'
 import CourseEditor from './CourseEditor'
+import getTechIcon from '../../../util/getTechIcon'
 
 const COURSES = gql`
  query allCourses($first: Int, $skip: Int, $text: String) {
@@ -18,6 +19,8 @@ const COURSES = gql`
         isRecording
         duration
         createdAt
+        tech
+        color
         cover {
           s100
         }
@@ -32,17 +35,19 @@ const CREATE_COURSE = gql`
     courseCreate(input: {
       title: $title
     }) {
-      slug
-      title
-      _id
-      isPublished
-      isRecording
-      duration
-      createdAt
-      cover {
-        s100
+        slug
+        title
+        _id
+        isPublished
+        isRecording
+        duration
+        createdAt
+        tech
+        color
+        cover {
+          s100
+        }
       }
-    }
   }
 `
 
@@ -69,23 +74,37 @@ const TimeAgo = styled.div`
 
 const Box = styled.div`
   width: 100%;
-  height: 60px;
+  height: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
 `
 
 const SearchBox = styled.div`
-width: 100%;
-height: 100px;
-display: flex;
-align-items: center;
-justify-content: center;
-background-color: #0f141b;
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #0f141b;
+`
+
+const CoverBox = styled.div`
+  width: 75px;
+  height: 75px;
+  background-color: #FFF;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 1em;
+  position: relative;
+  z-index: 10;
+  box-shadow: ${p => `0 0 35px ${p.color}`};
 `
 
 const Cover = styled.img`
-  width: 60px;
+  width: 70%;
 `
 const Ball = styled.div`
   width: 10px;
@@ -94,17 +113,29 @@ const Ball = styled.div`
   background: ${props => props.published ? '#6bcf00' : '#dcdcdc'};
   display: inline-block;
 `
+//     box-shadow: 0 0 21px red;
+const TechBox = styled.div`
+  width: 30px;
+  height: 30px;
+  background-color: #FFF;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 1em;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 0 21px rgb(223, 223, 223);
+`
+
+const TechImage = styled.img`
+  width: 50%;
+`
 
 class CoursesComponent extends Component {
   state = {
-    isFetching: false,
-    courses: [],
-    total: null,
-    itemsByPage: 10,
     showEditor: false,
-    slugActive: null,
-    mounted: false,
-    firstFetch: false
+    slugActive: null
   }
 
   componentDidMount () {
@@ -123,8 +154,10 @@ class CoursesComponent extends Component {
       accessor: 'cover',
       Cell: row => {
         return (
-          <Box>
-            <Cover src={row.original.cover.s100} />
+          <Box onClick={() => this.showEditor(row)}>
+            <CoverBox color={row.original.color}>
+              <Cover src={row.original.cover.s100} />
+            </CoverBox>
           </Box>
         )
       }
@@ -157,6 +190,17 @@ class CoursesComponent extends Component {
       )
     },
     {
+      Header: 'Tech',
+      accessor: 'tech',
+      Cell: row => (
+        <Box>
+          <TechBox>
+            <TechImage src={getTechIcon(row.value)} />
+          </TechBox>
+        </Box>
+      )
+    },
+    {
       Header: 'Published',
       accessor: 'isPublished',
       Cell: row => (
@@ -164,44 +208,6 @@ class CoursesComponent extends Component {
       )
     }
   ]
-
-  fetchData = async (state) => {
-    if (process.browser) {
-      const skip = state.page * state.pageSize
-      this.setState({ isFetching: true })
-
-      const result = await this.props.client.query({
-        query: COURSES,
-        variables: { first: state.pageSize, skip }
-      })
-
-      this.setState({
-        courses: result.data.allCourses.courses,
-        total: result.data.allCourses.total,
-        isFetching: false,
-        itemsByPage: state.pageSize
-      })
-    }
-  }
-
-  search = async (text) => {
-    this.setState({ isFetching: true })
-
-    const result = await this.props.client.query({
-      query: COURSES,
-      variables: {
-        first: this.state.itemsByPage,
-        skip: 0,
-        text
-      }
-    })
-
-    this.setState({
-      courses: result.data.allCourses.courses,
-      total: result.data.allCourses.total,
-      isFetching: false
-    })
-  }
 
   createCourse = async (text) => {
     this.setState({ isFetching: true })
@@ -231,27 +237,58 @@ class CoursesComponent extends Component {
   }
 
   render () {
-    console.log('RENDER', this.props)
     if (!this.props.show) return null
     return (
       <Panel>
-        <SearchBox>
-          <Search
-            onSearch={this.search}
-            onCreate={this.createCourse}
-          />
-        </SearchBox>
-
-        <ReactTable
-          manual
-          loading={this.state.isFetching}
-          data={this.state.courses}
-          columns={this.columns}
-          defaultPageSize={this.state.itemsByPage}
-          onFetchData={this.fetchData}
-          pages={Math.ceil(this.state.total / this.state.itemsByPage, 10)}
-        />
-
+        <Query query={COURSES} variables={{ first: 10, skip: 0 }}>
+          {({ data, loading, error, fetchMore, networkStatus }) => {
+            if (loading) return null
+            if (error) return `Error!: ${error}`
+            if (networkStatus === 4) return 'Refetching!'
+            if (data) {
+              return (
+                <div>
+                  <SearchBox>
+                    <Search
+                      onSearch={(text) => {
+                        fetchMore({
+                          variables: {
+                            first: 10,
+                            skip: 0,
+                            text
+                          },
+                          updateQuery: (prev, { fetchMoreResult }) => {
+                            if (!fetchMoreResult) return prev
+                            return fetchMoreResult
+                          }
+                        })
+                      }}
+                      onCreate={this.createCourse}
+                    />
+                  </SearchBox>
+                  <ReactTable
+                    manual
+                    loading={loading}
+                    data={data.allCourses.courses}
+                    columns={this.columns}
+                    defaultPageSize={10}
+                    onFetchData={(table) => {
+                      fetchMore({
+                        variables: { first: table.pageSize, skip: 10 * table.page },
+                        updateQuery: (prev, { fetchMoreResult }) => {
+                          if (!fetchMoreResult) return prev
+                          return fetchMoreResult
+                        }
+                      })
+                    }}
+                    pages={Math.ceil(data.allCourses.total / 10, 10)}
+                  />
+                </div>
+              )
+            }
+            return null
+          }}
+        </Query>
         <CourseEditor
           {...this.props}
           show={this.state.showEditor}
