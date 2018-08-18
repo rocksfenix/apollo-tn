@@ -1,8 +1,8 @@
-import { GetSelf, CreateSelf, DeleteSelf } from '../authorization'
+import { getSelf, createSelf, deleteSelf } from '../authorization'
 
 export default {
   Query: {
-    bookmarks: GetSelf({
+    bookmarks: getSelf({
       model: 'Bookmark',
       only: 'pro free admin',
       populate: 'lesson course'
@@ -11,14 +11,14 @@ export default {
   },
 
   Mutation: {
-    bookmarkCreate: CreateSelf({
+    bookmarkCreate: createSelf({
       model: 'Bookmark',
       only: 'pro free admin',
       populate: 'lesson course'
     })
       .createResolver((_, args, { doc }) => doc),
 
-    bookmarkDelete: DeleteSelf({
+    bookmarkDelete: deleteSelf({
       model: 'Bookmark',
       only: 'pro free admin',
       populate: 'lesson course'

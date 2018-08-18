@@ -1,29 +1,25 @@
-import { GetAll, CreateSelf, UpdateSelf, DeleteSelf } from '../authorization'
+import { createSelf, updateSelf, deleteSelf } from '../authorization'
 
 export default {
   Query: {
-    comments: GetAll({
-      model: 'Comment',
-      populate: 'author lesson',
-      only: 'pro free admin'
-    }).createResolver((_, args, { doc }) => doc)
+    comments: () => {}
     // TODO getCommentsByLesson
   },
 
   Mutation: {
-    commentCreate: CreateSelf({
+    commentCreate: createSelf({
       model: 'Comment',
       populate: 'author lesson',
       only: 'pro free admin'
     }).createResolver((_, args, { doc }) => doc),
 
-    commentUpdate: UpdateSelf({
+    commentUpdate: updateSelf({
       model: 'Comment',
       populate: 'author lesson',
       only: 'pro free admin'
     }).createResolver((_, args, { doc }) => doc),
 
-    commentDelete: DeleteSelf({
+    commentDelete: deleteSelf({
       model: 'Comment',
       populate: 'author lesson',
       only: 'pro free admin'

@@ -1,5 +1,5 @@
 import models from '../models'
-import { NotFound, AuthenticationRequiredError, ForbiddenError } from '../errors'
+import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../authorization/errors'
 
 export default {
   Query: {
@@ -23,6 +23,7 @@ export default {
   Mutation: {
     ticketNoteCreate: async (_, { text, ticket }, { user }) => {
       if (!user.sub) throw new AuthenticationRequiredError()
+      if (user.role !== 'admin') throw new ForbiddenError()
 
       const ticketNote = await models.TicketNote.create({
         text,

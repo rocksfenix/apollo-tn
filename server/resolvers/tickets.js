@@ -1,5 +1,5 @@
 import models from '../models'
-import { NotFound, AuthenticationRequiredError, ForbiddenError } from '../errors'
+import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../authorization/errors'
 
 export default {
   Query: {
@@ -21,8 +21,11 @@ export default {
   },
 
   Mutation: {
+    // Posiblemente se requiera de liberar de forma
+    // publica pero protegido con recaptcha
     ticketCreate: async (_, { input }, { user }) => {
       if (!user.sub) throw new AuthenticationRequiredError()
+      if (user.role !== 'admin') throw new ForbiddenError()
 
       const ticket = await models.Ticket.create({
         ...input,

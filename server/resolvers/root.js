@@ -1,5 +1,5 @@
-// import { GetSelf, CreateSelf, DeleteSelf } from '../authorization'
 import models from '../models'
+import { AuthenticationRequiredError } from '../authorization/errors'
 
 export default {
   Search: {
@@ -16,7 +16,9 @@ export default {
     }
   },
   Query: {
+    // Solo usuarios Authentificados
     search: async (_, { text }, { doc, user }) => {
+      if (!user) throw new AuthenticationRequiredError()
       const title = new RegExp(text, 'i')
       const query = {
         $or: [

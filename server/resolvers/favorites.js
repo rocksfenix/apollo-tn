@@ -1,8 +1,7 @@
-import { GetSelf, CreateSelf, UpdateSelf, DeleteSelf } from '../authorization'
-
+import { getSelf, createSelf, updateSelf, deleteSelf } from '../authorization'
 export default {
   Query: {
-    favorites: GetSelf({
+    favorites: getSelf({
       model: 'Favorite',
       only: 'pro free admin',
       populate: 'author lesson course'
@@ -11,20 +10,20 @@ export default {
   },
 
   Mutation: {
-    favoriteCreate: CreateSelf({
+    favoriteCreate: createSelf({
       model: 'Favorite',
       only: 'pro free admin',
       populate: 'author lesson course'
     }).createResolver((_, args, { doc }) => doc),
 
-    favoriteUpdate: UpdateSelf({
+    favoriteUpdate: updateSelf({
       model: 'Favorite',
       only: 'pro free admin',
       populate: 'author lesson course'
     }).createResolver((_, args, { doc }) => doc),
 
-    favoriteDelete: DeleteSelf({
-      model: 'Favorite',
+    favoriteDelete: deleteSelf({
+      model: 'Favorie',
       only: 'pro free admin',
       populate: 'author lesson course'
     }).createResolver((_, args, { doc }) => doc)

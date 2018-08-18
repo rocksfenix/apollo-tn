@@ -1,22 +1,15 @@
 import models from '../models'
-import { GetAll, GetSingle, UpdateSelf, DeleteSelf } from '../authorization'
+import { updateSelf, deleteSelf } from '../authorization'
+import { AuthenticationRequiredError, ForbiddenError } from '../authorization/errors'
 
 export default {
   Query: {
     userSelf: async (_, args, { user }) => {
-      // console.log(user.sub)
       if (user) {
         const us = await models.User.findById(user.sub)
-        // console.log(us)
         return us
       }
     },
-
-    // user: GetSingle({
-    //   model: 'User',
-    //   only: 'pro free admin'
-    // })
-    //   .createResolver((_, args, { doc }) => doc),
 
     user: async (_, { _id }) => {
       const user = await models.User.findById(_id)
@@ -24,8 +17,11 @@ export default {
       return user
     },
 
-    allUsers: async (_, { first, skip = 0, text }, { doc }) => {
-      // TODO unicamente admin
+    // TODO unicamente admin
+    allUsers: async (_, { first, skip = 0, text }, { user }) => {
+      if (!user) throw new AuthenticationRequiredError()
+      if (user.role !== 'admin') throw new ForbiddenError()
+
       let limit = first <= 100 ? first : 100
       const _text = text ? new RegExp(text, 'i') : null
       let query = {}
@@ -56,12 +52,12 @@ export default {
   },
 
   Mutation: {
-    userUpdate: UpdateSelf({
+    userUpdate: updateSelf({
       model: 'User',
       only: 'free pro admin'
     }).createResolver((_, args, { doc }) => doc),
 
-    userDelete: DeleteSelf({
+    userDelete: deleteSelf({
       model: 'User',
       only: 'admin'
     }).createResolver((_, args, { doc }) => doc)

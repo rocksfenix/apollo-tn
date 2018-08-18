@@ -1,10 +1,10 @@
 import models from '../models'
-import { GetSelf, CreateSelf, UpdateSelf, DeleteSelf, GetSingle } from '../authorization'
+import { getSelf, createSelf, updateSelf, deleteSelf, getSingle } from '../authorization'
 
 export default {
   Query: {
     // Regresa todas las notas propias
-    notes: GetSelf({
+    notes: getSelf({
       model: 'Note',
       only: 'pro free admin',
       populate: 'lesson course'
@@ -12,7 +12,7 @@ export default {
       .createResolver((_, args, { doc }) => doc),
 
     // Filtrar por tag
-    notesByTags: GetSelf({
+    notesByTags: getSelf({
       model: 'Note',
       only: 'pro free admin',
       populate: 'lesson course',
@@ -21,7 +21,7 @@ export default {
       .createResolver((_, args, { doc }) => doc),
 
     // Filtrar por texto -buscar en text
-    notesByText: GetSelf({
+    notesByText: getSelf({
       model: 'Note',
       only: 'pro free admin',
       populate: 'lesson course',
@@ -30,7 +30,7 @@ export default {
       .createResolver((_, args, { doc }) => doc),
 
     // Nota spor cursoId
-    notesByCourse: GetSelf({
+    notesByCourse: getSelf({
       model: 'Note',
       only: 'pro free admin',
       populate: 'lesson course',
@@ -38,7 +38,7 @@ export default {
     })
       .createResolver((_, args, { doc }) => doc),
 
-    tagsByUser: GetSingle({
+    tagsByUser: getSingle({
       model: 'User',
       only: 'pro free admin'
       // populate: 'lesson course',
@@ -49,7 +49,7 @@ export default {
   },
 
   Mutation: {
-    noteCreate: CreateSelf({
+    noteCreate: createSelf({
       model: 'Note',
       only: 'pro free admin',
       populate: 'lesson course'
@@ -67,7 +67,7 @@ export default {
       }
     ),
 
-    noteUpdate: UpdateSelf({
+    noteUpdate: updateSelf({
       model: 'Note',
       only: 'pro free admin',
       populate: 'lesson course'
@@ -85,7 +85,7 @@ export default {
       }
     ),
 
-    noteDelete: DeleteSelf({
+    noteDelete: deleteSelf({
       model: 'Note',
       only: 'pro free admin',
       populate: 'lesson course'

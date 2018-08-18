@@ -1,5 +1,5 @@
 import models from '../models'
-import { AuthenticationRequiredError, NotFound } from '../errors'
+import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../authorization/errors'
 import { withFilter } from 'graphql-subscriptions'
 import pubsub from '../pupsub'
 import agents from '../agents'
@@ -7,21 +7,22 @@ import agents from '../agents'
 export default {
   Query: {
     agentAvailable: async () => {
-      console.log('************** AGENT AVALABLES', agents.list())
+      // console.log('************** AGENT AVALABLES', agents.list())
+      // De momento es publica ya que posiblemente se implemente en chat
+      // publico, se realizaran pruebas despues
       // TODO se haria logia de obtener el agente menos ocupado
       // de momento listamos el primero
       // const agent = agents.list()[0] ? agents.list()[0] : 'no-available-at-this-moment'
 
       const _id = agents.list()[0]
 
-      if (!_id) {
-        return null
-      }
+      if (!_id) return null
 
       const agent = await models.User.findById(_id)
 
       return agent
     },
+
     messages: async (_, { sender, receiver }, { user }) => {
       if (!user.sub) throw new AuthenticationRequiredError()
 
@@ -41,6 +42,7 @@ export default {
   Mutation: {
     messageCreate: async (_, { text, receiver }, { user }) => {
       if (!user.sub) throw new AuthenticationRequiredError()
+
       const message = await models.Message.create({
         receiver,
         text,
@@ -70,7 +72,8 @@ export default {
     },
 
     availability: async (_, { connection }, { user }) => {
-      if (!user.sub) throw new AuthenticationRequiredError()
+      if (!user) throw new AuthenticationRequiredError()
+      if (user.role !== 'admin') throw new ForbiddenError()
 
       if (connection) {
         agents.add(user.sub)
@@ -88,6 +91,7 @@ export default {
   },
 
   Subscription: {
+    // TODO Se van a revisar el flujo de los chats
     newMessage: {
       subscribe: withFilter(() => pubsub.asyncIterator('newMessage'), (payload, variables, ctx) => {
         return (

@@ -1,14 +1,16 @@
 import models from '../models'
-import { CreateSelf, UpdateSelf, DeleteSelf } from '../authorization'
-import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../errors'
+import { createSelf, deleteSelf } from '../authorization'
 import uploadImage from '../util/upload-image'
 import { GraphQLUpload } from 'apollo-upload-server'
+import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../authorization/errors'
 
 export default {
   Upload: GraphQLUpload,
   Query: {
     allLessons: async (_, { first, skip = 0, text }, { user = {} }) => {
-      // TODO separar isPublished para role !== admin
+      if (!user) throw new AuthenticationRequiredError()
+      if (user.role !== 'admin') throw new ForbiddenError()
+
       let limit = first <= 100 ? first : 100
       const _text = text ? new RegExp(text, 'i') : null
       let query = {}
@@ -37,13 +39,12 @@ export default {
         total
       }
     },
+
     // TODO De lo contrario enviar solo las isPublished
     // TODO LessonsByText
     // TODO LessonsByTech
 
     lessons: async (_, args, { user = {} }) => {
-      // Si no es admin
-
       let role = user.role ? user.role : 'public'
 
       if (role !== 'admin') {
@@ -82,7 +83,7 @@ export default {
   },
 
   Mutation: {
-    lessonCreate: CreateSelf({
+    lessonCreate: createSelf({
       model: 'Lesson',
       populate: 'author',
       only: 'admin'
@@ -102,20 +103,17 @@ export default {
       return lesson
     },
 
-    // UpdateSelf({
-    //   model: 'Lesson',
-    //   populate: 'author',
-    //   only: 'admin'
-    // }).createResolver((_, args, { doc }) => doc),
-
-    lessonDelete: DeleteSelf({
+    lessonDelete: deleteSelf({
       model: 'Lesson',
       only: 'admin',
       populate: 'author'
     })
       .createResolver((_, args, { doc }) => doc),
 
-    uploadScreenshot: async (obj, { file, lessonSlug }) => {
+    uploadScreenshot: async (obj, { file, lessonSlug }, { user }) => {
+      if (!user) throw new AuthenticationRequiredError()
+      if (user.role !== 'admin') throw new ForbiddenError()
+
       const lesson = await models.Lesson.findOne({ slug: lessonSlug })
 
       if (!lesson) throw new NotFound()

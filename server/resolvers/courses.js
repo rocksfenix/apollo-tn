@@ -1,15 +1,16 @@
-import models from '../models'
-import { CreateSelf, DeleteSelf } from '../authorization'
-// AuthenticationRequiredError, ForbiddenError,
-import { NotFound } from '../errors'
 import { GraphQLUpload } from 'apollo-upload-server'
+import models from '../models'
 import uploadImage from '../util/upload-image'
+import { createSelf, deleteSelf } from '../authorization'
+import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../authorization/errors'
 
 export default {
   Upload: GraphQLUpload,
   Query: {
-    allCourses: async (_, { first, skip = 0, text }, { user = {} }) => {
-      // TODO separar isPublished para role !== admin
+    allCourses: async (_, { first, skip = 0, text }, { user }) => {
+      if (!user) throw new AuthenticationRequiredError()
+      if (user.role !== 'admin') throw new ForbiddenError()
+
       let limit = first <= 100 ? first : 100
       const _text = text ? new RegExp(text, 'i') : null
       let query = {}
@@ -24,10 +25,15 @@ export default {
         }
       }
 
-      const courses = await models.Course.find(query).limit(limit).skip(skip).sort({ createdAt: -1 })
+      const courses = await models.Course
+        .find(query)
+        .limit(limit)
+        .skip(skip)
+        .sort({ createdAt: -1 })
+
       let total = courses.length
 
-      // SI no hay consulta de texto, el total es el total absoluto
+      // Si no hay consulta de texto, el total es la cantidad en Coleccion
       if (!_text) {
         total = await models.Course.count()
       }
@@ -38,17 +44,16 @@ export default {
       }
     },
 
+    // Solo da los cursos que esten publicados
+    // Aunque sea admin
     courses: async (_, args, { user = {} }) => {
       const role = user.role ? user.role : 'public'
-      let query = role !== 'admin' ? { isPublished: true } : {}
-      let courses = await models.Course.find(query).populate('author lessons')
+      // let query = role !== 'admin' ? { isPublished: true } : {}
+      let courses = await models.Course
+        .find({ isPublished: true })
+        .populate('author lessons')
 
-      // # TODO Si no es admin unicamente enviar los cursos isPublished
-      if (role !== 'admin') {
-        return courses.map(c => c.getDataByRole(role))
-      }
-
-      return courses
+      return courses.map(c => c.getDataByRole(role))
     },
 
     course: async (_, { slug }, { user = {} }) => {
@@ -64,7 +69,6 @@ export default {
 
       let course = await models.Course.findOne(query).populate('author lessons')
 
-      // # TODO Si no es admin unicamente enviar los cursos isPublished
       if (role !== 'admin') {
         return course.getDataByRole(role)
       }
@@ -74,13 +78,16 @@ export default {
   },
 
   Mutation: {
-    courseCreate: CreateSelf({
+    courseCreate: createSelf({
       model: 'Course',
       populate: 'author',
       only: 'admin'
     }).createResolver((_, args, { doc }) => doc),
 
-    courseUpdate: async (_, { input }, { doc }) => {
+    courseUpdate: async (_, { input }, { user }) => {
+      if (!user) throw new AuthenticationRequiredError()
+      if (user.role !== 'admin') throw new ForbiddenError()
+
       const course = await models.Course.findById(input._id) // .populate('author lessons')
 
       if (!course) throw new NotFound()
@@ -98,14 +105,17 @@ export default {
       return coursePopulate
     },
 
-    courseDelete: DeleteSelf({
+    courseDelete: deleteSelf({
       model: 'Course',
       only: 'admin',
       populate: 'author lessons'
     })
       .createResolver((_, args, { doc }) => doc),
 
-    uploadCover: async (obj, { file, courseSlug }) => {
+    uploadCover: async (_, { file, courseSlug }, { user }) => {
+      if (!user) throw new AuthenticationRequiredError()
+      if (user.role !== 'admin') throw new ForbiddenError()
+
       const course = await models.Course.findOne({ slug: courseSlug })
 
       if (!course) throw new NotFound()

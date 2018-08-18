@@ -1,0 +1,6 @@
+export {default as hasValidRole} from './hasValidRole'
+export {default as createSelf} from './createSelf'
+export {default as deleteSelf} from './deleteSelf'
+export {default as updateSelf} from './updateSelf'
+export {default as getSelf} from './getSelf'
+export {default as getSingle} from './getSingle'

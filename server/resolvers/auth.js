@@ -2,8 +2,7 @@ import { withFilter } from 'graphql-subscriptions'
 import request from 'request-promise'
 import models from '../models'
 import auth from '../middlewares/auth'
-import { baseResolver } from '../authorization'
-import { ValidationError } from '../errors'
+import { ValidationError } from '../authorization/errors'
 import getHash from '../util/getHash'
 import pubsub from '../pupsub'
 
@@ -18,7 +17,7 @@ export default {
   Query: {},
 
   Mutation: {
-    signup: baseResolver.createResolver(async (_, { input }, { req }, info) => {
+    signup: async (_, { input }, { req }, info) => {
       // Primero se valida recaptcha para evitar abuso
       const { reCaptchaResponse } = input
       const verificationURL = `https://www.google.com/recaptcha/api/siteverify?secret=${RECAPTCHA_SECRET}&response=${reCaptchaResponse}&remoteip=${req.connection.remoteAddress}`
@@ -54,7 +53,7 @@ export default {
         refreshToken,
         errors: []
       }
-    }),
+    },
 
     login: async (_, { email, password }) => {
       const user = await models.User.findOne({ email })
@@ -63,7 +62,7 @@ export default {
         return {
           success: false,
           errors: [{
-            message: 'El usuario es invalido',
+            message: 'Wops! El email o password son invalidos',
             path: 'user'
           }]
         }
@@ -75,7 +74,7 @@ export default {
         return {
           success: false,
           errors: [{
-            message: 'Pass invalido',
+            message: 'Wops! El email o password son invalidos',
             path: 'password'
           }]
         }

@@ -1,8 +1,13 @@
 import models from '../models'
+import { AuthenticationRequiredError, ForbiddenError } from '../authorization/errors'
 
 export default {
   Query: {
-    statistics: async (_, args) => {
+    // Solo admin
+    statistics: async (_, args, { user }) => {
+      if (!user) throw new AuthenticationRequiredError()
+      if (user.role !== 'admin') throw new ForbiddenError()
+
       const User = models.User
       let todayStart = new Date()
       let todayEnd = new Date()
