@@ -4,7 +4,7 @@ import moment from 'moment'
 import { Query, withApollo } from 'react-apollo'
 import gql from 'graphql-tag'
 import ReactTable from 'react-table'
-import Search from './Search'
+import Search from '../Search'
 import CourseEditor from './CourseEditor'
 import getTechIcon from '../../../util/getTechIcon'
 

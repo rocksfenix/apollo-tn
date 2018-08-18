@@ -8,6 +8,28 @@ import Editor from './Editor'
 import Markdown from './Markdown'
 import Library from './Library'
 
+const LESSONS = gql`
+ query allLessons($first: Int, $skip: Int, $text: String) {
+    allLessons (first: $first, skip: $skip, text: $text) {
+      lessons {
+        slug
+        title
+        _id
+        role
+        tech
+        isTranscriptionPublic
+        isPublished
+        duration
+        createdAt
+        screenshot {
+          s100
+        }
+      }
+      total
+    }
+  }
+`
+
 const LESSON = gql`
   query lesson ($slug: String!) {
     lesson(slug: $slug) {
@@ -21,12 +43,12 @@ const LESSON = gql`
       role
       tags
       duration
+      createdAt
       screenshot {
         s100
       }
       isPublished
       isTranscriptionPublic
-      isRecording
       transcription
     }
   }
@@ -46,7 +68,6 @@ const LESSON_UPDATE = gql`
       $duration: String
       $isPublished: Boolean
       $isTranscriptionPublic: Boolean
-      $isRecording: Boolean
       $transcription: String
     ) {
     lessonUpdate(input: {
@@ -62,7 +83,6 @@ const LESSON_UPDATE = gql`
       duration: $duration
       isPublished: $isPublished
       isTranscriptionPublic: $isTranscriptionPublic
-      isRecording: $isRecording
       transcription: $transcription
     }) {
       _id
@@ -75,12 +95,12 @@ const LESSON_UPDATE = gql`
       role
       tags
       duration
+      createdAt
       screenshot {
         s100
       }
       isPublished
       isTranscriptionPublic
-      isRecording
       transcription
     }
   }
@@ -94,6 +114,15 @@ const animation = keyframes`
   100%{
     transform: scale(1);
     opacity: 1;
+  }
+`
+
+const LESSON_DELETE = gql`
+  mutation lessonDelete ($_id: ID!) {
+    lessonDelete(_id: $_id) {
+      _id
+      title
+    }
   }
 `
 
@@ -223,7 +252,6 @@ class LessonEditor extends Component {
       screenshot: {},
       isPublished: false,
       isTranscriptionPublic: false,
-      isRecording: false,
       transcription: '',
       duration: '0'
     }
@@ -266,8 +294,25 @@ class LessonEditor extends Component {
       return window.alert('Error al Guardar Informacion')
     }
 
+    // Actualizamos cache de Apollo
+    const { allLessons } = this.props.client.cache.readQuery({
+      query: LESSONS,
+      variables: { first: 10, skip: 0 }
+    })
+
+    this.props.client.cache.writeQuery({
+      query: LESSONS,
+      variables: { first: 10, skip: 0 },
+      data: {
+        allLessons: {
+          ...allLessons,
+          lessons: allLessons.lessons.map(c => c._id === response.data.lessonUpdate._id ? response.data.lessonUpdate : c)
+        }
+      }
+    })
+
     this.setState({
-      course: response.data.lessonUpdate,
+      lesson: response.data.lessonUpdate,
       notification: {
         show: true,
         message: 'Cambios Guardados Exitosamente'
@@ -282,6 +327,40 @@ class LessonEditor extends Component {
     )), 3000)
   }
 
+  deleteLesson = async () => {
+    const title = window.prompt('Para eliminar ingresa el titulo de la leccion')
+
+    if (!title) return
+
+    if (this.state.lesson.title !== title) {
+      return window.alert('El titulo ingresado no es valido')
+    }
+
+    const res = await this.props.client.mutate({
+      mutation: LESSON_DELETE,
+      variables: { _id: this.state.lesson._id }
+    })
+
+    // Actualizamos cache de Apollo
+    const { allLessons } = this.props.client.cache.readQuery({
+      query: LESSONS,
+      variables: { first: 10, skip: 0 }
+    })
+
+    this.props.client.cache.writeQuery({
+      query: LESSONS,
+      variables: { first: 10, skip: 0 },
+      data: {
+        allLessons: {
+          ...allLessons,
+          lessons: allLessons.lessons.filter(c => c._id !== res.data.lessonDelete._id)
+        }
+      }
+    })
+
+    this.props.hideEditor()
+  }
+
   render () {
     if (!this.props.show || !this.props.slug) return null
     return (
@@ -290,6 +369,7 @@ class LessonEditor extends Component {
           <ButtonSave onClick={this.saveChanges}>Save</ButtonSave>
           <ButtonSave onClick={this.props.hideEditor}>Close</ButtonSave>
           <ButtonSave onClick={() => console.log(JSON.stringify(this.state, null, 2))}>Debugg</ButtonSave>
+          <ButtonSave onClick={this.deleteLesson}>Delete</ButtonSave>
         </Buttons>
         <PanelButtons>
           <TabsPanel>

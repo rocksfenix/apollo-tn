@@ -6,6 +6,7 @@ import gql from 'graphql-tag'
 import ReactTable from 'react-table'
 import LessonEditor from './LessonEditor'
 import Search from '../Search'
+import getTechIcon from '../../../util/getTechIcon'
 
 const LESSONS = gql`
  query allLessons($first: Int, $skip: Int, $text: String) {
@@ -15,7 +16,9 @@ const LESSONS = gql`
         title
         _id
         role
+        tech
         isTranscriptionPublic
+        isPublished
         duration
         createdAt
         screenshot {
@@ -25,7 +28,25 @@ const LESSONS = gql`
       total
     }
   }
+`
 
+const LESSON_CREATE = gql`
+ mutation lessonCreate($title: String!) {
+  lessonCreate (input: { title: $title }) {
+      slug
+      title
+      _id
+      role
+      tech
+      isTranscriptionPublic
+      isPublished
+      duration
+      createdAt
+      screenshot {
+        s100
+      }
+    }
+  }
 `
 
 const Panel = styled.div`
@@ -67,6 +88,23 @@ const SearchBox = styled.div`
 
 const Cover = styled.img`
   width: 60px;
+`
+const TechBox = styled.div`
+  width: 30px;
+  height: 30px;
+  background-color: #FFF;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 1em;
+  position: relative;
+  z-index: 10;
+  box-shadow: 0 0 21px rgb(223, 223, 223);
+`
+
+const TechImage = styled.img`
+  width: 50%;
 `
 
 const Ball = styled.div`
@@ -130,6 +168,17 @@ export default class extends Component {
       accessor: 'role',
       Cell: row => (
         <TimeAgo>{row.value}</TimeAgo>
+      )
+    },
+    {
+      Header: 'Tech',
+      accessor: 'tech',
+      Cell: row => (
+        <Box>
+          <TechBox>
+            <TechImage src={getTechIcon(row.value)} />
+          </TechBox>
+        </Box>
       )
     },
     {
@@ -202,18 +251,39 @@ export default class extends Component {
 
   hideEditor = () => this.setState({ showEditor: false })
 
+  createLesson = async (title) => {
+    const result = await this.props.client.mutate({
+      mutation: LESSON_CREATE,
+      variables: { title }
+    })
+
+    // Actualizamos cache de Apollo
+    const { allLessons } = this.props.client.cache.readQuery({
+      query: LESSONS,
+      variables: { first: 10, skip: 0 }
+    })
+
+    this.props.client.cache.writeQuery({
+      query: LESSONS,
+      variables: { first: 10, skip: 0 },
+      data: {
+        allLessons: {
+          ...allLessons,
+          lessons: [ result.data.lessonCreate, ...allLessons.lessons ]
+        }
+      }
+    })
+
+    this.setState({ lessons: [ result.data.lessonCreate ], total: 1, isFetching: false })
+  }
+
   render () {
-    if (!this.props.show) {
-      return null
-    }
+    if (!this.props.show) return null
     return (
       <Query query={LESSONS} variables={{ first: 10, skip: 0 }}>
-        {({ loading, error, data = {}, client, refetch, networkStatus }) => {
-          if (data.allLessons) {
-            this.pushData(data)
-          }
-
-          if (!this.state.total) return null
+        {({ loading, error, data, fetchMore }) => {
+          if (loading) return '...Loading'
+          if (error) return `Error!: ${error}`
           return (
             <Panel>
               <LessonEditor
@@ -222,16 +292,39 @@ export default class extends Component {
                 slug={this.state.activeLessonSlug}
               />
               <SearchBox>
-                <Search onSeach={this.searchUser} />
+                <Search
+                  onSearch={(text) => {
+                    fetchMore({
+                      variables: {
+                        first: 10,
+                        skip: 0,
+                        text
+                      },
+                      updateQuery: (prev, { fetchMoreResult }) => {
+                        if (!fetchMoreResult) return prev
+                        return fetchMoreResult
+                      }
+                    })
+                  }}
+                  onCreate={this.createLesson}
+                />
               </SearchBox>
               <ReactTable
                 manual
-                loading={this.state.isFetching}
-                data={this.state.lessons}
+                loading={loading}
+                data={data.allLessons.lessons}
                 columns={this.columns}
-                defaultPageSize={this.state.itemsByPage}
-                onFetchData={this.fetchData}
-                pages={Math.ceil(this.state.total / this.state.itemsByPage, 10)}
+                defaultPageSize={10}
+                onFetchData={(table) => {
+                  fetchMore({
+                    variables: { first: table.pageSize, skip: 10 * table.page },
+                    updateQuery: (prev, { fetchMoreResult }) => {
+                      if (!fetchMoreResult) return prev
+                      return fetchMoreResult
+                    }
+                  })
+                }}
+                pages={Math.ceil(data.allLessons.total / 10, 10)}
               />
             </Panel>
           )

@@ -105,23 +105,12 @@ class LessonEditor extends Component {
             </Column>
             <Column>
               <ToggleField
-                label='Is Recording'
-                keyName='isRecording'
-                active={this.props.lesson.isRecording}
-                onChange={this.props.onChange}
-              />
-            </Column>
-          </Row>
-          <Row>
-            <Column>
-              <ToggleField
                 label='Is Transcription Public'
                 keyName='isTranscriptionPublic'
                 active={this.props.lesson.isTranscriptionPublic}
                 onChange={this.props.onChange}
               />
             </Column>
-            <Column />
           </Row>
           <TagsField
             label='tags'

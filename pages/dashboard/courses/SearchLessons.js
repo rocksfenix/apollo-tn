@@ -4,7 +4,7 @@ import gql from 'graphql-tag'
 import includes from 'lodash/includes'
 import some from 'lodash/some'
 
-import Search from '../Search'
+import Search from '../SearchBox'
 
 const LESSONS = gql`
  query allLessons($first: Int, $skip: Int, $text: String) {

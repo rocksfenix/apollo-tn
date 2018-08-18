@@ -4,7 +4,7 @@ import { withApollo } from 'react-apollo'
 import gql from 'graphql-tag'
 import copy from 'copy-to-clipboard'
 import Dropzone from './Dropzone'
-import Search from '../Search'
+import Search from '../SearchBox'
 
 const ASSETS = gql`
   query assets($text: String) {
