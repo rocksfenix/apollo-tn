@@ -5,6 +5,7 @@ import Textarea from '../../../components/Textarea'
 import Multioption from '../../../components/Multioption'
 import ToggleField from '../../../components/ToggleField'
 import TagsField from '../../../components/TagsField'
+import ScreenshotDropzone from './ScreenshotDropzone'
 
 const Panel = styled.div`
   width: 600px;
@@ -117,6 +118,10 @@ class LessonEditor extends Component {
             keyName='tags'
             onChange={this.props.onChange}
             tags={this.props.lesson.tags}
+          />
+          <ScreenshotDropzone
+            src={this.props.lesson.screenshot.s100}
+            lessonSlug={this.props.lesson.slug}
           />
         </Fields>
       </Panel>

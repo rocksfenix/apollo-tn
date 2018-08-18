@@ -1,8 +1,11 @@
 import models from '../models'
 import { CreateSelf, UpdateSelf, DeleteSelf } from '../authorization'
 import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../errors'
+import uploadImage from '../util/upload-image'
+import { GraphQLUpload } from 'apollo-upload-server'
 
 export default {
+  Upload: GraphQLUpload,
   Query: {
     allLessons: async (_, { first, skip = 0, text }, { user = {} }) => {
       // TODO separar isPublished para role !== admin
@@ -98,7 +101,7 @@ export default {
 
       return lesson
     },
-    
+
     // UpdateSelf({
     //   model: 'Lesson',
     //   populate: 'author',
@@ -110,6 +113,31 @@ export default {
       only: 'admin',
       populate: 'author'
     })
-      .createResolver((_, args, { doc }) => doc)
+      .createResolver((_, args, { doc }) => doc),
+
+    uploadScreenshot: async (obj, { file, lessonSlug }) => {
+      const lesson = await models.Lesson.findOne({ slug: lessonSlug })
+
+      if (!lesson) throw new NotFound()
+
+      // Pasamos 3 valores, el file, un array con los tamaños y el folder S3
+      // cover.s800
+      const sizes = [
+        { size: 30, suffix: 's30' },
+        { size: 50, suffix: 's50' },
+        { size: 100, suffix: 's100' },
+        { size: 300, suffix: 's300' },
+        { size: 500, suffix: 's500' },
+        { size: 800, suffix: 's800' }
+      ]
+
+      const screenshot = await uploadImage(file, sizes, 'screenshot')
+
+      lesson.screenshot = screenshot
+
+      await lesson.save()
+
+      return lesson
+    }
   }
 }
