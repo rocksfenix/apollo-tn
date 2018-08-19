@@ -17,6 +17,8 @@ const USERS = gql`
         email
         role
         createdAt
+        isConnected
+        connectionDate
         avatar {
           s100
         }
@@ -24,7 +26,27 @@ const USERS = gql`
       total
     }
   }
+`
 
+const ON_USER_CONNECTION = gql`
+  subscription {
+    onChangeConnection {
+      status
+      user {
+        _id
+        slug
+        fullname
+        email
+        role
+        createdAt
+        isConnected
+        connectionDate
+        avatar {
+          s100
+        }
+      }
+    }
+  }
 `
 
 const Panel = styled.div`
@@ -47,11 +69,37 @@ const TimeAgo = styled.div`
   font-weight: 100;
 `
 
-const Avatar = styled.img`
-  width: 35px;
-  border-radius: 50%;
-  margin: 16px;
+const AvatarBox = styled.div`
+  width: ${props => props.size || '35px'};
+  height: ${props => props.size || '35px'};
+  position: relative;
 `
+const AvatarBall = styled.div`
+  background-color: ${p => p.isConnected ? '#32d412' : '#c6c6c6'};
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2px solid #FFF;
+  position: absolute;
+  top: 2px;
+  right: -3px;
+  box-shadow: -6px 3px 10px rgba(0, 0, 0, 0.61);
+`
+
+const AvatarImage = styled.div`
+  width: ${props => props.size || '35px'};
+  height: ${props => props.size || '35px'};
+  border-radius: 50%;
+  background: url(${props => props.src});
+  background-size: cover;
+`
+
+const Avatar = ({ src, isConnected }) => (
+  <AvatarBox>
+    <AvatarImage src={src} />
+    <AvatarBall isConnected={isConnected} />
+  </AvatarBox>
+)
 
 const Center = styled.div`
   height: 100%;
@@ -126,7 +174,10 @@ export default class extends Component {
         return (
           <Link>
             <LeftBlock onClick={() => this.showEditor(row)}>
-              <Avatar src={row.original.avatar.s100} />
+              <Avatar
+                src={row.original.avatar.s100}
+                isConnected={row.original.isConnected}
+              />
               { row.value }
             </LeftBlock>
           </Link>
@@ -156,93 +207,84 @@ export default class extends Component {
     }
   ]
 
-  pushData = (data) => {
-    if (!this.state.total) {
-      this.setState({
-        users: data.allUsers.users,
-        total: data.allUsers.total,
-        isFetching: false
-      })
-    }
-  }
-
-  fetchData = async (state, instance) => {
-    const skip = state.page * state.pageSize
-
-    this.setState({ isFetching: true })
-
-    const result = await this.props.client.query({
-      query: USERS,
-      variables: { first: state.pageSize, skip }
-    })
-
-    this.setState({
-      users: result.data.allUsers.users,
-      total: result.data.allUsers.total,
-      isFetching: false,
-      userByPage: state.pageSize
-    })
-
-    // console.log(result)
-    // https://github.com/howtographql/react-apollo/blob/master/src/components/LinkList.js
-  }
-
-  searchUser = async (text) => {
-    this.setState({ isFetching: true })
-
-    const result = await this.props.client.query({
-      query: USERS,
-      variables: {
-        first: this.state.userByPage,
-        skip: 0,
-        text
-      }
-    })
-
-    this.setState({
-      users: result.data.allUsers.users,
-      total: result.data.allUsers.total,
-      isFetching: false
-    })
-  }
-
   showEditor = (row) => {
-    console.log(row);
     this.setState({
       showEditor: true,
       usedId: row.original._id
     })
-    
   }
 
   hideEditor = () => this.setState({ showEditor: false })
 
+  sub = false
+
   render () {
-    if (!this.props.show) {
-      return null
-    }
+    if (!this.props.show) return null
+
     return (
       <Query query={USERS} variables={{ first: 10, skip: 0 }}>
-        {({ loading, error, data = {}, client, refetch, networkStatus }) => {
-          if (data.allUsers) {
-            this.pushData(data)
+        {({ loading, error, data, subscribeToMore, fetchMore }) => {
+          if (loading) return '...Loading'
+          if (error) return `Error!: ${error}`
+
+          if (!this.sub) {
+            this.sub = subscribeToMore({
+              document: ON_USER_CONNECTION,
+              updateQuery: (prev, { subscriptionData }) => {
+                if (!subscriptionData.data.onChangeConnection) return prev
+
+                console.log(subscriptionData.data.onChangeConnection)
+                return {
+                  allUsers: {
+                    ...prev.allUsers,
+                    users: prev.allUsers.users.map(user =>
+                      user._id === subscriptionData.data.onChangeConnection.user._id
+                        ? subscriptionData.data.onChangeConnection.user
+                        : user
+                    )
+                  }
+                }
+              }
+            })
           }
 
-          if (!this.state.total) return null
           return (
             <Panel>
               <SearchBox>
-                <Search onSeach={this.searchUser} />
+                <Search
+                  onSearch={(text) => {
+                    fetchMore({
+                      variables: {
+                        first: 10,
+                        skip: 0,
+                        text
+                      },
+                      updateQuery: (prev, { fetchMoreResult }) => {
+                        if (!fetchMoreResult) return prev
+                        return fetchMoreResult
+                      }
+                    })
+                  }}
+                />
               </SearchBox>
               <ReactTable
                 manual
-                loading={this.state.isFetching}
-                data={this.state.users}
+                loading={loading}
+                data={data.allUsers.users}
                 columns={this.columns}
-                defaultPageSize={this.state.userByPage}
-                onFetchData={this.fetchData}
-                pages={Math.ceil(this.state.total / this.state.userByPage, 10)}
+                defaultPageSize={10}
+                onFetchData={(table) => {
+                  fetchMore({
+                    variables: { first: table.pageSize, skip: 10 * table.page },
+                    updateQuery: (prev, { fetchMoreResult }) => {
+                      if (!fetchMoreResult) return prev
+                      return fetchMoreResult
+                    }
+                  })
+                }}
+                pages={Math.ceil(data.allUsers.total / 10, 10)}
               />
+
               <UserEditor
                 show={this.state.showEditor}
                 hideEditor={this.hideEditor}

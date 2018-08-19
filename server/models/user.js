@@ -74,14 +74,12 @@ const UserSchema = new mongoose.Schema({
   },
 
   activeToken: String,
-  // preferences: {
-  //   notifications: {
-  //     newCourse: { type: Boolean, default: false },
-  //     newLesson: { type: Boolean, default: true }
-  //   }
-  // },
-  // Se depreca ahora se sustituye el avatar
-  // avatarCache: { type: String, default: 'def' },
+
+  // Se usa para validar el estatus de coneccion
+  // Se actualizara a travez de Websockets
+  // o manualmente - solo admin
+  isConnected: { type: Boolean, default: false },
+  connectionDate: { type: Date },
 
   status: {
     type: String,

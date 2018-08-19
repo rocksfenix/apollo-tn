@@ -30,6 +30,9 @@ type User {
   createdAt: String
   updatedAt: String
 
+  isConnected: Boolean,
+  connectionDate: String,
+
   # Statistics
   countViewPro: Float
   countViewSub: Float
@@ -61,4 +64,16 @@ type Query {
 type Mutation {
   userUpdate(input: UserSet!): User
   userDelete(_id: ID!): User
+  online: String
+}
+
+type Connection {
+  status: Boolean
+  user: User
+}
+
+type Subscription {
+  # Cuando un usuario se conecta o desconecta
+  # Es disparado por Websockets
+  onChangeConnection: Connection
 }

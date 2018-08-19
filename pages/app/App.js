@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
 import Mousetrap from 'mousetrap'
+import { withApollo } from 'react-apollo'
 import Router from 'next/router'
 import Navbar from './Navbar'
 import SeoHead from '../../components/SeoHead'
@@ -75,6 +76,12 @@ const USER_SELF = gql`{
     acceptTermsAndPrivacy
   }
 }
+`
+
+const ONLINE = gql`
+  mutation {
+    online
+  }
 `
 
 class App extends Component {
@@ -184,6 +191,11 @@ class App extends Component {
       Mousetrap.bind('esc', () => this.onChangeTab(2, 'curso'))
       Mousetrap.bind('ctrl+up', this.toolUp)
       Mousetrap.bind('ctrl+down', this.toolDown)
+
+      // emitimos señal de conexion
+      this.props.client.mutate({
+        mutation: ONLINE
+      })
     }
   }
 
@@ -350,4 +362,4 @@ class App extends Component {
   }
 }
 
-export default App
+export default withApollo(App)

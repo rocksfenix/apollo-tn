@@ -1,6 +1,8 @@
 import models from '../models'
 import { updateSelf, deleteSelf } from '../authorization'
 import { AuthenticationRequiredError, ForbiddenError } from '../authorization/errors'
+import { withFilter } from 'graphql-subscriptions'
+import pubsub from '../pupsub'
 
 export default {
   Query: {
@@ -52,6 +54,22 @@ export default {
   },
 
   Mutation: {
+    online: async (_, params, { user }) => {
+      if (!user) throw new AuthenticationRequiredError()
+      const u = await models.User.findById(user.sub)
+      if (u) {
+        u.isConnected = true
+        u.connectionDate = Date.now()
+        await u.save()
+        pubsub.publish('onChangeConnection', {
+          onChangeConnection: {
+            status: true,
+            user: u
+          }
+        })
+      }
+      return 'ok'
+    },
     userUpdate: updateSelf({
       model: 'User',
       only: 'free pro admin'
@@ -61,5 +79,14 @@ export default {
       model: 'User',
       only: 'admin'
     }).createResolver((_, args, { doc }) => doc)
+  },
+
+  Subscription: {
+    // TODO Se van a revisar el flujo de los chats
+    onChangeConnection: {
+      subscribe: withFilter(() => pubsub.asyncIterator('onChangeConnection'), (payload, variables, ctx) => {
+        return ctx.user.role === 'admin'
+      })
+    }
   }
 }
