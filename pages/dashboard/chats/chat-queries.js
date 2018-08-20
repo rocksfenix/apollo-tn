@@ -19,6 +19,32 @@ export const NEW_CHAT = gql`
   }
 `
 
+export const CHATS = gql`
+  query chats($status: String) {
+    chats(status: $status) {
+      _id
+      fullname
+      email
+      avatar {
+        s100
+      }
+    }
+  }
+`
+
+export const CLOSE_CHAT = gql`
+  mutation closeChat($_id: ID!) {
+    closeChat(_id: $_id) {
+      _id
+      fullname
+      email
+      avatar {
+        s100
+      }
+    }
+  }
+`
+
 export const NEW_MESSAGE_SUBSCRIPTION = gql`
   subscription {
     newMessage {

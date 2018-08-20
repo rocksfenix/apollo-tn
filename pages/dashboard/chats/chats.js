@@ -7,7 +7,7 @@ import ChatList from './ChatList'
 import Conversation from './Conversation'
 import Information from './Information'
 
-import { NEW_MESSAGE_SUBSCRIPTION, NEW_CHAT } from './chat-queries'
+import { NEW_MESSAGE_SUBSCRIPTION, NEW_CHAT, CHATS } from './chat-queries'
 
 const USER = gql`
   query user ($_id: ID!) {
@@ -153,6 +153,15 @@ class ChatComponent extends Component {
     }
   }
 
+  async componentDidMount () {
+    const res = await this.props.client.query({
+      query: CHATS,
+      variables: { status: 'active' }
+    })
+
+    this.setState({ chats: res.data.chats })
+  }
+
   fetchUser = async () => {
     const res = await this.props.client.query({
       query: USER,
@@ -193,6 +202,7 @@ class ChatComponent extends Component {
     return (
       <Panel show={this.props.show}>
         <Chats>
+          <button onClick={() => console.log(this.state)}>SSSSSSSSSSSS</button>
           <ChatList
             chats={this.state.chats}
             onChatClick={this.onChatClick}

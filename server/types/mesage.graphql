@@ -19,6 +19,8 @@ type Subscription {
 type Query {
   messages(sender: String!, receiver: String!): [Message]!
 
+  chats(status: String): [User]
+
   # Revisa si hay algun agente conectado para chatear
   agentAvailable: User
 }
@@ -28,4 +30,8 @@ type Mutation {
   newChat(agent: String!): String
   # Cuando un usuario se conecta o desconecta como disponible
   availability(connection: Boolean!): String!
+
+  # si ed admin toma el id pasado por parametro de lo contrario
+  # toma el user.sub
+  closeChat(_id: ID): User
 }

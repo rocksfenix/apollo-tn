@@ -80,6 +80,9 @@ const UserSchema = new mongoose.Schema({
   // o manualmente - solo admin
   isConnected: { type: Boolean, default: false },
   connectionDate: { type: Date },
+  hasConversationActive: false,
+  conversationChanged: Date,
+  agentChat: String,
 
   status: {
     type: String,

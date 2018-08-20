@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import findLast from 'lodash/findLast'
 import { Mutation } from 'react-apollo'
 import ToggleField from '../../../../components/ToggleField'
-import { SET_DISPONIBILITY } from './../chat-queries'
+import { SET_DISPONIBILITY, CLOSE_CHAT } from './../chat-queries'
 import SmallText from './SmallText'
 
 const Avatar = styled.img`
@@ -86,6 +86,22 @@ const getLastPreviewMessage = (messages, userId) => {
   }
 }
 
+const CloseChat = ({ _id }) => (
+  <Mutation mutation={CLOSE_CHAT} variables={{ _id }}>
+    {(closeChat, { data }) => {
+      if (data) {
+        console.log(data);
+        
+        // debugger
+        
+      }
+      return (
+        <button onClick={closeChat}>X</button>
+      )
+    }}
+  </Mutation>
+)
+
 export default ({ chats, onChatClick, conversationActive, messages, messagesUnread }) => {
   return (
     <div>
@@ -112,7 +128,7 @@ export default ({ chats, onChatClick, conversationActive, messages, messagesUnre
             </AvatarBox>
 
             <UserData>
-              <Username>{chat.fullname}</Username>
+              <Username>{chat.fullname}</Username> <CloseChat _id={chat._id} />
               <LastMessage>
                 { conversationActive._id !== chat._id
                   ? <SmallText text={getLastPreviewMessage(messages, chat._id)} />

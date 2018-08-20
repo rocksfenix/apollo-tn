@@ -36,6 +36,20 @@ export default {
       const messages = await models.Message.find(query).limit(20).sort({ createdAt: 1 })
 
       return messages
+    },
+
+    chats: async (_, { status }, { user }) => {
+      if (!user) throw new AuthenticationRequiredError()
+      if (user.role !== 'admin') throw new ForbiddenError()
+      // TODO - filtrar por todos o por los mios
+
+      const chats = await models.User.find({
+        hasConversationActive: true,
+        agentChat: user.sub
+      })
+
+      console.log('chats', chats)
+      return chats
     }
   },
 
@@ -59,16 +73,41 @@ export default {
     newChat: async (_, { agent }, { user }) => {
       if (!user.sub) throw new AuthenticationRequiredError()
 
-      const User = await models.User.findById(user.sub)
+      const _user = await models.User.findById(user.sub)
 
-      if (!user) throw new NotFound()
+      if (!_user) throw new NotFound()
+
+      _user.hasConversationActive = true
+      _user.conversationChanged = Date.now()
+      _user.agentChat = agent
+
+      _user.save()
 
       pubsub.publish('newChat', {
         agent,
-        newChat: User
+        newChat: _user
       })
 
       return 'ok'
+    },
+
+    // el _id es el del usuario que se cerrara la
+    // seccion solo el admin puede cerrar una seccion
+    // de lo contrario toma el user.sub para cerrarla
+    closeChat: async (_, { _id }, { user }) => {
+      if (!user) throw new AuthenticationRequiredError()
+      let id = user.role === 'admin' ? _id : user.sub
+
+      const u = await models.User.findById(id)
+
+      if (!u) throw new NotFound()
+
+      u.hasConversationActive = false
+      u.conversationChanged = Date.now()
+
+      u.save()
+
+      return u
     },
 
     availability: async (_, { connection }, { user }) => {
