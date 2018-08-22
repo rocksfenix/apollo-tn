@@ -54,6 +54,9 @@ export default {
   },
 
   Mutation: {
+    // Se dispara cuando un usuario este en la pagina
+    // de /app modifica el documento para validar
+    // que el usuario esta conectado
     online: async (_, params, { user }) => {
       if (!user) throw new AuthenticationRequiredError()
       const u = await models.User.findById(user.sub)
@@ -70,6 +73,7 @@ export default {
       }
       return 'ok'
     },
+
     userUpdate: updateSelf({
       model: 'User',
       only: 'free pro admin'

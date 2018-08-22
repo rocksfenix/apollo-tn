@@ -7,6 +7,8 @@ import pubsub from '../pupsub'
 export default {
   Query: {
     agentAvailable: async () => {
+      // Se dispara cuando un usuario solicita soporte
+      // ya sea entrando a una pagina de soporte /app etc.
       // Obtenemos el listado de administradores activos
       // y se ordenan por conversationsActives
       const agents = await models.User
@@ -103,17 +105,23 @@ export default {
       return u
     },
 
+    // Solo los usuarios admin, puede setear su isConnected
+    // para dar soporte a travez del chat, se dispara
+    // el evento agentConnected para notificar a los usuarios
     availability: async (_, { connection }, { user }) => {
       if (!user) throw new AuthenticationRequiredError()
       if (user.role !== 'admin') throw new ForbiddenError()
 
-      if (connection) {
-        // user.sub correponde al agente que se acaba de conectar
-        const User = await models.User.findById(user.sub)
-        pubsub.publish('agentConnected', {
-          agentConnected: User
-        })
-      }
+      // user.sub correponde al agente que se acaba de conectar
+      const _user = await models.User.findById(user.sub)
+
+      _user.isConnected = connection
+      _user.connectionDate = Date.now()
+      await _user.save()
+
+      pubsub.publish('agentConnected', {
+        agentConnected: _user
+      })
 
       return 'ok'
     }
