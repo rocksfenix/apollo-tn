@@ -4,7 +4,6 @@
 import jwt from 'jsonwebtoken'
 import models from '../models'
 import auth from './auth'
-import agents from '../agents'
 
 const JWT_SECRET = process.env.JWT_SECRET
 
@@ -12,8 +11,6 @@ export default async ({ token, refreshToken }, webSocket) => {
   if (!token || !refreshToken) return {}
   try {
     const user = jwt.verify(token, JWT_SECRET)
-    // WARNING SE DEPRECARA
-    if (user.role === 'admin') agents.add(user.sub)
     return { user }
   } catch (e) {
     // TOKEN EXPIRED
@@ -32,9 +29,6 @@ export default async ({ token, refreshToken }, webSocket) => {
 
         const newToken = auth.getToken(user)
         const _user = await jwt.decode(newToken)
-
-        // Agregamos a agents si es admin
-        if (_user.role === 'admin') agents.add(_user.sub)
 
         return { user: _user }
       } catch (error) {

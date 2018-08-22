@@ -1,5 +1,4 @@
 import cookie from 'cookie'
-import agents from '../agents'
 import jwt from 'jsonwebtoken'
 import Constants from '../../config'
 import pubsub from '../pupsub'
@@ -28,7 +27,4 @@ export default async (webSocket, context) => {
   const cookies = cookie.parse(context.request.headers.cookie)
   const user = jwt.decode(cookies[JWT_KEY])
   changeUserConnect(user.sub, false)
-  if (user.role === 'admin') {
-    agents.remove(user.sub)
-  }
 }

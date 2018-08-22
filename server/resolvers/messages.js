@@ -2,25 +2,18 @@ import models from '../models'
 import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../authorization/errors'
 import { withFilter } from 'graphql-subscriptions'
 import pubsub from '../pupsub'
-import agents from '../agents'
+// import agents from '../agents'
 
 export default {
   Query: {
     agentAvailable: async () => {
-      // console.log('************** AGENT AVALABLES', agents.list())
-      // De momento es publica ya que posiblemente se implemente en chat
-      // publico, se realizaran pruebas despues
-      // TODO se haria logia de obtener el agente menos ocupado
-      // de momento listamos el primero
-      // const agent = agents.list()[0] ? agents.list()[0] : 'no-available-at-this-moment'
+      // Obtenemos el listado de administradores activos
+      // y se ordenan por conversationsActives
+      const agents = await models.User
+        .find({ role: 'admin', isConnected: true }, null, { sort: 'conversationsActives' })
 
-      const _id = agents.list()[0]
-
-      if (!_id) return null
-
-      const agent = await models.User.findById(_id)
-
-      return agent
+      // El primero es el mas desocupado
+      return agents[0]
     },
 
     messages: async (_, { sender, receiver }, { user }) => {
@@ -115,15 +108,12 @@ export default {
       if (user.role !== 'admin') throw new ForbiddenError()
 
       if (connection) {
-        agents.add(user.sub)
         // user.sub correponde al agente que se acaba de conectar
         const User = await models.User.findById(user.sub)
         pubsub.publish('agentConnected', {
           agentConnected: User
         })
       }
-
-      if (!connection) agents.remove(user.sub)
 
       return 'ok'
     }

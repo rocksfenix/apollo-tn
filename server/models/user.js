@@ -83,6 +83,7 @@ const UserSchema = new mongoose.Schema({
   hasConversationActive: false,
   conversationChanged: Date,
   agentChat: String,
+  conversationsActives: { type: Number, default: 0 },
 
   status: {
     type: String,

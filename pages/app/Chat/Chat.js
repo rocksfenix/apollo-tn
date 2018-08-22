@@ -100,6 +100,8 @@ class ChatComponent extends Component {
       query: GET_AGENT_AVAILABLE
     })
 
+    // debugger
+
     this.setState({ agentAvailable: res.data.agentAvailable })
   }
 

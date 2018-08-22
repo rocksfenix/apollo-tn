@@ -12,6 +12,12 @@ import Issues from './issues'
 import Chats from './chats'
 import withUser from '../../components/HOC/WithUser'
 
+const ONLINE = gql`
+  mutation {
+    online
+  }
+`
+
 const NEW_CHAT = gql`
   subscription {
     newChat {
@@ -103,6 +109,13 @@ class DashboardPage extends Component {
   state = {
     tab: 'statistics',
     unreadChats: 0
+  }
+
+  componentDidMount () {
+    // emitimos señal de conexion
+    this.props.client.mutate({
+      mutation: ONLINE
+    })
   }
 
   onChangeTab = (tab) => {

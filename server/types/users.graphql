@@ -35,6 +35,7 @@ type User {
   hasConversationActive: Boolean
   conversationChanged: String
   agentChat: String
+  conversationsActives: Int
 
   # Statistics
   countViewPro: Float
