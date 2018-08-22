@@ -48,14 +48,23 @@ const ON_USER_CONNECTION = gql`
     }
   }
 `
+// display: flex;
+// flex-direction: column;
+// align-items: center;
+// justify-content: space-around;
 
 const Panel = styled.div`
+  position: fixed;
+  top: 0;
   width: 100%;
   height: 100vh;
-  background-color: yellow;
-  background: #fbfbfb;
-  overflow-y: auto;
-  overflow-x: hidden;
+  padding-right: 52px;
+  z-index: 1000;
+  transition: all .2s ease-in-out;
+  overflow: hidden;
+  opacity: ${p => p.show ? '1' : '0'};
+  transform: ${p => p.show ? 'scale(1)' : 'scale(.93)'};
+  z-index: ${p => p.show ? '1000' : '-1'};
 `
 
 const TimeAgo = styled.div`
@@ -219,15 +228,13 @@ export default class extends Component {
   sub = false
 
   render () {
-    if (!this.props.show) return null
-
     return (
       <Query query={USERS} variables={{ first: 10, skip: 0 }}>
         {({ loading, error, data, subscribeToMore, fetchMore }) => {
           if (loading) return '...Loading'
           if (error) return `Error!: ${error}`
 
-          if (!this.sub) {
+          if (!this.sub && process.browser) {
             this.sub = subscribeToMore({
               document: ON_USER_CONNECTION,
               updateQuery: (prev, { subscriptionData }) => {
@@ -249,7 +256,7 @@ export default class extends Component {
           }
 
           return (
-            <Panel>
+            <Panel show={this.props.show}>
               <SearchBox>
                 <Search
                   onSearch={(text) => {

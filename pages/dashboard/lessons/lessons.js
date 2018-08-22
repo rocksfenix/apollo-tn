@@ -284,6 +284,7 @@ export default class extends Component {
         {({ loading, error, data, fetchMore }) => {
           if (loading) return '...Loading'
           if (error) return `Error!: ${error}`
+          if (!data) return null
           return (
             <Panel>
               <LessonEditor
