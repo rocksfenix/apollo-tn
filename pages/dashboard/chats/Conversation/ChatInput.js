@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom'
 import styled from 'styled-components'
 import { withApollo } from 'react-apollo'
 import { CREATE_MESSAGE, MESSAGES } from '../chat-queries'
+import audios from '../../../../services/audios'
 
 const Input = styled.textarea`
   width: 95%;
@@ -102,9 +103,6 @@ class ChatInput extends Component {
       variables: { receiver: this.props.receiver, sender: this.props.sender, skip: 0, first: 30 }
     })
 
-    console.log(messages)
-    // debugger
-
     this.props.client.cache.writeQuery({
       query: MESSAGES,
       variables: { receiver: this.props.receiver, sender: this.props.sender, skip: 0, first: 30 },
@@ -112,6 +110,8 @@ class ChatInput extends Component {
         messages: [ ...messages, res.data.messageCreate ]
       }
     })
+
+    audios.newMessage.play()
 
     // Force Update
     this.props.onNewMessage([ ...messages, res.data.messageCreate ])

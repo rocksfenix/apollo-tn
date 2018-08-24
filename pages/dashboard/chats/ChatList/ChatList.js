@@ -35,12 +35,10 @@ export default class extends React.Component {
               updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data) return prev
                 const { newChat } = subscriptionData.data
+                audios.newChat.play()
 
                 if (prev.chats.filter(f => f._id === newChat._id).length) {
-                  // Disparamos el evento de nuevo chat registrado
-                  // alert('NEW CHAT')
-                  // document.getElementById('audio-newChat').play()
-                  audios.newChat.play()
+                  // TODO - Disparamos el evento de nuevo chat registrado
                   return prev
                 }
 
