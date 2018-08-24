@@ -2,6 +2,7 @@ import models from '../models'
 import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../authorization/errors'
 import { withFilter } from 'graphql-subscriptions'
 import pubsub from '../pupsub'
+import uid from 'uid'
 
 export default {
   Query: {
@@ -115,6 +116,13 @@ export default {
 
       u.save()
 
+      pubsub.publish('closeConvesation', {
+        closeConvesation: {
+          code: uid(),
+          user: u
+        }
+      })
+
       return u
     },
 
@@ -142,6 +150,12 @@ export default {
 
   Subscription: {
     // TODO Se van a revisar el flujo de los chats
+    closeConvesation: {
+      subscribe: withFilter(() => pubsub.asyncIterator('closeConvesation'), (payload, variables, ctx) => {
+        // Se emite al usuario que notifica del cierre de conversacion
+        return payload.closeConvesation.user._id === ctx.user.sub
+      })
+    },
     newMessage: {
       subscribe: withFilter(() => pubsub.asyncIterator('newMessage'), (payload, variables, ctx) => {
         //

@@ -76,50 +76,50 @@ const getSegments = (messages) => {
   return acc
 }
 
-let unsubscribe = null
-
-export default (props) => {
-  if (!props.receiver._id || !props.sender._id || !props.show) return null
-
-  return (
-    <Query
-      query={MESSAGES}
-      variables={{ receiver: props.receiver._id, sender: props.sender._id }}
-    >
-      {({ loading, error, data, subscribeToMore }) => {
-        if (!unsubscribe) {
-          unsubscribe = subscribeToMore({
-            document: NEW_MESSAGE_SUBSCRIPTION,
-            updateQuery: (prev, { subscriptionData }) => {
-              if (!subscriptionData.data) return prev
-              const { newMessage } = subscriptionData.data
-              return {
-                ...prev,
-                messages: [ ...prev.messages, newMessage ]
+export default class extends React.Component {
+  unsubscribe = null
+  render () {
+    if (!this.props.receiver._id || !this.props.sender._id || !this.props.show) return null
+    return (
+      <Query
+        query={MESSAGES}
+        variables={{ receiver: this.props.receiver._id, sender: this.props.sender._id }}
+      >
+        {({ loading, error, data, subscribeToMore }) => {
+          if (!this.unsubscribe) {
+            this.unsubscribe = subscribeToMore({
+              document: NEW_MESSAGE_SUBSCRIPTION,
+              updateQuery: (prev, { subscriptionData }) => {
+                if (!subscriptionData.data) return prev
+                const { newMessage } = subscriptionData.data
+                return {
+                  ...prev,
+                  messages: [ ...prev.messages, newMessage ]
+                }
               }
-            }
-          })
-        }
-        if (data.messages) {
-          return (
-            <Chat>
-              <ChatMessages>
-                {getSegments(data.messages).map((segment, i) => (
-                  <Message
-                    key={`sec_id${i}`}
-                    segment={segment}
-                    itsMe={segment[0].sender === props.sender._id}
-                    me={props.sender}
-                    receiver={props.receiver}
-                  />
-                ))}
-              </ChatMessages>
-            </Chat>
-          )
-        } else {
-          return null
-        }
-      }}
-    </Query>
-  )
+            })
+          }
+          if (data.messages) {
+            return (
+              <Chat>
+                <ChatMessages>
+                  {getSegments(data.messages).map((segment, i) => (
+                    <Message
+                      key={`sec_id${i}`}
+                      segment={segment}
+                      itsMe={segment[0].sender === this.props.sender._id}
+                      me={this.props.sender}
+                      receiver={this.props.receiver}
+                    />
+                  ))}
+                </ChatMessages>
+              </Chat>
+            )
+          } else {
+            return null
+          }
+        }}
+      </Query>
+    )
+  }
 }

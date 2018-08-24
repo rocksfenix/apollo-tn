@@ -28,6 +28,19 @@ const ON_AGENT_CONNECTED = gql`
       }
   }
 `
+const ON_CLOSE_CONVERSATION = gql`
+  subscription {
+    closeConvesation {
+      code
+    }
+  }
+`
+
+const NEW_CHAT = gql`
+  mutation newChat($agent: String!) {
+    newChat (agent: $agent)
+  }
+`
 
 const Panel = styled.div`
   opacity: 1;
@@ -79,10 +92,21 @@ const ChatImage = styled.img`
 class ChatComponent extends Component {
   state = {
     isExpanded: false,
-    agentAvailable: null
+    activeChat: false,
+    agentAvailable: null,
+    endConversation: null,
+    closeCode: ''
   }
 
   static getDerivedStateFromProps (nextProps, prevState) {
+    // debugger
+    // console.log('onCloseConversation', nextProps.onCloseConversation.closeConvesation)
+    if (nextProps.onCloseConversation.closeConvesation) {
+      if (nextProps.onCloseConversation.closeConvesation.code !== prevState.closeCode) {
+        return { endConversation: true, closeCode: nextProps.onCloseConversation.closeConvesation.code }
+      }
+    }
+
     if (nextProps.onAgentConnected.agentConnected) {
       return {
         agentAvailable: nextProps.onAgentConnected.agentConnected
@@ -105,8 +129,21 @@ class ChatComponent extends Component {
     this.setState({ agentAvailable: res.data.agentAvailable })
   }
 
+  newChat = async () => {
+    const res = await this.props.client.mutate({
+      mutation: NEW_CHAT,
+      variables: { agent: this.state.agentAvailable._id }
+    })
+    // debugger
+    // Obtener datos del agente
+    if (res.data.newChat) {
+      this.setState({ activeChat: true, endConversation: false })
+    }
+  }
+
   render () {
     if (!this.state.agentAvailable) return null
+
     return (
       <Panel>
         <ChatMini
@@ -118,6 +155,9 @@ class ChatComponent extends Component {
           show={this.state.isExpanded}
           onClick={this.expandedToggle}
           agentAvailable={this.state.agentAvailable}
+          endConversation={this.state.endConversation}
+          newChat={this.newChat}
+          activeChat={this.state.activeChat}
           {...this.props}
         />
       </Panel>
@@ -126,5 +166,6 @@ class ChatComponent extends Component {
 }
 
 export default compose(
-  graphql(ON_AGENT_CONNECTED, { name: 'onAgentConnected' })
+  graphql(ON_AGENT_CONNECTED, { name: 'onAgentConnected' }),
+  graphql(ON_CLOSE_CONVERSATION, { name: 'onCloseConversation' })
 )(ChatComponent)

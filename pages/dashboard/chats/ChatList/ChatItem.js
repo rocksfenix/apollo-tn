@@ -104,7 +104,6 @@ class ChatItem extends Component {
         const { newMessage } = subscriptionData.data
 
         // document.getElementById('audio-newMessage').play()
-
         audios.newMessage.play()
 
         if (newMessage.sender !== chat._id) {
@@ -179,7 +178,7 @@ class ChatItem extends Component {
           <Avatar src={chat.avatar.s100} />
         </AvatarBox>
         <UserData>
-          <Username>{chat.fullname}</Username>
+          <Username>{chat.fullname} - {chat._id}</Username>
           <LastMessage>
             { !isActive
               ? <SmallText text={this.state.lastMessage} />

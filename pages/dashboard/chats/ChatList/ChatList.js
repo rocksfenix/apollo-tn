@@ -60,6 +60,7 @@ export default class extends React.Component {
                     isActive={conversationActive._id === chat._id}
                     key={chat._id}
                     chat={chat}
+                    chats={data.chats}
                     receiver={chat._id}
                     sender={user._id}
                     onChatClick={onChatClick}

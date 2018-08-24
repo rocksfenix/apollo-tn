@@ -6,6 +6,11 @@ type Message {
   createdAt: String
 }
 
+type closeConvesation {
+  user: User,
+  code: String
+}
+
 type Subscription {
   newMessage: Message
 
@@ -14,6 +19,9 @@ type Subscription {
 
   # Cuando un agente se pone como disponible
   agentConnected: User
+
+  # Se dispara cuando se termina la session
+  closeConvesation: closeConvesation
 }
 
 type Query {
@@ -28,10 +36,12 @@ type Query {
 type Mutation {
   messageCreate(text: String!, receiver: ID!): Message
   newChat(agent: String!): String
+
   # Cuando un usuario se conecta o desconecta como disponible
   availability(connection: Boolean!): String!
 
   # si ed admin toma el id pasado por parametro de lo contrario
   # toma el user.sub
+  # Cuando se sierraLa conversacion
   closeChat(_id: ID): User
 }

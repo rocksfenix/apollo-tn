@@ -3,13 +3,8 @@ import styled, { keyframes } from 'styled-components'
 import { withApollo, Mutation } from 'react-apollo'
 import Messages from './Messages'
 import gql from 'graphql-tag'
-import { MESSAGES } from '../../dashboard/chats/chat-queries';
-
-const NEW_CHAT = gql`
-  mutation newChat($agent: String!) {
-    newChat (agent: $agent)
-  }
-`
+import { MESSAGES } from '../../dashboard/chats/chat-queries'
+import EndConversation from './EndConversation'
 
 const CREATE_MESSAGE = gql`
   mutation messageCreate($text: String!, $receiver: ID!) {
@@ -40,7 +35,7 @@ const anim = keyframes`
   }
 `
 
-const ChatExpanded = styled.div`
+const Panel = styled.div`
   opacity: 1;
   z-index: -1;
   position: fixed;
@@ -51,7 +46,7 @@ const ChatExpanded = styled.div`
   max-height: 100%;
   min-height: 0px;
   min-width: 0px;
-  background-color: tomato;
+  background-color: transparent;
   border: 0px;
   overflow: hidden;
   right: 0px;
@@ -257,65 +252,56 @@ const Input = ({ receiver, sender }) => {
 }
 
 class ChatExpandedComponent extends Component {
-  state = {
-    activeChat: false
-  }
-
-  newChat = async () => {
-    const res = await this.props.client.mutate({
-      mutation: NEW_CHAT,
-      variables: { agent: this.props.agentAvailable._id }
-    })
-
-    // Obtener datos del agente
-    if (res.data.newChat) {
-      this.setState({ activeChat: true })
-    }
-  }
-
   render () {
     return (
-      <ChatExpanded
+      <Panel
         show={this.props.show}
       >
+
         <ChatContainer>
-          <ChatBox>
-            <Top>
-              <Button>
-                <Icon className='icon-menu-points' />
-              </Button>
-              <Button onClick={this.props.onClick}>
-                <Icon className='icon-arrow-bottom' />
-              </Button>
-            </Top>
-            <AgentBox>
-              <AvatarBox>
-                <Avatar src='/static/avatar.jpg' />
-              </AvatarBox>
-              <AgentInfo>
-                <AgentName>Gerardo Gallegos</AgentName>
-                <AgentTitle>SEO</AgentTitle>
-              </AgentInfo>
-            </AgentBox>
-            { !this.props.agentAvailable._id || !this.props.user._id
-              ? 'Auth is needed!'
+          {
+            this.props.endConversation ? <EndConversation newChat={this.props.newChat} />
               : (
-                <Messages
-                  receiver={this.props.agentAvailable}
-                  sender={this.props.user}
-                  show={this.props.show}
-                />
+                <ChatBox>
+                  <Top>
+                    <Button>
+                      <Icon className='icon-menu-points' />
+                    </Button>
+                    <Button onClick={this.props.onClick}>
+                      <Icon className='icon-arrow-bottom' />
+                    </Button>
+                  </Top>
+                  <AgentBox>
+                    <AvatarBox>
+                      <Avatar src='/static/avatar.jpg' />
+                    </AvatarBox>
+                    <AgentInfo>
+                      <AgentName>Gerardo Gallegos</AgentName>
+                      <AgentTitle>SEO</AgentTitle>
+                    </AgentInfo>
+                  </AgentBox>
+                  { !this.props.agentAvailable._id || !this.props.user._id
+                    ? 'Auth is needed!'
+                    : (
+                      <Messages
+                        receiver={this.props.agentAvailable}
+                        sender={this.props.user}
+                        show={this.props.show}
+                      />
+                    )
+                  }
+                  <ChatNow>
+                    { this.props.activeChat
+                      ? <Input receiver={this.props.agentAvailable} sender={this.props.user} />
+                      : <BigButton onClick={this.props.newChat}>Chatear ahora</BigButton>
+                    }
+                  </ChatNow>
+                </ChatBox>
               )
-            }
-            <ChatNow>
-              { this.state.activeChat
-                ? <Input receiver={this.props.agentAvailable} sender={this.props.user} />
-                : <BigButton onClick={this.newChat}>Chatear ahora</BigButton>
-              }
-            </ChatNow>
-          </ChatBox>
+          }
         </ChatContainer>
-      </ChatExpanded>
+
+      </Panel>
     )
   }
 }
