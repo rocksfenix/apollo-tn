@@ -61,7 +61,7 @@ const ChatContainer = styled.div`
 `
 
 const ChatBox = styled.div`
-  display: flex;
+  display: ${p => p.show ? 'flex' : 'none'};
   flex-direction: column;
   min-width: 0px;
   height: 100%;
@@ -179,60 +179,61 @@ const ChatNow = styled.div`
   backface-visibility: hidden;
 `
 
+const AgentBoxComp = ({agentAvailable}) => {
+  if (!agentAvailable._id) return null
+  return (
+    <AgentBox>
+      <AvatarBox>
+        <Avatar src={agentAvailable.avatar.s100} />
+      </AvatarBox>
+      <AgentInfo>
+        <AgentName>{ agentAvailable.fullname }</AgentName>
+        <AgentTitle>Support Agent</AgentTitle>
+      </AgentInfo>
+    </AgentBox>
+  )
+}
+
 class ChatExpandedComponent extends Component {
   render () {
-    console.log(this.props)
-    const { show, endConversation, hasTicket, agentAvailable, user } = this.props
+    const { isExpanded, endConversation, hasTicket, agentAvailable, user } = this.props
     return (
       <Panel
-        show={show}
+        show={isExpanded}
       >
         { endConversation
           ? <EndConversation {...this.props} />
           : (
             <ChatContainer>
               <OpenChat
-                mount={!hasTicket && show}
+                mount={!hasTicket && isExpanded}
                 {...this.props}
               />
-
-              { show && hasTicket && agentAvailable
-                ? (
-                  <ChatBox>
-                    <Top>
-                      <Button>
-                        <Icon className='icon-menu-points' />
-                      </Button>
-                      <Button onClick={this.props.onMinimize}>
-                        <Icon className='icon-arrow-bottom' />
-                      </Button>
-                    </Top>
-                    <AgentBox>
-                      <AvatarBox>
-                        <Avatar src={agentAvailable.avatar.s100} />
-                      </AvatarBox>
-                      <AgentInfo>
-                        <AgentName>{ agentAvailable.fullname }</AgentName>
-                        <AgentTitle>Support Agent</AgentTitle>
-                      </AgentInfo>
-                    </AgentBox>
-                    { !agentAvailable._id || !user._id
-                      ? 'Auth is needed!'
-                      : (
-                        <Messages
-                          receiver={agentAvailable}
-                          sender={user}
-                          show={show}
-                        />
-                      )
-                    }
-                    <ChatNow>
-                      <ChatInput receiver={agentAvailable} sender={user} />
-                    </ChatNow>
-                  </ChatBox>
-                )
-                : null
-              }
+              <ChatBox show={isExpanded && hasTicket && agentAvailable._id}>
+                <Top>
+                  <Button>
+                    <Icon className='icon-menu-points' />
+                  </Button>
+                  <Button onClick={this.props.onMinimize}>
+                    <Icon className='icon-arrow-bottom' />
+                  </Button>
+                </Top>
+                <AgentBoxComp agentAvailable={agentAvailable} />
+                { !agentAvailable._id || !user._id
+                  ? 'Auth is needed!'
+                  : (
+                    <Messages
+                      receiver={agentAvailable}
+                      sender={user}
+                      show={isExpanded}
+                      newMessageUnread={this.props.newMessageUnread}
+                    />
+                  )
+                }
+                <ChatNow>
+                  <ChatInput receiver={agentAvailable} sender={user} />
+                </ChatNow>
+              </ChatBox>
             </ChatContainer>
           )
         }

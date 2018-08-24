@@ -65,14 +65,35 @@ const ChatImage = styled.img`
   height: 28px;
 `
 
+const MessagesUnread = styled.div`
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  background-color: #ff0047;
+  border-radius: 3px;
+  color: #FFF;
+  font-size: 13px;
+  padding: 0 .4em;
+  opacity: 1;
+  -webkit-transform: translateY(-50%) scale(1);
+  -ms-transform: translateY(-50%) scale(1);
+  transform: translateY(-50%) scale(1);
+  -webkit-transition: all .3s ease-in-out;
+  transition: all .3s ease-in-out;
+`
+
 class ChatComponent extends Component {
   state = {
     isExpanded: false,
     activeChat: false,
-    agentAvailable: null,
+    agentAvailable: {},
     endConversation: null,
     endConversationCustomer: null,
-    hasTicket: false
+    hasTicket: false,
+    messagesUnread: 0
   }
 
   componentDidUpdate (prevProps) {
@@ -83,7 +104,8 @@ class ChatComponent extends Component {
 
   expandedToggle = () => this.setState(state => ({
     ...state,
-    isExpanded: !state.isExpanded
+    isExpanded: !state.isExpanded,
+    messagesUnread: 0
   }))
 
   newChat = async () => {
@@ -118,6 +140,13 @@ class ChatComponent extends Component {
     })
   }
 
+  newMessageUnread = (message) => {
+    this.setState(state => ({
+      ...state,
+      messagesUnread: state.messagesUnread + 1
+    }))
+  }
+
   render () {
     return (
       <Panel>
@@ -125,14 +154,19 @@ class ChatComponent extends Component {
           show={!this.state.isExpanded}
           onClick={this.expandedToggle}>
           <ChatImage src='/static/chat.svg' />
+          { this.state.messagesUnread > 0
+            ? <MessagesUnread>{this.state.messagesUnread}</MessagesUnread>
+            : null
+          }
         </ChatMini>
         <ChatExpanded
-          show={this.state.isExpanded}
+          isExpanded={this.state.isExpanded}
           onMinimize={this.expandedToggle}
           onAgentSync={this.onAgentSync}
           onTicketCreate={this.onTicketCreate}
           newChat={this.newChat}
           onCloseEnd={this.onCloseEnd}
+          newMessageUnread={this.newMessageUnread}
           {...this.props}
           {...this.state}
         />

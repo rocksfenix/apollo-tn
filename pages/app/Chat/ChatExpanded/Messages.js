@@ -86,12 +86,18 @@ export default class extends React.Component {
         variables={{ receiver: this.props.receiver._id, sender: this.props.sender._id }}
       >
         {({ loading, error, data, subscribeToMore }) => {
-          if (!this.unsubscribe) {
+          if (!this.unsubscribe && process.browser) {
             this.unsubscribe = subscribeToMore({
               document: NEW_MESSAGE_SUBSCRIPTION,
               updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data) return prev
                 const { newMessage } = subscriptionData.data
+
+                // Validamos si no esta expandido para agreegar
+                // Como mensajes sin leer
+                if (!this.props.show) {
+                  this.props.newMessageUnread(newMessage)
+                }
                 return {
                   ...prev,
                   messages: [ ...prev.messages, newMessage ]
