@@ -1,147 +1,77 @@
 import React from 'react'
 import styled from 'styled-components'
-import findLast from 'lodash/findLast'
-import { Mutation } from 'react-apollo'
-import ToggleField from '../../../../components/ToggleField'
-import { SET_DISPONIBILITY, CLOSE_CHAT } from './../chat-queries'
-import SmallText from './SmallText'
+import { Query } from 'react-apollo'
+import { NEW_CHAT, CHATS } from '../chat-queries'
+import ChatItem from './ChatItem'
+import SetDisponibility from './SetDisponibility'
+import audios from '../../../../services/audios'
 
-const Avatar = styled.img`
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
+const Panel = styled.div`
+
 `
-
-const Item = styled.li`
-  list-style: none;
-  padding: .3em .5em;
-  background-color: ${p => p.active ? '#2a2b32' : '#FFF'};
-  color: ${p => p.active ? '#FFF' : '#000'};
-  position: relative;
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 3px;
-  cursor: pointer;
-`
-
-const Notify = styled.div`
-  position: absolute;
-  right: 1em;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: orangered;
-  border-radius: 3px;
-  color: #FFF;
-  font-size: 13px;
-  padding: 0 .4em;
-  opacity: ${p => p.show ? '1' : '0'};
-  transform: ${p => p.show ? 'translateY(-50%) scale(1)' : 'translateY(-50%) scale(0)'};
-  transition: all .3s ease-in-out;
-`
-
-const AvatarBox = styled.div`
-  width: 25px;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
-const UserData = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding-left: 1em;
-`
-
 const Items = styled.ul`
   padding: 0;
   width: 95%;
   margin: 1em auto;
 `
+let sub = null
 
-const Username = styled.div`
-  width: 100%;
-  font-size: 16px;
-`
+export default class extends React.Component {
+  getMoreData = () => {
 
-const LastMessage = styled.div`
-  width: 100%;
-  height: 22px;
-  overflow: hidden;
-  position: relative;
-`
-
-const getLastPreviewMessage = (messages, userId) => {
-  try {
-    // Retornamos el ultimo mensaje
-    return findLast(messages, m => m.sender === userId).text.substring(0, 50)
-  } catch (error) {
-    return ''
   }
-}
+  render () {
+    const { user, conversationActive, onChatClick } = this.props
 
-const CloseChat = ({ _id }) => (
-  <Mutation mutation={CLOSE_CHAT} variables={{ _id }}>
-    {(closeChat, { data }) => {
-      if (data) {
-        console.log(data);
-        
-        // debugger
-        
-      }
-      return (
-        <button onClick={closeChat}>X</button>
-      )
-    }}
-  </Mutation>
-)
+    return (
+      <Query query={CHATS}>
+        {({ data, loading, error, subscribeToMore }) => {
+          if (loading) return null
+          if (error) return null
 
-export default ({ chats, onChatClick, conversationActive, messages, messagesUnread }) => {
-  return (
-    <div>
-      <Mutation mutation={SET_DISPONIBILITY}>
-        {(availability, { data }) => {
+          if (!sub && process.browser) {
+            sub = subscribeToMore({
+              document: NEW_CHAT,
+              updateQuery: (prev, { subscriptionData }) => {
+                if (!subscriptionData.data) return prev
+                const { newChat } = subscriptionData.data
+
+                if (prev.chats.filter(f => f._id === newChat._id).length) {
+                  // Disparamos el evento de nuevo chat registrado
+                  // alert('NEW CHAT')
+                  // document.getElementById('audio-newChat').play()
+                  audios.newChat.play()
+                  return prev
+                }
+
+                return {
+                  ...prev,
+                  chats: [newChat, ...prev.chats]
+                }
+              }
+            })
+          }
           return (
-            <ToggleField
-              active
-              onChange={(k, value) => availability({ variables: { connection: value } })}
-              label='Availability'
-            />
+            <Panel>
+              <SetDisponibility />
+              <Items>
+                {data.chats.map(chat => (
+                  <ChatItem
+                    isActive={conversationActive._id === chat._id}
+                    key={chat._id}
+                    chat={chat}
+                    receiver={chat._id}
+                    sender={user._id}
+                    onChatClick={onChatClick}
+                    first={30}
+                    skip={0}
+                  />
+                ))}
+              </Items>
+            </Panel>
           )
         }}
-      </Mutation>
-      <Items>
-        {chats.map((chat, i) => (
-          <Item
-            key={chat._id}
-            onClick={() => onChatClick(chat)}
-            active={conversationActive._id === chat._id}
-          >
-            <AvatarBox>
-              <Avatar src={chat.avatar.s100} />
-            </AvatarBox>
-
-            <UserData>
-              <Username>{chat.fullname}</Username> <CloseChat _id={chat._id} />
-              <LastMessage>
-                { conversationActive._id !== chat._id
-                  ? <SmallText text={getLastPreviewMessage(messages, chat._id)} />
-                  : ''
-                }
-              </LastMessage>
-            </UserData>
-            <Notify
-              show={messagesUnread[`user-${chat._id}`] !== 0}
-            >{ messagesUnread[`user-${chat._id}`] }</Notify>
-          </Item>
-        ))}
-      </Items>
-    </div>
-  )
+      </Query>
+    )
+  }
 }

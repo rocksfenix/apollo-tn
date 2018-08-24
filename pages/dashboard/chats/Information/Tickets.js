@@ -225,14 +225,11 @@ class TicketsComponent extends Component {
   }
 
   render () {
-    console.log('RENDER', this.state)
+    // console.log('RENDER', this.state)
     return (
       <Query query={TICKETS} variables={{ customer: this.props.customer._id }}>
         {({ data, loading }) => {
           if (data && !loading) {
-            if (data) {
-              console.log(data)
-            }
             return (
               <Panel>
                 <NewTicket show={this.state.show === 'new'} >

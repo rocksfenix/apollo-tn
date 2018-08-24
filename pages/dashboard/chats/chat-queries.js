@@ -45,6 +45,18 @@ export const CLOSE_CHAT = gql`
   }
 `
 
+export const MESSAGES = gql`
+  query messages($sender: String!, $receiver: String!, $first: Int, $skip: Int) {
+    messages(sender: $sender, receiver: $receiver, first: $first, skip: $skip){
+      _id
+      text
+      sender
+      receiver
+      createdAt
+    }
+  }
+`
+
 export const NEW_MESSAGE_SUBSCRIPTION = gql`
   subscription {
     newMessage {

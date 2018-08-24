@@ -1,6 +1,9 @@
-import React from 'react'
+import React, {Component} from 'react'
 import styled from 'styled-components'
 import Message from './Message'
+import { debounce } from 'throttle-debounce'
+import ReactDOM from 'react-dom'
+import PubSub from 'pubsub-js'
 
 const Chat = styled.div`
   -webkit-box-flex: 1;
@@ -70,20 +73,31 @@ const getSegments = (messages) => {
   return acc
 }
 
-export default (props) => (
-  <Chat>
-    <ChatMessages id='x-messages-panel'>
-      <div id='x-messages'>
-        {getSegments(props.messages).map((segment, i) => (
-          <Message
-            key={`sec_id${i}`}
-            segment={segment}
-            itsMe={segment[0].sender === props.sender._id}
-            me={props.sender}
-            receiver={props.receiver}
-          />
-        ))}
-      </div>
-    </ChatMessages>
-  </Chat>
-)
+export default class extends Component {
+  onScroll = debounce(400, (e) => {
+    const messages = ReactDOM.findDOMNode(this.refs.messages)
+    if (messages.scrollTop < 3) {
+      PubSub.publish('MY TOPIC', this.props.receiver)
+    }
+  })
+
+  render () {
+    return (
+      <Chat>
+        <ChatMessages id='x-messages-panel' ref='messages' onScroll={this.onScroll}>
+          <div id='x-messages'>
+            {getSegments(this.props.messages).map((segment, i) => (
+              <Message
+                key={`sec_id${i}`}
+                segment={segment}
+                itsMe={segment[0].sender === this.props.sender._id}
+                me={this.props.sender}
+                receiver={this.props.receiver}
+              />
+            ))}
+          </div>
+        </ChatMessages>
+      </Chat>
+    )
+  }
+}

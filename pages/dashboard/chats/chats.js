@@ -1,26 +1,9 @@
 import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import styled from 'styled-components'
-import { graphql, compose } from 'react-apollo'
-import gql from 'graphql-tag'
-import ChatList from './ChatList'
+import ChatList from './ChatList/ChatList'
 import Conversation from './Conversation'
 import Information from './Information'
-
-import { NEW_MESSAGE_SUBSCRIPTION, NEW_CHAT, CHATS } from './chat-queries'
-
-const USER = gql`
-  query user ($_id: ID!) {
-    user(_id: $_id) {
-      _id
-      fullname
-      email
-      avatar {
-        s100
-      }
-    }
-  }
-`
 
 const Panel = styled.div`
   position: fixed;
@@ -55,166 +38,33 @@ class ChatComponent extends Component {
   }
 
   state = {
-    lastChatId: '',
-    lastMessageId: '',
-    messages: [],
-    messagesUnread: {},
-    chats: [],
-    conversationActive: { _id: '' },
-
-    fetchUser: false
+    conversationActive: {},
+    messages: []
   }
 
-  static getDerivedStateFromProps (nextProps, prevState) {
-    // Cuando llega un nuevo chat
-    if (nextProps.newChat.newChat && nextProps.newChat.newChat._id !== prevState.lastChatId) {
-      document.getElementById('audio-incoming').play()
-      return {
-        ...prevState,
-        lastChatId: nextProps.newChat.newChat._id,
-        chats: [ ...prevState.chats, nextProps.newChat.newChat ]
-      }
-    }
+  child = React.createRef()
 
-    // Cuanto llega un nuevo mensaje
-    if (nextProps.newMessage.newMessage && prevState.lastMessageId !== nextProps.newMessage.newMessage._id) {
-      // Revisar si el nuevo mensaje tiene conversacion previa
-      // emitida por la sub newChat si no es asi es posible que
-      // el usuario haya recargado la pagina en ese caso se crea el nuevo
-      // chat si que llegue a travez de la subscricion
+  onChatClick = (conversationActive, messages) => this.setState(state => ({
+    conversationActive,
+    messages
+  }))
 
-      // Esiste sender chat con ese mensaje
-      const hasChat = prevState.chats.filter(chat => chat._id === nextProps.newMessage.newMessage.sender)
-
-      // Si no tiene chat traer los datos del servidor
-      // Si es diferente al usuario admin activo
-      const fetchUser = hasChat.length || nextProps.user._id === nextProps.newMessage.newMessage.sender
-        ? false
-        : nextProps.newMessage.newMessage.sender
-
-      // Nuevo Mensaje
-      document.getElementById('audio-pop').play()
-      let messagesUnread = prevState.messagesUnread
-
-      // Si estoy en otro usuario activo
-      if (nextProps.newMessage.newMessage.sender !== prevState.conversationActive._id) {
-        const {sender} = nextProps.newMessage.newMessage
-        // si existe la key se añade uno
-        // Si no existe se crea
-        if (!messagesUnread[`user-${sender}`]) messagesUnread[`user-${sender}`] = 0
-
-        messagesUnread[`user-${sender}`] = messagesUnread[`user-${sender}`] + 1
-      }
-      return {
-        messages: [ ...prevState.messages, nextProps.newMessage.newMessage ],
-        lastMessageId: nextProps.newMessage.newMessage._id,
-        messagesUnread,
-        fetchUser
-      }
-    }
-    return null
-  }
-
-  componentDidUpdate (prevProps, prevState) {
-    if (this.state.lastChatId !== prevState.lastChatId) {
-      this.props.onNewChat()
-    }
-
-    if (this.state.lastMessageId !== prevState.lastMessageId) {
-      const msgPanel = document.getElementById('x-messages-panel')
-      const messages = document.getElementById('x-messages')
-
-      if (msgPanel && messages) {
-        // animacion de scroll
-        // Calculamos la differiencia, cuanto scroll vamos a mover
-        const diff = messages.clientHeight - msgPanel.scrollTop
-        // const diff = messages.clientHeight
-        // milisecons
-        let totalTime = 500
-        let step = diff * 10 / totalTime
-
-        let i = 0
-        const move = () => {
-          if (i < diff) {
-            msgPanel.scrollTop = msgPanel.scrollTop + step
-            i += step
-            window.requestAnimationFrame(move)
-          }
-        }
-        move()
-      }
-
-      // TODO hacer que se muestro tooltip con nuevos mensajes
-      // this.props.onNewMessage()
-    }
-
-    if (this.state.fetchUser) {
-      this.fetchUser()
-    }
-  }
-
-  async componentDidMount () {
-    const res = await this.props.client.query({
-      query: CHATS,
-      variables: { status: 'active' }
-    })
-
-    this.setState({ chats: res.data.chats })
-  }
-
-  fetchUser = async () => {
-    const res = await this.props.client.query({
-      query: USER,
-      variables: { _id: this.state.fetchUser }
-    })
-
-    this.setState(state => ({
-      fetchUser: false,
-      chats: [ ...state.chats, res.data.user ]
-    }))
-
-    document.getElementById('audio-incoming').play()
-
-    this.props.onNewChat()
-  }
-
-  onChatClick = async (receiver) => {
-    // TODO agregar mensajes previos
-    // const res = await this.props.client.query({
-    //   query: MESSAGES,
-    //   variables: { sender: this.props.user._id, receiver: receiver._id }
-    // })
-
-    // debugger
-
-    // limpiamos los unreads
-    this.setState(state => ({
-      ...state,
-      messagesUnread: {
-        ...state.messagesUnread,
-        [`user-${receiver._id}`]: 0
-      },
-      conversationActive: receiver
-    }))
-  }
-
+  onNewMessage = (messages) => this.setState({ messages })
   render () {
     return (
       <Panel show={this.props.show}>
         <Chats>
-          <button onClick={() => console.log(this.state)}>SSSSSSSSSSSS</button>
           <ChatList
-            chats={this.state.chats}
+            {...this.props}
             onChatClick={this.onChatClick}
             conversationActive={this.state.conversationActive}
-            messagesUnread={this.state.messagesUnread}
-            messages={this.state.messages}
           />
         </Chats>
         <Conversation
           conversationActive={this.state.conversationActive}
           sender={this.props.user}
           messages={this.state.messages}
+          onNewMessage={this.onNewMessage}
         />
         <Information _id={this.state.conversationActive._id} />
       </Panel>
@@ -222,7 +72,4 @@ class ChatComponent extends Component {
   }
 }
 
-export default compose(
-  graphql(NEW_MESSAGE_SUBSCRIPTION, { name: 'newMessage' }),
-  graphql(NEW_CHAT, {name: 'newChat'})
-)(ChatComponent)
+export default ChatComponent

@@ -2,7 +2,6 @@ import models from '../models'
 import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../authorization/errors'
 import { withFilter } from 'graphql-subscriptions'
 import pubsub from '../pupsub'
-// import agents from '../agents'
 
 export default {
   Query: {
@@ -18,7 +17,9 @@ export default {
       return agents[0]
     },
 
-    messages: async (_, { sender, receiver }, { user }) => {
+    // Regresa los ultimos 30 mensajes
+    // Se usa para /Dashboard/chats y /App/Chat
+    messages: async (_, { sender, receiver, first = 30, skip = 0 }, { user }) => {
       if (!user.sub) throw new AuthenticationRequiredError()
 
       const query = {
@@ -28,9 +29,23 @@ export default {
         ]
       }
 
-      const messages = await models.Message.find(query).limit(20).sort({ createdAt: 1 })
+      const messages = await models.Message
+        .find(query)
+        .sort({ createdAt: 1 })
 
-      return messages
+      const total = messages.length
+      // const first = 30
+      // const skip = 30
+      // total =  71 - 60 = 11
+      // console.log(total, from, limit, send.length)
+      let limit = total - skip
+      let from = limit - first
+
+      if (from < 0) from = 0
+      if (limit < 0) limit = 0
+
+      let send = messages.slice(from, limit)
+      return send
     },
 
     chats: async (_, { status }, { user }) => {
@@ -42,8 +57,6 @@ export default {
         hasConversationActive: true,
         agentChat: user.sub
       })
-
-      console.log('chats', chats)
       return chats
     }
   },
@@ -131,10 +144,8 @@ export default {
     // TODO Se van a revisar el flujo de los chats
     newMessage: {
       subscribe: withFilter(() => pubsub.asyncIterator('newMessage'), (payload, variables, ctx) => {
-        return (
-          payload.newMessage.receiver === ctx.user.sub ||
-          payload.newMessage.sender === ctx.user.sub
-        )
+        //
+        return payload.newMessage.receiver === ctx.user.sub
       })
     },
 

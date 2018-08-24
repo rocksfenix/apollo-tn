@@ -62,6 +62,7 @@ const defaultConfig = {
       'https://s3-us-west-2.amazonaws.com'
     ],
     mediaSrc: [
+      'dxpdcvj89hnue.cloudfront.net',
       'https://player.vimeo.com'
     ],
     manifestSrc: [],

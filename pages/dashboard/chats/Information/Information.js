@@ -158,8 +158,6 @@ const Row = styled.div`
 `
 
 const Conf = ({ text, active }) => {
-  console.log(text, active)
-
   return (
     <ConfBox>
       <Ball active={active}>

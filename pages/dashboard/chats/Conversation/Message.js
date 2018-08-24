@@ -105,7 +105,7 @@ const Text = styled.div`
   border-color: initial;
   border-image: initial;
   border-radius: ${p => p.active ? '20px 0 20px 20px' : '0 20px 20px 20px'};
-  background: ${p => p.active ? 'linear-gradient(20deg, #283a90, #7b9de2)' : '#f2f3f4'};
+  background: ${p => p.active ? 'linear-gradient(20deg,#283c97,rgba(0,129,255,1))' : '#f2f3f4'};
   color: ${p => p.active ? '#FFF' : '#000'};
   animation: .3s ease-out ${Anima};
 `

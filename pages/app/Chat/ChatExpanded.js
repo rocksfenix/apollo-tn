@@ -3,6 +3,7 @@ import styled, { keyframes } from 'styled-components'
 import { withApollo, Mutation } from 'react-apollo'
 import Messages from './Messages'
 import gql from 'graphql-tag'
+import { MESSAGES } from '../../dashboard/chats/chat-queries';
 
 const NEW_CHAT = gql`
   mutation newChat($agent: String!) {
@@ -220,10 +221,21 @@ const InputPanel = styled.div`
   background-color: blue;
 `
 
-const Input = ({ receiver }) => {
+const Input = ({ receiver, sender }) => {
   let input
   return (
-    <Mutation mutation={CREATE_MESSAGE}>
+    <Mutation
+      mutation={CREATE_MESSAGE}
+      update={(cache, { data: { messageCreate } }) => {
+        const variables = { sender: sender._id, receiver: receiver._id }
+        const { messages } = cache.readQuery({ query: MESSAGES, variables })
+        cache.writeQuery({
+          query: MESSAGES,
+          variables,
+          data: { messages: messages.concat([messageCreate]) }
+        })
+      }}
+    >
       {(createMessage, { data }) => (
         <InputPanel>
           <form
@@ -297,7 +309,7 @@ class ChatExpandedComponent extends Component {
             }
             <ChatNow>
               { this.state.activeChat
-                ? <Input receiver={this.props.agentAvailable} />
+                ? <Input receiver={this.props.agentAvailable} sender={this.props.user} />
                 : <BigButton onClick={this.newChat}>Chatear ahora</BigButton>
               }
             </ChatNow>

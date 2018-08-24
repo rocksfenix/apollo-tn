@@ -17,7 +17,7 @@ type Subscription {
 }
 
 type Query {
-  messages(sender: String!, receiver: String!): [Message]!
+  messages(sender: String!, receiver: String!, first: Int, skip: Int): [Message]!
 
   chats(status: String): [User]
 

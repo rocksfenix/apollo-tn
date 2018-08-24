@@ -138,8 +138,8 @@ class DashboardPage extends Component {
     return (
       <View>
         <Nav>
-          <audio src='/static/audio/incoming_chat.mp3' id='audio-incoming' />
-          <audio src='/static/audio/pop.mp3' id='audio-pop' />
+          {/* <audio src='https://dxpdcvj89hnue.cloudfront.net/audio/newChat.mp3' id='audio-newChat' />
+          <audio src='https://dxpdcvj89hnue.cloudfront.net/audio/newMessage.mp3' id='audio-newMessage' /> */}
           {Tabs.map(item => (
             <NavItem
               key={item.title}

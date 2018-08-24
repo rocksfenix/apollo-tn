@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import styled from 'styled-components'
 import { withApollo } from 'react-apollo'
-import { CREATE_MESSAGE } from '../chat-queries'
+import { CREATE_MESSAGE, MESSAGES } from '../chat-queries'
 
 const Input = styled.textarea`
   width: 95%;
@@ -90,11 +90,31 @@ const InputPanel = styled.div`
 `
 
 class ChatInput extends Component {
-  sendMessate = (text) => {
-    this.props.client.mutate({
+  sendMessate = async (text) => {
+    const res = await this.props.client.mutate({
       mutation: CREATE_MESSAGE,
       variables: { text, receiver: this.props.receiver }
     })
+
+    // Actualizamos cache de Apollo
+    const { messages } = this.props.client.cache.readQuery({
+      query: MESSAGES,
+      variables: { receiver: this.props.receiver, sender: this.props.sender, skip: 0, first: 30 }
+    })
+
+    console.log(messages)
+    // debugger
+
+    this.props.client.cache.writeQuery({
+      query: MESSAGES,
+      variables: { receiver: this.props.receiver, sender: this.props.sender, skip: 0, first: 30 },
+      data: {
+        messages: [ ...messages, res.data.messageCreate ]
+      }
+    })
+
+    // Force Update
+    this.props.onNewMessage([ ...messages, res.data.messageCreate ])
   }
 
   render () {

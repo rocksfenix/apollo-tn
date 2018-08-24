@@ -67,6 +67,7 @@
         "nprogress": "^0.2.0",
         "polished": "^1.9.3",
         "prop-types": "^15.6.2",
+        "pubsub-js": "^1.6.1",
         "query-string": "^6.1.0",
         "react": "^16.4.1",
         "react-apollo": "^2.1.7",
