@@ -4,30 +4,6 @@ import { compose, graphql } from 'react-apollo'
 import gql from 'graphql-tag'
 import ChatExpanded from './ChatExpanded'
 
-const GET_AGENT_AVAILABLE = gql`{
-  agentAvailable {
-    _id
-    fullname
-    # position
-    avatar {
-      s100
-    }
-  }
-}
-`
-
-const ON_AGENT_CONNECTED = gql`
-  subscription {
-    agentConnected {
-      _id
-      fullname
-      # position
-      avatar {
-        s100
-        }
-      }
-  }
-`
 const ON_CLOSE_CONVERSATION = gql`
   subscription {
     closeConvesation {
@@ -95,22 +71,13 @@ class ChatComponent extends Component {
     activeChat: false,
     agentAvailable: null,
     endConversation: null,
-    closeCode: ''
+    endConversationCustomer: null,
+    hasTicket: false
   }
 
-  static getDerivedStateFromProps (nextProps, prevState) {
-    // debugger
-    // console.log('onCloseConversation', nextProps.onCloseConversation.closeConvesation)
-    if (nextProps.onCloseConversation.closeConvesation) {
-      if (nextProps.onCloseConversation.closeConvesation.code !== prevState.closeCode) {
-        return { endConversation: true, closeCode: nextProps.onCloseConversation.closeConvesation.code }
-      }
-    }
-
-    if (nextProps.onAgentConnected.agentConnected) {
-      return {
-        agentAvailable: nextProps.onAgentConnected.agentConnected
-      }
+  componentDidUpdate (prevProps) {
+    if (this.props.onCloseConversation.closeConvesation !== prevProps.onCloseConversation.closeConvesation) {
+      this.setState({ endConversation: true })
     }
   }
 
@@ -119,31 +86,39 @@ class ChatComponent extends Component {
     isExpanded: !state.isExpanded
   }))
 
-  async componentDidMount () {
-    const res = await this.props.client.query({
-      query: GET_AGENT_AVAILABLE
-    })
-
-    // debugger
-
-    this.setState({ agentAvailable: res.data.agentAvailable })
-  }
-
   newChat = async () => {
     const res = await this.props.client.mutate({
       mutation: NEW_CHAT,
       variables: { agent: this.state.agentAvailable._id }
     })
-    // debugger
+
     // Obtener datos del agente
     if (res.data.newChat) {
       this.setState({ activeChat: true, endConversation: false })
     }
   }
 
-  render () {
-    if (!this.state.agentAvailable) return null
+  onTicketCreate = () => {
+    this.setState({ hasTicket: true })
+    this.newChat()
+  }
 
+  onAgentSync = (agentAvailable) => {
+    this.setState({ agentAvailable })
+  }
+
+  onCloseEnd = () => {
+    this.setState({
+      isExpanded: false,
+      activeChat: false,
+      agentAvailable: null,
+      endConversation: false,
+      closeCode: '',
+      hasTicket: false
+    })
+  }
+
+  render () {
     return (
       <Panel>
         <ChatMini
@@ -153,12 +128,13 @@ class ChatComponent extends Component {
         </ChatMini>
         <ChatExpanded
           show={this.state.isExpanded}
-          onClick={this.expandedToggle}
-          agentAvailable={this.state.agentAvailable}
-          endConversation={this.state.endConversation}
+          onMinimize={this.expandedToggle}
+          onAgentSync={this.onAgentSync}
+          onTicketCreate={this.onTicketCreate}
           newChat={this.newChat}
-          activeChat={this.state.activeChat}
+          onCloseEnd={this.onCloseEnd}
           {...this.props}
+          {...this.state}
         />
       </Panel>
     )
@@ -166,6 +142,5 @@ class ChatComponent extends Component {
 }
 
 export default compose(
-  graphql(ON_AGENT_CONNECTED, { name: 'onAgentConnected' }),
   graphql(ON_CLOSE_CONVERSATION, { name: 'onCloseConversation' })
 )(ChatComponent)

@@ -79,7 +79,7 @@ const getSegments = (messages) => {
 export default class extends React.Component {
   unsubscribe = null
   render () {
-    if (!this.props.receiver._id || !this.props.sender._id || !this.props.show) return null
+    if (!this.props.receiver._id || !this.props.sender._id) return null
     return (
       <Query
         query={MESSAGES}

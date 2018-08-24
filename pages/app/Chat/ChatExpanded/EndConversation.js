@@ -67,6 +67,7 @@ export default (props) => (
         <ButtonLike>Dislike</ButtonLike>
       </Buttons>
     </div>
+    <Button onClick={props.onCloseEnd}>Cerrar Chat</Button>
     <Button onClick={props.newChat}>Chatear de Nuevo</Button>
   </Panel>
 )

@@ -12,7 +12,7 @@ const TicketSchema = new mongoose.Schema({
   customer: { type: String, ref: 'User', required: [true, 'El Customer es requerido'] },
   status: { type: String, enum: ['new', 'working', 'completed'], default: 'new' },
   priority: { type: String, enum: ['low', 'normal', 'urgent'], default: 'normal' },
-  category: { type: String, enum: ['billing', 'platform', 'content', 'subscription', 'legal', 'other', 'account'], default: 'other' },
+  category: { type: String, enum: ['billing', 'bugg', 'content', 'legal', 'other'], default: 'other' },
   createdAt: { type: Date, default: Date.now },
   completedAt: { type: Date, default: Date.now }
 })

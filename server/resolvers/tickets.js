@@ -25,7 +25,7 @@ export default {
     // publica pero protegido con recaptcha
     ticketCreate: async (_, { input }, { user }) => {
       if (!user.sub) throw new AuthenticationRequiredError()
-      if (user.role !== 'admin') throw new ForbiddenError()
+      // if (user.role !== 'admin') throw new ForbiddenError()
 
       const ticket = await models.Ticket.create({
         ...input,

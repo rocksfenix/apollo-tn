@@ -1,22 +1,10 @@
 import React, {Component} from 'react'
 import styled, { keyframes } from 'styled-components'
-import { withApollo, Mutation } from 'react-apollo'
+import { withApollo } from 'react-apollo'
 import Messages from './Messages'
-import gql from 'graphql-tag'
-import { MESSAGES } from '../../dashboard/chats/chat-queries'
 import EndConversation from './EndConversation'
-
-const CREATE_MESSAGE = gql`
-  mutation messageCreate($text: String!, $receiver: ID!) {
-    messageCreate(text: $text, receiver: $receiver) {
-      _id
-      text
-      sender
-      receiver
-      createdAt
-    }
-  }
-`
+import ChatInput from './ChatInput'
+import OpenChat from './OpenChat'
 
 const anim = keyframes`
   15% {
@@ -69,7 +57,6 @@ const ChatContainer = styled.div`
   will-change: opacity;
   backface-visibility: hidden;
   padding: 1em 1em 2em;
-  background-color: #FFF;
   z-index: 2147483639;
 `
 
@@ -192,115 +179,63 @@ const ChatNow = styled.div`
   backface-visibility: hidden;
 `
 
-const BigButton = styled.button`
-  color: rgb(255, 255, 255);
-  font-size: inherit;
-  font-weight: bold;
-  font-family: inherit;
-  width: 100%;
-  max-width: 320px;
-  opacity: 1;
-  text-transform: none;
-  background-color: rgb(66, 127, 225);
-  border-radius: 0.3em;
-  border-width: 0px;
-  border-style: initial;
-  border-color: initial;
-  border-image: initial;
-  padding: 0.5em;
-`
-
-const InputPanel = styled.div`
-  width: 100%;
-  height: 100%;
-  background-color: blue;
-`
-
-const Input = ({ receiver, sender }) => {
-  let input
-  return (
-    <Mutation
-      mutation={CREATE_MESSAGE}
-      update={(cache, { data: { messageCreate } }) => {
-        const variables = { sender: sender._id, receiver: receiver._id }
-        const { messages } = cache.readQuery({ query: MESSAGES, variables })
-        cache.writeQuery({
-          query: MESSAGES,
-          variables,
-          data: { messages: messages.concat([messageCreate]) }
-        })
-      }}
-    >
-      {(createMessage, { data }) => (
-        <InputPanel>
-          <form
-            onSubmit={e => {
-              e.preventDefault()
-              createMessage({ variables: { text: input.value, receiver: receiver._id } })
-              input.value = ''
-            }}
-          >
-            <input
-              ref={node => { input = node }}
-            />
-            <button type='submit'>Add Message</button>
-          </form>
-        </InputPanel>
-      )}
-    </Mutation>
-  )
-}
-
 class ChatExpandedComponent extends Component {
   render () {
+    console.log(this.props)
+    const { show, endConversation, hasTicket, agentAvailable, user } = this.props
     return (
       <Panel
-        show={this.props.show}
+        show={show}
       >
+        { endConversation
+          ? <EndConversation {...this.props} />
+          : (
+            <ChatContainer>
+              <OpenChat
+                mount={!hasTicket && show}
+                {...this.props}
+              />
 
-        <ChatContainer>
-          {
-            this.props.endConversation ? <EndConversation newChat={this.props.newChat} />
-              : (
-                <ChatBox>
-                  <Top>
-                    <Button>
-                      <Icon className='icon-menu-points' />
-                    </Button>
-                    <Button onClick={this.props.onClick}>
-                      <Icon className='icon-arrow-bottom' />
-                    </Button>
-                  </Top>
-                  <AgentBox>
-                    <AvatarBox>
-                      <Avatar src='/static/avatar.jpg' />
-                    </AvatarBox>
-                    <AgentInfo>
-                      <AgentName>Gerardo Gallegos</AgentName>
-                      <AgentTitle>SEO</AgentTitle>
-                    </AgentInfo>
-                  </AgentBox>
-                  { !this.props.agentAvailable._id || !this.props.user._id
-                    ? 'Auth is needed!'
-                    : (
-                      <Messages
-                        receiver={this.props.agentAvailable}
-                        sender={this.props.user}
-                        show={this.props.show}
-                      />
-                    )
-                  }
-                  <ChatNow>
-                    { this.props.activeChat
-                      ? <Input receiver={this.props.agentAvailable} sender={this.props.user} />
-                      : <BigButton onClick={this.props.newChat}>Chatear ahora</BigButton>
+              { show && hasTicket && agentAvailable
+                ? (
+                  <ChatBox>
+                    <Top>
+                      <Button>
+                        <Icon className='icon-menu-points' />
+                      </Button>
+                      <Button onClick={this.props.onMinimize}>
+                        <Icon className='icon-arrow-bottom' />
+                      </Button>
+                    </Top>
+                    <AgentBox>
+                      <AvatarBox>
+                        <Avatar src={agentAvailable.avatar.s100} />
+                      </AvatarBox>
+                      <AgentInfo>
+                        <AgentName>{ agentAvailable.fullname }</AgentName>
+                        <AgentTitle>Support Agent</AgentTitle>
+                      </AgentInfo>
+                    </AgentBox>
+                    { !agentAvailable._id || !user._id
+                      ? 'Auth is needed!'
+                      : (
+                        <Messages
+                          receiver={agentAvailable}
+                          sender={user}
+                          show={show}
+                        />
+                      )
                     }
-                  </ChatNow>
-                </ChatBox>
-              )
-          }
-        </ChatContainer>
-
+                    <ChatNow>
+                      <ChatInput receiver={agentAvailable} sender={user} />
+                    </ChatNow>
+                  </ChatBox>
+                )
+                : null
+              }
+            </ChatContainer>
+          )
+        }
       </Panel>
     )
   }
