@@ -7,6 +7,7 @@ import ReactTable from 'react-table'
 import LessonEditor from './LessonEditor'
 import Search from '../Search'
 import getTechIcon from '../../../util/getTechIcon'
+import Panel from '../Panel'
 
 const LESSONS = gql`
  query allLessons($first: Int, $skip: Int, $text: String) {
@@ -47,15 +48,6 @@ const LESSON_CREATE = gql`
       }
     }
   }
-`
-
-const Panel = styled.div`
-  width: 100%;
-  height: 100vh;
-  background-color: yellow;
-  background: #fbfbfb;
-  overflow-y: auto;
-  overflow-x: hidden;
 `
 
 const TimeAgo = styled.div`
@@ -207,23 +199,23 @@ export default class extends Component {
     }
   }
 
-  fetchData = async (state, instance) => {
-    const skip = state.page * state.pageSize
+  // fetchData = async (state, instance) => {
+  //   const skip = state.page * state.pageSize
 
-    this.setState({ isFetching: true })
+  //   this.setState({ isFetching: true })
 
-    const result = await this.props.client.query({
-      query: LESSONS,
-      variables: { first: state.pageSize, skip }
-    })
+  //   const result = await this.props.client.query({
+  //     query: LESSONS,
+  //     variables: { first: state.pageSize, skip }
+  //   })
 
-    this.setState({
-      lessons: result.data.allLessons.lessons,
-      total: result.data.allLessons.total,
-      isFetching: false,
-      itemsByPage: state.pageSize
-    })
-  }
+  //   this.setState({
+  //     lessons: result.data.allLessons.lessons,
+  //     total: result.data.allLessons.total,
+  //     isFetching: false,
+  //     itemsByPage: state.pageSize
+  //   })
+  // }
 
   searchUser = async (text) => {
     this.setState({ isFetching: true })
@@ -278,7 +270,6 @@ export default class extends Component {
   }
 
   render () {
-    if (!this.props.show) return null
     return (
       <Query query={LESSONS} variables={{ first: 10, skip: 0 }}>
         {({ loading, error, data, fetchMore }) => {
@@ -286,7 +277,7 @@ export default class extends Component {
           if (error) return `Error!: ${error}`
           if (!data) return null
           return (
-            <Panel>
+            <Panel show={this.props.show}>
               <LessonEditor
                 show={this.state.showEditor}
                 hideEditor={this.hideEditor}

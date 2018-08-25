@@ -6,6 +6,7 @@ import gql from 'graphql-tag'
 import ReactTable from 'react-table'
 import Search from '../Search'
 import UserEditor from './UserEditor'
+import Panel from '../Panel'
 
 const USERS = gql`
  query allUsersQuery($first: Int, $skip: Int, $text: String) {
@@ -47,24 +48,6 @@ const ON_USER_CONNECTION = gql`
       }
     }
   }
-`
-// display: flex;
-// flex-direction: column;
-// align-items: center;
-// justify-content: space-around;
-
-const Panel = styled.div`
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 100vh;
-  padding-right: 52px;
-  z-index: 1000;
-  transition: all .2s ease-in-out;
-  overflow: hidden;
-  opacity: ${p => p.show ? '1' : '0'};
-  transform: ${p => p.show ? 'scale(1)' : 'scale(.93)'};
-  z-index: ${p => p.show ? '1000' : '-1'};
 `
 
 const TimeAgo = styled.div`

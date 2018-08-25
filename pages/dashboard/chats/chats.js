@@ -4,22 +4,12 @@ import styled from 'styled-components'
 import ChatList from './ChatList/ChatList'
 import Conversation from './Conversation'
 import Information from './Information'
+import _Panel from '../Panel'
 
-const Panel = styled.div`
-  position: fixed;
-  top: 0;
-  width: 100%;
-  height: 100vh;
-  padding-right: 52px;
+const Panel = styled(_Panel)`
   display: flex;
   align-items: center;
   justify-content: space-around;
-  z-index: 1000;
-  transition: all .2s ease-in-out;
-  overflow: hidden;
-  opacity: ${p => p.show ? '1' : '0'};
-  transform: ${p => p.show ? 'scale(1)' : 'scale(.93)'};
-  z-index: ${p => p.show ? '1000' : '-1'};
 `
 
 const Chats = styled.div`

@@ -45,6 +45,7 @@ const NEW_MESSAGE_SUBSCRIPTION = gql`
 
 const View = styled.section`
   height: 100vh;
+  background: #000;
 `
 
 const Content = styled.div`

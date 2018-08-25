@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 import { Doughnut, Line } from 'react-chartjs-2'
-
+import Panel from '../Panel'
 import MembersCard from './MembersCard'
 
 const STATISTICS = gql`{
@@ -28,14 +28,6 @@ const STATISTICS = gql`{
 }
 `
 
-const Panel = styled.div`
-  width: 100%;
-  height: 100%;
-  background-color: yellow;
-  background: #fbfbfb;
-  overflow-y: auto;
-  overflow-x: hidden;
-`
 const Row = styled.div`
   width: 100%;
   margin: 1px;
@@ -119,49 +111,47 @@ const getDataLineChart = (last30Days) => ({
 })
 
 export default ({ show }) => {
-  if (show) {
-    return (
-      <Query query={STATISTICS}>
-        {({ loading, error, data = {}, client, refetch, networkStatus }) => {
-          const { statistics } = data
-          // console.log(data, error)
+  return (
+    <Query query={STATISTICS}>
+      {({ loading, error, data = {}, client, refetch, networkStatus }) => {
+        const { statistics } = data
+        // console.log(data, error)
 
-          if (!data.statistics) {
-            return null
-          }
-          // return null
-          return (
-            <Panel>
-              <Row>
-                <MiniPanel>
-                  <MembersCard
-                    title='Ninja PRO'
-                    today={statistics.today.pro}
-                    all={statistics.total.pro}
-                  />
-                </MiniPanel>
-                <MiniPanel>
-                  <MembersCard
-                    title='Ninja Free'
-                    today={statistics.today.free}
-                    all={statistics.total.free}
-                  />
-                </MiniPanel>
-                <Card width='300px'>
-                  <Doughnut data={getDataDoughnut(statistics.total)} />
-                </Card>
-              </Row>
-              <Row>
-                <Card width='90%'>
-                  <Line data={getDataLineChart(statistics.last30Days)} height={100} />
-                </Card>
-              </Row>
-            </Panel>
-          )
-        }}
-      </Query>
-    )
-  }
+        if (!data.statistics) {
+          return null
+        }
+        // return null
+        return (
+          <Panel show={show}>
+            <Row>
+              <MiniPanel>
+                <MembersCard
+                  title='Ninja PRO'
+                  today={statistics.today.pro}
+                  all={statistics.total.pro}
+                />
+              </MiniPanel>
+              <MiniPanel>
+                <MembersCard
+                  title='Ninja Free'
+                  today={statistics.today.free}
+                  all={statistics.total.free}
+                />
+              </MiniPanel>
+              <Card width='300px'>
+                <Doughnut data={getDataDoughnut(statistics.total)} />
+              </Card>
+            </Row>
+            <Row>
+              <Card width='90%'>
+                <Line data={getDataLineChart(statistics.last30Days)} height={100} />
+              </Card>
+            </Row>
+          </Panel>
+        )
+      }}
+    </Query>
+  )
 
   return null
 }

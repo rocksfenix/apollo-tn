@@ -7,6 +7,7 @@ import ReactTable from 'react-table'
 import Search from '../Search'
 import CourseEditor from './CourseEditor'
 import getTechIcon from '../../../util/getTechIcon'
+import Panel from '../Panel'
 
 const COURSES = gql`
  query allCourses($first: Int, $skip: Int, $text: String) {
@@ -51,16 +52,6 @@ const CREATE_COURSE = gql`
   }
 `
 
-const Panel = styled.div`
-  width: 100%;
-  height: 100vh;
-  background-color: yellow;
-  background: #fbfbfb;
-  overflow-y: auto;
-  overflow-x: hidden;
-  position: relative;
-`
-
 const TimeAgo = styled.div`
   font-size: 13px;
   color: #666;
@@ -100,7 +91,7 @@ const CoverBox = styled.div`
   margin-right: 1em;
   position: relative;
   z-index: 10;
-  box-shadow: ${p => `0 0 35px ${p.color}`};
+  box-shadow: ${p => `0 0 180px 2px ${p.color}`};
 `
 
 const Cover = styled.img`
@@ -237,9 +228,9 @@ class CoursesComponent extends Component {
   }
 
   render () {
-    if (!this.props.show) return null
+    // if (!this.props.show) return null
     return (
-      <Panel>
+      <Panel show={this.props.show}>
         <Query query={COURSES} variables={{ first: 10, skip: 0 }}>
           {({ data, loading, error, fetchMore, networkStatus }) => {
             if (loading) return null
