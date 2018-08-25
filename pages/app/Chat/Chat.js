@@ -93,7 +93,8 @@ class ChatComponent extends Component {
     endConversation: null,
     endConversationCustomer: null,
     hasTicket: false,
-    messagesUnread: 0
+    messagesUnread: 0,
+    hasConversationActive: false
   }
 
   componentDidUpdate (prevProps) {
@@ -125,8 +126,15 @@ class ChatComponent extends Component {
     this.newChat()
   }
 
-  onAgentSync = (agentAvailable) => {
-    this.setState({ agentAvailable })
+  onAgentSync = ({ hasConversationActive, agent }) => {
+    console.log(hasConversationActive)
+    this.setState({ agentAvailable: agent, hasConversationActive })
+    // debugger
+    console.log(this.state)
+
+    if (hasConversationActive) {
+      this.newChat()
+    }
   }
 
   onCloseEnd = () => {
@@ -136,7 +144,8 @@ class ChatComponent extends Component {
       agentAvailable: null,
       endConversation: false,
       closeCode: '',
-      hasTicket: false
+      hasTicket: false,
+      hasConversationActive: false
     })
   }
 

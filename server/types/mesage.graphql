@@ -24,13 +24,19 @@ type Subscription {
   closeConvesation: closeConvesation
 }
 
+type AgentAvailableResponse {
+  hasConversationActive: Boolean,
+  agent: User
+}
+
 type Query {
   messages(sender: String!, receiver: String!, first: Int, skip: Int): [Message]!
 
   chats(status: String): [User]
 
   # Revisa si hay algun agente conectado para chatear
-  agentAvailable: User
+  # Se envia si tiene conversaciones activas
+  agentAvailable: AgentAvailableResponse
 }
 
 type Mutation {

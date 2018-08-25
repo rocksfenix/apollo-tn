@@ -6,7 +6,8 @@ import uid from 'uid'
 
 export default {
   Query: {
-    agentAvailable: async () => {
+    agentAvailable: async (_, {}, { user }) => {
+      if (!user.sub) throw new AuthenticationRequiredError()
       // Se dispara cuando un usuario solicita soporte
       // ya sea entrando a una pagina de soporte /app etc.
       // Obtenemos el listado de administradores activos
@@ -14,8 +15,24 @@ export default {
       const agents = await models.User
         .find({ role: 'admin', isConnected: true }, null, { sort: 'conversationsActives' })
 
+        // Revisar si el usuario cliente tiene una conversacion activa
+        //
+      const client = await models.User.findById(user.sub)
+      let hasConversationActive = false
+
+      // Revisamos si tiene conversacion activa
+      if (client.hasConversationActive) {
+        hasConversationActive = true
+      }
+      // const chats = await models.User.find({
+      //   hasConversationActive: true,
+      //   agentChat: user.sub
+      // })
       // El primero es el mas desocupado
-      return agents[0]
+      return {
+        agent: agents[0],
+        hasConversationActive
+      }
     },
 
     // Regresa los ultimos 30 mensajes

@@ -6,11 +6,14 @@ import OpenTicket from './OpenTicket'
 
 const GET_AGENT_AVAILABLE = gql`{
   agentAvailable {
-    _id
-    fullname
-    # position
-    avatar {
-      s100
+    hasConversationActive
+    agent {
+      _id
+      fullname
+      # position
+      avatar {
+        s100
+      }
     }
   }
 }
@@ -52,9 +55,7 @@ const Main = styled.div`
 
 class OpenChat extends Component {
   state = {
-    loading: true,
-    needFetch: false,
-    agentAvailable: null
+    loading: true
   }
 
   async componentDidUpdate (prevProps) {
@@ -73,10 +74,9 @@ class OpenChat extends Component {
 
     // TODO - Eliminar el setimeout
     window.setTimeout(() => {
-      if (res.data.agentAvailable) {
-        this.setState({ agentAvailable: res.data.agentAvailable, loading: false })
-
+      if (res.data.agentAvailable.agent) {
         this.props.onAgentSync(res.data.agentAvailable)
+        this.setState({ loading: false })
       } else {
         this.setState({ loading: false })
       }
@@ -92,7 +92,7 @@ class OpenChat extends Component {
           : (
             <Main>
               <OpenTicket
-                agentAvailable={this.state.agentAvailable}
+                agentAvailable={this.props.agentAvailable}
                 onMinimize={this.props.onMinimize}
                 user={this.props.user}
                 onTicketCreate={this.props.onTicketCreate}
