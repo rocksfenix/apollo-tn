@@ -6,7 +6,8 @@ import OpenTicket from './OpenTicket'
 
 const GET_AGENT_AVAILABLE = gql`{
   agentAvailable {
-    hasConversationActive
+    # hasConversationActive
+    conversationTicket
     agent {
       _id
       fullname

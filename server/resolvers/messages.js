@@ -15,23 +15,12 @@ export default {
       const agents = await models.User
         .find({ role: 'admin', isConnected: true }, null, { sort: 'conversationsActives' })
 
-        // Revisar si el usuario cliente tiene una conversacion activa
-        //
       const client = await models.User.findById(user.sub)
-      let hasConversationActive = false
-
-      // Revisamos si tiene conversacion activa
-      if (client.hasConversationActive) {
-        hasConversationActive = true
-      }
-      // const chats = await models.User.find({
-      //   hasConversationActive: true,
-      //   agentChat: user.sub
-      // })
+      // Revisar si el usuario cliente tiene una conversacion activa
       // El primero es el mas desocupado
       return {
         agent: agents[0],
-        hasConversationActive
+        conversationTicket: client.conversationTicket
       }
     },
 
@@ -96,7 +85,7 @@ export default {
       return message
     },
 
-    newChat: async (_, { agent }, { user }) => {
+    newChat: async (_, { agent, ticket }, { user }) => {
       if (!user.sub) throw new AuthenticationRequiredError()
 
       const _user = await models.User.findById(user.sub)
@@ -104,6 +93,7 @@ export default {
       if (!_user) throw new NotFound()
 
       _user.hasConversationActive = true
+      _user.conversationTicket = ticket
       _user.conversationChanged = Date.now()
       _user.agentChat = agent
 
@@ -129,6 +119,7 @@ export default {
       if (!u) throw new NotFound()
 
       u.hasConversationActive = false
+      u.conversationTicket = null
       u.conversationChanged = Date.now()
 
       u.save()

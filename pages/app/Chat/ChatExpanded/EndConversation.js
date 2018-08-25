@@ -1,5 +1,15 @@
-import React from 'react'
+import React, {Component} from 'react'
 import styled, { keyframes } from 'styled-components'
+import gql from 'graphql-tag'
+import { withApollo } from 'react-apollo'
+
+const FEEDBACK = gql`
+  mutation feedback ($ticket: ID!, $agent: ID!, $like: Boolean!) {
+    ticketFeedback(ticket: $ticket, agent: $agent, like: $like) {
+      _id
+    }
+  }
+`
 
 const anim = keyframes`
   15% {
@@ -57,17 +67,45 @@ const Buttons = styled.div`
   margin: 1em 0;
 `
 
-export default (props) => (
-  <Panel>
-    <div>
-      <div>Gracias por ser Ninja</div>
-      <div>Que opinas del soporte?</div>
-      <Buttons>
-        <ButtonLike>Like</ButtonLike>
-        <ButtonLike>Dislike</ButtonLike>
-      </Buttons>
-    </div>
-    <Button onClick={props.onCloseEnd}>Cerrar Chat</Button>
-    <Button onClick={props.newChat}>Chatear de Nuevo</Button>
-  </Panel>
-)
+const Feedback = styled.div`
+  display: ${p => p.show ? 'block' : 'none'};
+`
+
+const Regards = styled.div`
+  font-size: 24px;
+  display: ${p => p.show ? 'block' : 'none'};
+`
+
+class EndConversation extends Component {
+  state = { wasFeedbacked: false }
+  feedback = async (like) => {
+    const fb = await this.props.client.mutate({
+      mutation: FEEDBACK,
+      variables: { like, agent: this.props.agentAvailable._id, ticket: this.props.ticket }
+    })
+
+    this.setState({ wasFeedbacked: true })
+    console.log(like, fb.data)
+  }
+  render () {
+    return (
+      <Panel>
+        <Feedback show={!this.state.wasFeedbacked}>
+          <div>Gracias por ser Ninja</div>
+          <div>Que opinas del soporte?</div>
+          <Buttons>
+            <ButtonLike onClick={() => this.feedback(true)}>Like</ButtonLike>
+            <ButtonLike onClick={() => this.feedback(false)}>Dislike</ButtonLike>
+          </Buttons>
+        </Feedback>
+        <Regards show={this.state.wasFeedbacked}>
+          Gracias Ninja!
+        </Regards>
+        <Button onClick={this.props.onCloseEnd}>Cerrar Chat</Button>
+        <Button onClick={this.props.newChat}>Chatear de Nuevo</Button>
+      </Panel>
+    )
+  }
+}
+
+export default withApollo(EndConversation)

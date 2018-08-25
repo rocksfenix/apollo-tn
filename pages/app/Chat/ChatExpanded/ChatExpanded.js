@@ -130,7 +130,7 @@ const ChatNow = styled.div`
 
 class ChatExpandedComponent extends Component {
   render () {
-    const { isExpanded, endConversation, hasTicket, agentAvailable, user, hasConversationActive } = this.props
+    const { isExpanded, endConversation, ticket, agentAvailable, user, hasConversationActive } = this.props
     return (
       <Panel
         show={isExpanded}
@@ -140,10 +140,10 @@ class ChatExpandedComponent extends Component {
           : (
             <ChatContainer>
               <OpenChat
-                mount={!hasTicket && isExpanded && !hasConversationActive}
+                mount={!ticket && isExpanded && !hasConversationActive}
                 {...this.props}
               />
-              <ChatBox show={isExpanded && (hasTicket || hasConversationActive) && agentAvailable._id}>
+              <ChatBox show={isExpanded && (ticket || hasConversationActive) && agentAvailable._id}>
                 <Top>
                   <Button>
                     <Icon className='icon-menu-points' />

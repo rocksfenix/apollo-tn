@@ -407,7 +407,7 @@ class OpenTicketComponent extends Component {
     })
 
     if (res.data.ticketCreate) {
-      this.props.onTicketCreate()
+      this.props.onTicketCreate(res.data.ticketCreate)
     }
   }
 

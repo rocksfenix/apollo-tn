@@ -113,6 +113,8 @@ export const TICKETS = gql`
       category
       status
       priority
+      like
+      userFeedback
       author {
         fullname
         avatar {

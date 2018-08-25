@@ -13,8 +13,8 @@ const ON_CLOSE_CONVERSATION = gql`
 `
 
 const NEW_CHAT = gql`
-  mutation newChat($agent: String!) {
-    newChat (agent: $agent)
+  mutation newChat($agent: ID!, $ticket: ID!) {
+    newChat (agent: $agent, ticket: $ticket)
   }
 `
 
@@ -92,7 +92,7 @@ class ChatComponent extends Component {
     agentAvailable: {},
     endConversation: null,
     endConversationCustomer: null,
-    hasTicket: false,
+    ticket: null,
     messagesUnread: 0,
     hasConversationActive: false
   }
@@ -110,36 +110,40 @@ class ChatComponent extends Component {
   }))
 
   newChat = async () => {
-    const res = await this.props.client.mutate({
-      mutation: NEW_CHAT,
-      variables: { agent: this.state.agentAvailable._id }
-    })
+    if (this.state.agentAvailable._id && this.state.ticket) {
+      const res = await this.props.client.mutate({
+        mutation: NEW_CHAT,
+        variables: {
+          agent: this.state.agentAvailable._id,
+          ticket: this.state.ticket
+        }
+      })
 
-    // Obtener datos del agente
-    if (res.data.newChat) {
-      this.setState({ activeChat: true, endConversation: false })
+      // Obtener datos del agente
+      if (res.data.newChat) {
+        this.setState({ activeChat: true, endConversation: false })
+      }
     }
   }
 
-  onTicketCreate = () => {
-    this.setState({ hasTicket: true })
+  onTicketCreate = (ticket) => {
+    this.setState({ ticket: ticket._id })
     if (this.state.agentAvailable._id) {
       this.newChat()
     }
   }
 
-  onAgentSync = ({ hasConversationActive, agent }) => {
-    console.log(hasConversationActive)
-    // debugger
-    console.log(this.state)
-
+  onAgentSync = ({ conversationTicket, agent }) => {
+    // console.log(conversationTicket)
+    // // debugger
+    // console.log(this.state)
     if (agent) {
-      this.setState({ agentAvailable: agent, hasConversationActive })
+      this.setState({ agentAvailable: agent, ticket: conversationTicket })
     } else {
-      this.setState({ agentAvailable: {}, hasConversationActive })
+      this.setState({ agentAvailable: {}, ticket: conversationTicket })
     }
 
-    if (hasConversationActive) {
+    if (conversationTicket) {
       this.newChat()
     }
   }
@@ -151,7 +155,6 @@ class ChatComponent extends Component {
       agentAvailable: null,
       endConversation: false,
       closeCode: '',
-      hasTicket: false,
       hasConversationActive: false
     })
   }

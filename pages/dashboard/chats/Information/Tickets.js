@@ -74,6 +74,10 @@ const Ticket = ({ ticket, onClick }) => (
     <TicketStatus status={ticket.status}>{ ticket.status }</TicketStatus>
     <TicketText>{ ticket.text }</TicketText>
     <Priority priority={ticket.priority}>{ ticket.priority }</Priority>
+    { ticket.userFeedback
+      ? ticket.like ? 'Y' : 'N'
+      : null
+    }
   </TicketBox>
 )
 

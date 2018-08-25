@@ -64,6 +64,21 @@ export default {
       if (!ticket) throw new NotFound()
       await ticket.remove()
       return ticket
+    },
+
+    // Al finalizar la session de chat, el feedback que genera el usuario
+    ticketFeedback: async (_, { ticket, agent, like }, { user }) => {
+      if (!user.sub) throw new AuthenticationRequiredError()
+
+      const _ticket = await models.Ticket.findById(ticket)
+
+      _ticket.like = like
+      _ticket.conversationAgent = agent
+      _ticket.userFeedback = true
+
+      await _ticket.save()
+
+      return _ticket
     }
   }
 }

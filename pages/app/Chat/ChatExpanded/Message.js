@@ -95,7 +95,7 @@ const Text = styled.div`
   border-style: initial;
   border-color: initial;
   border-image: initial;
-  background: ${p => p.active ? '#4a5ec3' : '#FFF'};
+  background: ${p => p.active ? 'linear-gradient(20deg,#283c97,rgba(0,129,255,1))' : '#FFF'};
   color: ${p => p.active ? '#FFF' : '#000'};
 `
 

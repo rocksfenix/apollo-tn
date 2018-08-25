@@ -8,6 +8,8 @@ type Ticket {
   category: String,
   createdAt: String,
   completedAt: String
+  like: Boolean
+  userFeedback: Boolean
 }
 
 input TicketCreate {
@@ -34,4 +36,5 @@ type Mutation {
   ticketCreate(input: TicketCreate): Ticket
   ticketUpdate(input: TicketUpdate): Ticket
   ticketDelete(_id: ID!): Ticket
+  ticketFeedback(ticket: ID!, agent: ID!, like: Boolean!): Ticket
 }
