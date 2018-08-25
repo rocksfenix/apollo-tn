@@ -92,6 +92,9 @@ const UserSchema = new mongoose.Schema({
   // Se usa para los agentes o usuarios admin
   conversationsActives: { type: Number, default: 0 },
 
+  // Position dentro de la empresa
+  position: { type: String, default: 'Member' },
+
   status: {
     type: String,
     enum: ['active', 'hold'],
