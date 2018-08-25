@@ -123,7 +123,9 @@ class ChatComponent extends Component {
 
   onTicketCreate = () => {
     this.setState({ hasTicket: true })
-    this.newChat()
+    if (this.state.agentAvailable._id) {
+      this.newChat()
+    }
   }
 
   onAgentSync = ({ hasConversationActive, agent }) => {

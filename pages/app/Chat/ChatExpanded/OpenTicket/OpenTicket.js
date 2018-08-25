@@ -324,7 +324,7 @@ class OpenTicketComponent extends Component {
 
     if (key === 'priority') {
       this.state.ticket.priority = value
-      if (this.props.agentAvailable) {
+      if (this.props.agentAvailable._id) {
         // Si esta online
         this.createTicket()
       } else {
@@ -369,7 +369,7 @@ class OpenTicketComponent extends Component {
   render () {
     const { agentAvailable } = this.props
     const { showOptions } = this.state
-    const step = agentAvailable
+    const step = agentAvailable._id
       ? this.stepsOnline[this.state.step]
       : this.stepsOffline[this.state.step]
 
@@ -383,7 +383,7 @@ class OpenTicketComponent extends Component {
         <Main>
           <Header>
             {
-              agentAvailable
+              agentAvailable._id
                 ? <Online
                   {...agentAvailable}
                   text={step.text}
