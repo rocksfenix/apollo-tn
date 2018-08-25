@@ -130,9 +130,14 @@ class ChatComponent extends Component {
 
   onAgentSync = ({ hasConversationActive, agent }) => {
     console.log(hasConversationActive)
-    this.setState({ agentAvailable: agent, hasConversationActive })
     // debugger
     console.log(this.state)
+
+    if (agent) {
+      this.setState({ agentAvailable: agent, hasConversationActive })
+    } else {
+      this.setState({ agentAvailable: {}, hasConversationActive })
+    }
 
     if (hasConversationActive) {
       this.newChat()
@@ -158,6 +163,17 @@ class ChatComponent extends Component {
     }))
   }
 
+  // Se usa para actualizar los mensajes
+  // cuando un nuevo mensaje se crea
+  // a pesar de actualizar el cache de apollo
+  // No se actualizaba, de esta manera se forza
+  force = () => {
+    this.forceUpdate()
+    // Scroll IT
+    const m = document.getElementById('app-messages')
+    m.scrollTop = m.scrollHeight
+  }
+
   render () {
     return (
       <Panel>
@@ -178,6 +194,7 @@ class ChatComponent extends Component {
           newChat={this.newChat}
           onCloseEnd={this.onCloseEnd}
           newMessageUnread={this.newMessageUnread}
+          force={this.force}
           {...this.props}
           {...this.state}
         />

@@ -5,6 +5,7 @@ import Messages from './Messages'
 import EndConversation from './EndConversation'
 import ChatInput from './ChatInput'
 import OpenChat from './OpenChat'
+import Agent from '../Agent'
 
 const anim = keyframes`
   15% {
@@ -40,8 +41,10 @@ const Panel = styled.div`
   right: 0px;
   opacity: 0;
   bottom: 0;
+  will-change: opacity, transform;
   animation: ${p => p.show ? `.4s ease-out ${anim}` : ''};
   animation-fill-mode: forwards;
+  will-change: transform, opacity;
   transform-origin: 100% 100%;
   transform: scale(0);
 `
@@ -116,83 +119,14 @@ const Top = styled.div`
   }
 `
 
-const AvatarBox = styled.div`
-  width: 35px;
-  height: 35px;
-  margin-right: 0.5em;
-`
-
-const Avatar = styled.img`
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-`
-
-const AgentInfo = styled.div`
-  
-`
-
-const AgentTitle = styled.div`
-  font-weight: 300;
-  font-size: 0.7em;
-  opacity: 1;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  overflow: hidden;
-`
-const AgentName = styled.div`
-  font-size: 0.8em;
-  font-weight: bold;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  word-break: break-word;
-  overflow: hidden;
-`
-
-const AgentBox = styled.div`
-  display: flex;
-  min-width: 0px;
-  -webkit-box-align: center;
-  align-items: center;
-  z-index: 1;
-  color: rgb(66, 77, 87);
-  flex-shrink: 0;
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 0.1em 0.6em;
-  position: relative;
-  padding: 0.6em 0.8em;
-  background: rgb(255, 255, 255);
-  flex-grow: 1;
-  flex-shrink: 0;
-`
-
 const ChatNow = styled.div`
   text-align: center;
   font-size: 0.9em;
-  padding: 1em;
   box-sizing: border-box;
   will-change: opacity;
   backface-visibility: hidden;
+  box-shadow: rgba(0, 0, 0, 0.03) 0px -1em 1em;
 `
-
-const AgentBoxComp = ({agentAvailable}) => {
-  if (!agentAvailable._id) return null
-  return (
-    <AgentBox>
-      <AvatarBox>
-        <Avatar src={agentAvailable.avatar.s100} />
-      </AvatarBox>
-      <AgentInfo>
-        <AgentName>{ agentAvailable.fullname }</AgentName>
-        <AgentTitle>Support Agent</AgentTitle>
-      </AgentInfo>
-    </AgentBox>
-  )
-}
 
 class ChatExpandedComponent extends Component {
   render () {
@@ -218,7 +152,7 @@ class ChatExpandedComponent extends Component {
                     <Icon className='icon-arrow-bottom' />
                   </Button>
                 </Top>
-                <AgentBoxComp agentAvailable={agentAvailable} />
+                <Agent {...agentAvailable} />
                 { !agentAvailable._id || !user._id
                   ? 'Auth is needed!'
                   : (
@@ -227,11 +161,12 @@ class ChatExpandedComponent extends Component {
                       sender={user}
                       show={isExpanded}
                       newMessageUnread={this.props.newMessageUnread}
+                      force={this.props.force}
                     />
                   )
                 }
                 <ChatNow>
-                  <ChatInput receiver={agentAvailable} sender={user} />
+                  <ChatInput receiver={agentAvailable} sender={user} force={this.props.force} />
                 </ChatNow>
               </ChatBox>
             </ChatContainer>

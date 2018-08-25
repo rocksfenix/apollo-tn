@@ -4,9 +4,9 @@ import gql from 'graphql-tag'
 import { Query } from 'react-apollo'
 import Message from './Message'
 
-const MESSAGES = gql`
-  query messages($sender: String!, $receiver: String!) {
-    messages(sender: $sender, receiver: $receiver){
+export const MESSAGES = gql`
+  query messages($sender: String!, $receiver: String!, $first: Int, $skip: Int) {
+    messages(sender: $sender, receiver: $receiver, first: $first, skip: $skip){
       _id
       text
       sender
@@ -47,6 +47,26 @@ const ChatMessages = styled.div`
   right: 0px;
   padding: 0.5em;
   background: transparent;
+
+  ::-webkit-scrollbar {
+      width: 5px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background-color: #FFF
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+      background: rgb(174, 197, 208);
+      border-radius: 10px;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+      background: rgb(174, 197, 208); 
+  }
 `
 
 // Extraer los despues del indice pasata hasta que el senderID cambie
@@ -93,6 +113,11 @@ export default class extends React.Component {
                 if (!subscriptionData.data) return prev
                 const { newMessage } = subscriptionData.data
 
+                // Scroll IT
+                window.setTimeout(() => {
+                  this.props.force()
+                }, 30)
+
                 // Validamos si no esta expandido para agreegar
                 // Como mensajes sin leer
                 if (!this.props.show) {
@@ -108,7 +133,7 @@ export default class extends React.Component {
           if (data.messages) {
             return (
               <Chat>
-                <ChatMessages>
+                <ChatMessages id='app-messages'>
                   {getSegments(data.messages).map((segment, i) => (
                     <Message
                       key={`sec_id${i}`}

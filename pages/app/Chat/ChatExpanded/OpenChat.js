@@ -10,6 +10,7 @@ const GET_AGENT_AVAILABLE = gql`{
     agent {
       _id
       fullname
+      isConnected
       # position
       avatar {
         s100
@@ -41,6 +42,7 @@ const Panel = styled.div`
   box-shadow: rgba(0, 0, 0, 0.25) 0px 0.2em 1em;
   overflow: hidden;
   border-radius: 10px;
+  will-change: transform, opacity;
   background: rgb(233, 238, 244);
   display: flex;
   justify-content: space-around;
@@ -74,12 +76,8 @@ class OpenChat extends Component {
 
     // TODO - Eliminar el setimeout
     window.setTimeout(() => {
-      if (res.data.agentAvailable.agent) {
-        this.props.onAgentSync(res.data.agentAvailable)
-        this.setState({ loading: false })
-      } else {
-        this.setState({ loading: false })
-      }
+      this.props.onAgentSync(res.data.agentAvailable)
+      this.setState({ loading: false })
     }, 1000)
   }
 

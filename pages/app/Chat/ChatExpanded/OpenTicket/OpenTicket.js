@@ -1,8 +1,9 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
-import styled from 'styled-components'
+import styled, {keyframes} from 'styled-components'
 import gql from 'graphql-tag'
 import { withApollo } from 'react-apollo'
+import Agent from '../../Agent'
 
 export const NEW_TICKET = gql`
   mutation ticketCreate (
@@ -52,9 +53,12 @@ const Icon = styled.i`
 `
 
 const Top = styled.div`
-  width: 100%;
+  width: 95%;
+  margin: 0 auto;
   height: 35px;
   background-color: #FFF;
+  position: relative;
+  border-bottom: 1px solid #f4f4f4;
 `
 
 const Main = styled.div`
@@ -87,11 +91,6 @@ const OnlineBox = styled.div`
 
 const OnlineMessage = styled.div`
   padding: 1em 1em 0;
-`
-
-const Avatar = styled.img`
-  width: 30px;
-  height: 30px;
 `
 
 const BackBar = styled.div`
@@ -129,10 +128,9 @@ class Online extends Component {
   }
 
   render () {
-    const { fullname, avatar } = this.props
     return (
       <OnlineBox>
-        <Avatar src={avatar.s100} />{fullname}
+        <Agent {...this.props} />
         <OnlineMessage>
           {this.state.text}
         </OnlineMessage>
@@ -181,6 +179,7 @@ class OffLine extends Component {
 
 const Contents = styled.div`
   height: 100%;
+  width: 400%;
   display: flex;
   position: absolute;
   top: 0;
@@ -188,17 +187,21 @@ const Contents = styled.div`
   transition-duration: .5s;
   transition-timing-function: cubic-bezier(1,0,0,1);
   background-color: #cbd1e7;
+  will-change: left;
 `
 
 const ContentBox = styled.div`
+  position: relative;
   background-color: #FFF;
   width: 100%;
   height: 100%;
   display: flex;
   flex-flow: column;
-  transition: transform .5s ease-out, opacity .5s ease-out;
+  will-change: transform, opacity;
+  transition: transform .5s ease-out, opacity .5s ease-out; 
   transform: ${p => p.active ? 'translateY(0)' : 'translateY(30%)'};
   opacity: ${p => p.active ? '1' : '0'};
+  z-index: ${p => p.active ? '100' : '-1'};
 `
 
 const Optio = styled.div`
@@ -234,40 +237,72 @@ const Textarea = styled.textarea`
   margin: 1em auto;
   width: 95%;
   padding: .4em;
+  outline: none;
 
   :focus {
     border: 1px solid purple;
   }
 `
 
+const animationBtn = keyframes`
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+`
+
+const ButtonListo = styled.button`
+  width: 85%;
+  margin: 0 auto;
+  border: 0;
+  background-color: #9e68cf;
+  color: #FFF;
+  display: ${p => p.active ? 'block' : 'none'};
+  animation: .4s ease-out ${animationBtn};
+  cursor: pointer;
+  padding: .5em;
+  border-radius: 5px;
+`
+
+const ButtonMinimize = styled.button`
+  border: 0;
+  outline: none;
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 3px;
+`
+
 class OpenTicketComponent extends Component {
   //
   stepsOnline = [
     {
-      text: 'Hola Ninja, me podrias indicar con que tienes problemas?..',
+      text: 'Hola Ninja, me podrias decir con que tienes problemas?',
       left: '0%'
     },
     {
-      text: 'Muy bien, por favor describe el problema',
+      text: 'Okis, por favor describeme el problema',
       left: '-100%'
     },
     {
-      text: 'Exelente, para comenzar, me dices la prioridad?',
+      text: 'Exelente, que prioridad tiene?',
       left: '-200%'
     }
   ]
 
   stepsOffline = [
     {
-      text: 'De momento no hay agentes disponibles, pero puedes abrir un ticket, cual es el problema?',
+      text: 'De momento no hay agentes, pero puedes abrir un ticket, con que hay problema?',
       left: '0%'
     },
     {
-      text: 'Muy bien, por favor describe el problema',
+      text: 'Okis, por favor describeme el problema',
       left: '-100%'
     },
     {
-      text: 'Exelente, puedes indicarme que prioridad tiene?',
+      text: 'Exelente, que prioridad tiene?',
       left: '-200%'
     },
     {
@@ -318,9 +353,9 @@ class OpenTicketComponent extends Component {
       }))
     }
 
-    if (key === 'text') {
-      this.setState({ step: 2 })
-    }
+    // if (key === 'text') {
+    //   this.setState({ step: 2 })
+    // }
 
     if (key === 'priority') {
       this.state.ticket.priority = value
@@ -331,6 +366,20 @@ class OpenTicketComponent extends Component {
         // si es offline
         this.setState({ step: 3 })
       }
+    }
+  }
+
+  onChanteText = (e) => {
+    this.state.ticket.text = e.target.value
+    // this.setState()
+    this.forceUpdate()
+  }
+
+  onCheckText = () => {
+    if (this.state.ticket.text !== '') {
+      this.setState({ step: 2 })
+    } else {
+      window.alert('Por favor describe brevemente el problema')
     }
   }
 
@@ -346,10 +395,6 @@ class OpenTicketComponent extends Component {
     if (step === 2) this.setState({ showOptions: 'priority' })
 
     if (step === 3) this.setState({ showOptions: 'endTicket' })
-  }
-
-  onChanteText = (e) => {
-    this.state.ticket.text = e.target.value
   }
 
   createTicket = async () => {
@@ -376,9 +421,9 @@ class OpenTicketComponent extends Component {
     return (
       <Panel>
         <Top>
-          <button onClick={this.props.onMinimize}>
+          <ButtonMinimize onClick={this.props.onMinimize}>
             <Icon className='icon-arrow-bottom' />
-          </button>
+          </ButtonMinimize>
         </Top>
         <Main>
           <Header>
@@ -398,7 +443,7 @@ class OpenTicketComponent extends Component {
             <BackBar />
           </Header>
           <Content>
-            <Contents style={{ left: step.left, width: agentAvailable ? '400%' : '400%' }}>
+            <Contents style={{ left: step.left }}>
               <ContentBox active={showOptions === 'category'}>
                 {this.options.category.map(opt => (
                   <Option
@@ -412,7 +457,7 @@ class OpenTicketComponent extends Component {
               </ContentBox>
               <ContentBox active={showOptions === 'text'}>
                 <Textarea ref='textarea' onChange={this.onChanteText} />
-                <button onClick={() => this.onChange('text', 'other.....')}>Listo</button>
+                <ButtonListo active={this.state.ticket.text.length > 10} onClick={() => this.onCheckText('text', 'other.....')}>Confirmar</ButtonListo>
               </ContentBox>
               <ContentBox active={showOptions === 'priority'}>
                 {this.options.priority.map(opt => (
