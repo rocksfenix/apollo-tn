@@ -47,6 +47,11 @@ const Panel = styled.div`
   will-change: transform, opacity;
   transform-origin: 100% 100%;
   transform: scale(0);
+
+  @media (max-width: 800px) {
+    width: 100%;
+    height: 100vh;
+  }
 `
 
 const ChatContainer = styled.div`
@@ -61,6 +66,10 @@ const ChatContainer = styled.div`
   backface-visibility: hidden;
   padding: 1em 1em 2em;
   z-index: 2147483639;
+
+  @media (max-width: 800px) {
+    padding: 0;
+  }
 `
 
 const ChatBox = styled.div`
@@ -72,6 +81,10 @@ const ChatBox = styled.div`
   overflow: hidden;
   border-radius: 10px;
   background: rgb(233, 238, 244);
+
+  @media (max-width: 800px) {
+    border-radius: 0;
+  }
 `
 
 const Button = styled.button`
