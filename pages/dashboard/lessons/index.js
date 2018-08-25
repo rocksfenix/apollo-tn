@@ -1,1 +1,1 @@
-export {default} from './lessons'
+export {default} from './Lessons'

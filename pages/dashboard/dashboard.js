@@ -1,45 +1,18 @@
 import React, {Component} from 'react'
-import ReactDOM from 'react-dom'
 import styled from 'styled-components'
 import Router from 'next/router'
 import gql from 'graphql-tag'
-import { graphql, compose } from 'react-apollo'
-import Statistics from './statistics'
-import Users from './users'
-import Courses from './courses'
-import Lessons from './lessons'
-import Issues from './issues'
-import Chats from './chats'
+import Statistics from './Statistics'
+import Users from './Users'
+import Courses from './Courses'
+import Lessons from './Lessons'
+import Tickets from './Tickets'
+import Chats from './Chats'
 import withUser from '../../components/HOC/WithUser'
 
 const ONLINE = gql`
   mutation {
     online
-  }
-`
-
-const NEW_CHAT = gql`
-  subscription {
-    newChat {
-      _id
-      fullname
-      email
-      avatar {
-        s100
-      }
-    }
-  }
-`
-
-const NEW_MESSAGE_SUBSCRIPTION = gql`
-  subscription {
-    newMessage {
-      _id
-      text
-      sender
-      receiver
-      createdAt
-    }
   }
 `
 
@@ -60,7 +33,7 @@ const Tabs = [
   { title: 'courses', icon: 'icon-courses' },
   { title: 'lessons', icon: 'icon-notes' },
   { title: 'chats', icon: 'icon-help' },
-  { title: 'issues', icon: 'icon-success' }
+  { title: 'tickets', icon: 'icon-success' }
 ]
 
 const Nav = styled.nav`
@@ -139,8 +112,6 @@ class DashboardPage extends Component {
     return (
       <View>
         <Nav>
-          {/* <audio src='https://dxpdcvj89hnue.cloudfront.net/audio/newChat.mp3' id='audio-newChat' />
-          <audio src='https://dxpdcvj89hnue.cloudfront.net/audio/newMessage.mp3' id='audio-newMessage' /> */}
           {Tabs.map(item => (
             <NavItem
               key={item.title}
@@ -162,7 +133,7 @@ class DashboardPage extends Component {
           <Users show={this.state.tab === 'users'} {...this.props} />
           <Courses show={this.state.tab === 'courses'} {...this.props} />
           <Lessons show={this.state.tab === 'lessons'} {...this.props} />
-          <Issues show={this.state.tab === 'tickets'} />
+          <Tickets show={this.state.tab === 'tickets'} />
           <Chats show={this.state.tab === 'chats'} {...this.props} onNewChat={this.onNewChat} />
         </Content>
       </View>
@@ -171,7 +142,3 @@ class DashboardPage extends Component {
 }
 
 export default withUser(DashboardPage)
-
-// export default compose(
-//   graphql(NEW_CHAT, {name: 'newChat'})
-// )(withUser(DashboardPage))

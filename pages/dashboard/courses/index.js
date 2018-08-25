@@ -1,1 +1,1 @@
-export {default} from './courses'
+export {default} from './Courses'
