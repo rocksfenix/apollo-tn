@@ -88,6 +88,10 @@ class DashboardPage extends Component {
     unreadChats: 0
   }
 
+  componentWillMount () {
+    this.setState({ tab: this.props.query.tab })
+  }
+
   componentDidMount () {
     // emitimos señal de conexion
     this.props.client.mutate({
@@ -112,6 +116,7 @@ class DashboardPage extends Component {
   }
 
   render () {
+    console.log(this.props)
     return (
       <View>
         <Nav>
