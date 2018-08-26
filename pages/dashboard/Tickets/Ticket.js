@@ -12,7 +12,7 @@ const Ticket = styled.div`
   width: 100%;
   height: ${p => p.isColapsed ? '50px' : '330px'};
   background-color: #FFF;
-  border-bottom: 1px solid #f3f3f3;
+  border-bottom: ${p => p.isColapsed ? '1px solid #f3f3f3' : '2px solid #90afd6'};
   will-change: height, background;
   transition: height 150ms cubic-bezier(1,0,0,1), background 700ms ease-out;
   overflow: hidden;

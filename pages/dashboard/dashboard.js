@@ -9,7 +9,6 @@ import Lessons from './Lessons'
 import Tickets from './Tickets'
 import Chats from './Chats'
 import withUser from '../../components/HOC/WithUser'
-import Panel from './Panel'
 
 const ONLINE = gql`
   mutation {
