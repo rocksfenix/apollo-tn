@@ -9,6 +9,7 @@ import Lessons from './Lessons'
 import Tickets from './Tickets'
 import Chats from './Chats'
 import withUser from '../../components/HOC/WithUser'
+import Panel from './Panel'
 
 const ONLINE = gql`
   mutation {
@@ -19,12 +20,13 @@ const ONLINE = gql`
 const View = styled.section`
   height: 100vh;
   background: #000;
+  display: flex;
 `
 
 const Content = styled.div`
-  width: 100%;
+  flex-grow: 1;
   height: 100vh;
-  padding-left: 55px;
+  position: relative;
 `
 
 const Tabs = [
@@ -37,7 +39,8 @@ const Tabs = [
 ]
 
 const Nav = styled.nav`
-  position: fixed;
+  position: relative;
+  z-index: 10000;
   left: 0;
   top: 0;
   background-color: #1d1919;

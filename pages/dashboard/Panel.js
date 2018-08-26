@@ -5,12 +5,11 @@ export default styled.div`
   height: 100vh;
   background-color: yellow;
   background: #fbfbfb;
-  overflow-y: auto;
-  overflow-x: hidden;
   position: absolute;
   will-change: opacity, transform;
   transition: all .5s ease-out;
   top: 0;
   z-index: ${p => p.show ? '1000' : '-1'};
   transform: ${p => p.show ? 'scale(1)' : 'scale(.97)'};
+  overflow-y: auto;
 `
