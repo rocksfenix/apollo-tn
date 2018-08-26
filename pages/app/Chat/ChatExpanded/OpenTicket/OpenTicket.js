@@ -353,10 +353,6 @@ class OpenTicketComponent extends Component {
       }))
     }
 
-    // if (key === 'text') {
-    //   this.setState({ step: 2 })
-    // }
-
     if (key === 'priority') {
       this.state.ticket.priority = value
       if (this.props.agentAvailable._id) {
@@ -365,13 +361,13 @@ class OpenTicketComponent extends Component {
       } else {
         // si es offline
         this.setState({ step: 3 })
+        this.createTicket()
       }
     }
   }
 
   onChanteText = (e) => {
     this.state.ticket.text = e.target.value
-    // this.setState()
     this.forceUpdate()
   }
 

@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import ReactDom from 'react-dom'
 import styled from 'styled-components'
 import { withApollo } from 'react-apollo'
-import { MESSAGES } from '../../../dashboard/chats/chat-queries'
+import { MESSAGES } from '../../../dashboard/Chats/chat-queries'
 import gql from 'graphql-tag'
 
 const CREATE_MESSAGE = gql`

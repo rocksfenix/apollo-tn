@@ -110,22 +110,24 @@ export const TICKETS = gql`
     tickets (customer: $customer) {
       _id
       text
-      category
       status
       priority
+      category
+      createdAt
+      completedAt
       like
       userFeedback
       author {
         fullname
-        avatar {
-          s100
-        }
+        _id
+        email
+        role
       }
       customer {
         fullname
-        avatar {
-          s100
-        }
+        _id
+        email
+        role
       }
     }
   }
@@ -148,20 +150,24 @@ export const NEW_TICKET = gql`
     }) {
       _id
       text
-      category
       status
       priority
+      category
+      createdAt
+      completedAt
+      like
+      userFeedback
       author {
         fullname
-        avatar {
-          s100
-        }
+        _id
+        email
+        role
       }
       customer {
         fullname
-        avatar {
-          s100
-        }
+        _id
+        email
+        role
       }
     }
   }
@@ -244,20 +250,24 @@ export const DELETE_TICKET = gql`
     ticketDelete(_id: $_id) {
       _id
       text
-      category
-      priority
       status
+      priority
+      category
+      createdAt
+      completedAt
+      like
+      userFeedback
       author {
         fullname
-        avatar {
-          s100
-        }
+        _id
+        email
+        role
       }
       customer {
         fullname
-        avatar {
-          s100
-        }
+        _id
+        email
+        role
       }
     }
   }
@@ -280,20 +290,24 @@ export const TICKET_UPDATE = gql`
     }) {
       _id
       text
-      category
       status
       priority
+      category
+      createdAt
+      completedAt
+      like
+      userFeedback
       author {
         fullname
-        avatar {
-          s100
-        }
+        _id
+        email
+        role
       }
       customer {
         fullname
-        avatar {
-          s100
-        }
+        _id
+        email
+        role
       }
     }
   }

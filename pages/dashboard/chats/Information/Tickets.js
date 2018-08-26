@@ -229,58 +229,60 @@ class TicketsComponent extends Component {
   }
 
   render () {
-    // console.log('RENDER', this.state)
+    console.log('RENDER', this.state)
     return (
       <Query query={TICKETS} variables={{ customer: this.props.customer._id }}>
-        {({ data, loading }) => {
-          if (data && !loading) {
-            return (
-              <Panel>
-                <NewTicket show={this.state.show === 'new'} >
-                  <Header>
-                    <Back onClick={this.hidde}>
-                      <i className='icon-arrow-left' />
-                    </Back>
-                    <Buttons>
-                      <Button active onClick={this.createNewTicket}>Create</Button>
-                    </Buttons>
-                  </Header>
-                  <Textarea
-                    size='15px'
-                    onChange={this.onChangeNewTicket}
-                    value={this.state.newTicket.text}
-                    keyName='text'
-                  />
-                  <Multioption
-                    label='priority'
-                    keyName='priority'
-                    size='15px'
-                    active={this.state.newTicket.priority}
-                    options={[
-                      { value: 'low' },
-                      { value: 'normal' },
-                      { value: 'urgent' }
-                    ]}
-                    onChange={this.onChangeNewTicket}
-                  />
-                </NewTicket>
+        {({ data, loading, error }) => {
+          if (loading) return <h1>... Loading</h1>
+          console.log(error)
+          if (error) return <h1>... Error</h1>
 
-                <TicketDetails
-                  ticketInFocus={data.tickets.filter(t => t._id === this.state.ticketInFocus._id)[0]}
-                  customerId={this.props.customer._id}
-                  show={this.state.show === 'details'}
-                  onHidden={this.hidde}
+          return (
+            <Panel>
+              <NewTicket show={this.state.show === 'new'} >
+                <Header>
+                  <Back onClick={this.hidde}>
+                    <i className='icon-arrow-left' />
+                  </Back>
+                  <Buttons>
+                    <Button active onClick={this.createNewTicket}>Create</Button>
+                  </Buttons>
+                </Header>
+                <Textarea
+                  size='15px'
+                  onChange={this.onChangeNewTicket}
+                  value={this.state.newTicket.text}
+                  keyName='text'
                 />
+                <Multioption
+                  label='priority'
+                  keyName='priority'
+                  size='15px'
+                  active={this.state.newTicket.priority}
+                  options={[
+                    { value: 'low' },
+                    { value: 'normal' },
+                    { value: 'urgent' }
+                  ]}
+                  onChange={this.onChangeNewTicket}
+                />
+              </NewTicket>
 
-                <Title>Tickets <ButtonNewTicket onClick={this.showNew}>Create New</ButtonNewTicket></Title>
-                <Tickets>
-                  {data.tickets.map(ticket => (
-                    <Ticket onClick={() => this.showDetails(ticket)} ticket={ticket} />
-                  ))}
-                </Tickets>
-              </Panel>
-            )
-          } else return null
+              <TicketDetails
+                ticketInFocus={data.tickets.filter(t => t._id === this.state.ticketInFocus._id)[0]}
+                customerId={this.props.customer._id}
+                show={this.state.show === 'details'}
+                onHidden={this.hidde}
+              />
+
+              <Title>Tickets <ButtonNewTicket onClick={this.showNew}>Create New</ButtonNewTicket></Title>
+              <Tickets>
+                {data.tickets.map(ticket => (
+                  <Ticket onClick={() => this.showDetails(ticket)} ticket={ticket} />
+                ))}
+              </Tickets>
+            </Panel>
+          )
         }}
       </Query>
     )

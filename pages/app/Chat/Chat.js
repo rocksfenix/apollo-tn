@@ -128,6 +128,9 @@ class ChatComponent extends Component {
 
   onTicketCreate = (ticket) => {
     this.setState({ ticket: ticket._id })
+
+    // Si no hay agentes online solo se abre el ticket
+    // Pero no se crea el newChat
     if (this.state.agentAvailable._id) {
       this.newChat()
     }
