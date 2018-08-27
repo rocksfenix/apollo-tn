@@ -29,12 +29,12 @@ const Content = styled.div`
 `
 
 const Tabs = [
-  { title: 'statistics', icon: 'icon-arm-6' },
-  { title: 'users', icon: 'icon-ninja-4' },
+  { title: 'statistics', icon: 'icon-statistics-2' },
+  { title: 'users', icon: 'icon-ninja-2-line' },
   { title: 'courses', icon: 'icon-courses' },
-  { title: 'lessons', icon: 'icon-notes' },
-  { title: 'chats', icon: 'icon-help' },
-  { title: 'tickets', icon: 'icon-success' }
+  { title: 'lessons', icon: 'icon-lesson' },
+  { title: 'chats', icon: 'icon-chat' },
+  { title: 'tickets', icon: 'icon-ticket' }
 ]
 
 const Nav = styled.nav`
@@ -57,17 +57,15 @@ const NavItem = styled.li`
   align-items: center;
   cursor: pointer;
   background-color: ${p => p.active ? '#470080' : 'transparent'};
+  transition: background .3s ease-out;
 
-  &:hover {
-    background-color: purple;
-  }
-
-  &:hover > i {
+  :hover > i {
     color: #FFF;
   }
 `
 const Icon = styled.i`
-  color: gray;
+  color: ${p => p.active ? '#FFF' : '#01c2ff'};
+  font-size: 24px;
 `
 
 const Notify = styled.div`
@@ -131,7 +129,10 @@ class DashboardPage extends Component {
                   ? <Notify>{this.state.unreadChats}</Notify>
                   : null
               }
-              <Icon className={item.icon} />
+              <Icon
+                className={item.icon}
+                active={item.title === this.state.tab}
+              />
             </NavItem>
           ))}
         </Nav>
