@@ -88,10 +88,7 @@ class TicketComponent extends Component {
 
   // Actualiza el status del ticket
   onUpdateStatus = async (status) => {
-    const prevStatus = this.props.ticket.status
-    const { first, skip } = this.props
-
-    const res = await this.props.client.mutate({
+    await this.props.client.mutate({
       mutation: TICKET_UPDATE,
       variables: {
         _id: this.props.ticket._id,
@@ -99,47 +96,52 @@ class TicketComponent extends Component {
       }
     })
 
-    // Actualizamos cache de Apollo
-    const { allTickets } = this.props.client.cache.readQuery({
-      query: TICKETS,
-      variables: { status: prevStatus, first, skip }
-    })
+    // const prevStatus = this.props.ticket.status
+    // const { first, skip } = this.props
+    // Es mas usable dejar que se vea la actualizacion
+    // y no reaccionar solo con el click
+    // De deja para posterior revicion
+    // // Actualizamos cache de Apollo
+    // const { allTickets } = this.props.client.cache.readQuery({
+    //   query: TICKETS,
+    //   variables: { status: prevStatus, first, skip }
+    // })
 
-    // Eliminamos de la consulta de estatus anterior
-    this.props.client.cache.writeQuery({
-      query: TICKETS,
-      variables: { status: prevStatus, first, skip },
-      data: {
-        allTickets: {
-          ...allTickets,
-          tickets: allTickets.tickets.filter(t => t._id !== res.data.ticketUpdate._id)
-        }
-      }
-    })
+    // // Eliminamos de la consulta de estatus anterior
+    // this.props.client.cache.writeQuery({
+    //   query: TICKETS,
+    //   variables: { status: prevStatus, first, skip },
+    //   data: {
+    //     allTickets: {
+    //       ...allTickets,
+    //       tickets: allTickets.tickets.filter(t => t._id !== res.data.ticketUpdate._id)
+    //     }
+    //   }
+    // })
 
-    try {
-      // Añadimos a la consulta de estatus actual
-      // solo si no existe en la consulta con ese estatus
+    // try {
+    //   // Añadimos a la consulta de estatus actual
+    //   // solo si no existe en la consulta con ese estatus
 
-      const { allTickets } = this.props.client.cache.readQuery({
-        query: TICKETS,
-        variables: { status: status, first, skip }
-      })
+    //   const { allTickets } = this.props.client.cache.readQuery({
+    //     query: TICKETS,
+    //     variables: { status: status, first, skip }
+    //   })
 
-      if (!allTickets.tickets.filter(t => t._id === this.props.ticket._id)[0]) {
-        console.log('ANADIR', allTickets.tickets)
-        this.props.client.cache.writeQuery({
-          query: TICKETS,
-          variables: { status, first, skip },
-          data: {
-            allTickets: {
-              ...allTickets,
-              tickets: [ res.data.ticketUpdate, ...allTickets.tickets ]
-            }
-          }
-        })
-      }
-    } catch (err) {}
+    //   if (!allTickets.tickets.filter(t => t._id === this.props.ticket._id)[0]) {
+    //     console.log('ANADIR', allTickets.tickets)
+    //     this.props.client.cache.writeQuery({
+    //       query: TICKETS,
+    //       variables: { status, first, skip },
+    //       data: {
+    //         allTickets: {
+    //           ...allTickets,
+    //           tickets: [ res.data.ticketUpdate, ...allTickets.tickets ]
+    //         }
+    //       }
+    //     })
+    //   }
+    // } catch (err) {}
 
     this.createNote(status)
   }
