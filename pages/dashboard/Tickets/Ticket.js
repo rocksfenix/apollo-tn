@@ -15,17 +15,12 @@ const Ticket = styled.div`
   width: 100%;
   height: ${p => p.isColapsed ? '50px' : '330px'};
   background-color: #FFF;
-  border-bottom: ${p => p.isColapsed ? '1px solid #f3f3f3' : '2px solid #909090'};
+  border-bottom: ${p => p.isColapsed ? '2px solid #f3f3f3' : '2px solid #909090'};
   will-change: height, background, border;
   transition: height 150ms cubic-bezier(1,0,0,1), background 700ms ease-out, border 300ms ease-out;
   overflow: hidden;
   position: relative;
   background-color: ${p => p.isColapsed ? '#FFF' : '#f5fcff;'};
-
-
-  &:hover {
-    /* background-color: #fbfbfb; */
-  }
 `
 const Header = styled.div`
   height: 50px;
@@ -93,6 +88,9 @@ class TicketComponent extends Component {
 
   // Actualiza el status del ticket
   onUpdateStatus = async (status) => {
+    const prevStatus = this.props.ticket.status
+    const { first, skip } = this.props
+
     const res = await this.props.client.mutate({
       mutation: TICKET_UPDATE,
       variables: {
@@ -101,24 +99,47 @@ class TicketComponent extends Component {
       }
     })
 
-    const { first, skip } = this.props
-
     // Actualizamos cache de Apollo
     const { allTickets } = this.props.client.cache.readQuery({
       query: TICKETS,
-      variables: { status: this.props.ticket.status, first, skip }
+      variables: { status: prevStatus, first, skip }
     })
 
+    // Eliminamos de la consulta de estatus anterior
     this.props.client.cache.writeQuery({
       query: TICKETS,
-      variables: { status: this.props.ticket.status, first, skip },
+      variables: { status: prevStatus, first, skip },
       data: {
         allTickets: {
           ...allTickets,
-          tickets: allTickets.tickets.map(t => t._id === res.data.ticketUpdate._id ? res.data.ticketUpdate : t)
+          tickets: allTickets.tickets.filter(t => t._id !== res.data.ticketUpdate._id)
         }
       }
     })
+
+    try {
+      // Añadimos a la consulta de estatus actual
+      // solo si no existe en la consulta con ese estatus
+
+      const { allTickets } = this.props.client.cache.readQuery({
+        query: TICKETS,
+        variables: { status: status, first, skip }
+      })
+
+      if (!allTickets.tickets.filter(t => t._id === this.props.ticket._id)[0]) {
+        console.log('ANADIR', allTickets.tickets)
+        this.props.client.cache.writeQuery({
+          query: TICKETS,
+          variables: { status, first, skip },
+          data: {
+            allTickets: {
+              ...allTickets,
+              tickets: [ res.data.ticketUpdate, ...allTickets.tickets ]
+            }
+          }
+        })
+      }
+    } catch (err) {}
 
     this.createNote(status)
   }
@@ -176,6 +197,8 @@ class TicketComponent extends Component {
         }
       }
     })
+
+    this.props.force()
   }
 
     // Crea una nota cada vez que cambia de estatus
@@ -200,9 +223,6 @@ class TicketComponent extends Component {
         variables: { ticket },
         data: { ticketNotes: [ res.data.ticketNoteCreate, ...ticketNotes ] }
       })
-
-      // Forzamos el renderizado
-      this.forceUpdate()
     }
 
     render () {

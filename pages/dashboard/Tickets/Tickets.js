@@ -45,7 +45,7 @@ class Tickets extends Component {
         <Query
           query={TICKETS}
           variables={{ status: this.state.filter, first: this.state.itemsByPage, skip: this.state.skip }}
-          fetchPolicy='network-only'
+          // fetchPolicy='network-only'
         >
           {({ data, loading, error }) => {
             if (error) return <h1>Error {error}</h1>
