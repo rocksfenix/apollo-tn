@@ -92,14 +92,23 @@ class TicketComponent extends Component {
       }
     })
 
+    const { first, skip } = this.props
+
     // Actualizamos cache de Apollo
-    const { tickets } = this.props.client.cache.readQuery({
-      query: TICKETS
+    const { allTickets } = this.props.client.cache.readQuery({
+      query: TICKETS,
+      variables: { status: this.props.ticket.status, first, skip }
     })
 
     this.props.client.cache.writeQuery({
       query: TICKETS,
-      data: { tickets: tickets.map(t => t._id === res.data.ticketUpdate._id ? res.data.ticketUpdate : t) }
+      variables: { status: this.props.ticket.status, first, skip },
+      data: {
+        allTickets: {
+          ...allTickets,
+          tickets: allTickets.tickets.map(t => t._id === res.data.ticketUpdate._id ? res.data.ticketUpdate : t)
+        }
+      }
     })
 
     this.createNote(status)
@@ -113,13 +122,17 @@ class TicketComponent extends Component {
     })
 
     // Actualizamos cache de Apollo
-    const { tickets } = this.props.client.cache.readQuery({
+    const { allTickets } = this.props.client.cache.readQuery({
       query: TICKETS
     })
 
     this.props.client.cache.writeQuery({
       query: TICKETS,
-      data: { tickets: tickets.map(t => t._id === res.data.ticketUpdate._id ? res.data.ticketUpdate : t) }
+      data: {
+        allTickets: {
+          tickets: allTickets.tickets.map(t => t._id === res.data.ticketUpdate._id ? res.data.ticketUpdate : t)
+        }
+      }
     })
   }
 

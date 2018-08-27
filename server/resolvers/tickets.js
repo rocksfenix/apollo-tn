@@ -5,18 +5,39 @@ export default {
   Query: {
     // Regresa los tickets pueden ser filtrados por
     // un lciente especifico, o pasar first skip para paginacion
-    tickets: async (_, { first, skip, customer }, { user }) => {
+    allTickets: async (_, { first, skip, customer, status, priority }, { user }) => {
       if (!user.sub) throw new AuthenticationRequiredError()
       if (user.role !== 'admin') throw new ForbiddenError()
 
-      const query = customer ? { customer } : {}
+      const query = {}
 
-      return models.Ticket
+      if (customer) query.customer = customer
+      if (status && status !== 'all') query.status = status
+      if (priority && priority !== 'all') query.priority = priority
+
+      let limit = first <= 100 ? first : 100
+
+      const tickets = await models.Ticket
         .find(query)
         .populate('author customer')
-        .limit(first)
+        .limit(limit)
         .skip(skip)
         .sort({ createdAt: -1 })
+
+      let total = 0
+
+      // Si no hay query adicional, el total es la cantidad en Coleccion
+      if (customer || status || priority) {
+        total = await models.Ticket.find(query).count()
+      } else {
+        total = await models.Ticket.estimatedDocumentCount()
+      }
+
+      console.log('**** TOTAL ', total)
+      return {
+        tickets,
+        total
+      }
     }
   },
 

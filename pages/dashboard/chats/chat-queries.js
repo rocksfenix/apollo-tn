@@ -106,28 +106,31 @@ export const USER = gql`
 `
 
 export const TICKETS = gql`
-  query tickets ($customer: ID) {
-    tickets (customer: $customer) {
-      _id
-      text
-      status
-      priority
-      category
-      createdAt
-      completedAt
-      like
-      userFeedback
-      author {
-        fullname
+  query allTickets ($first: Int, $skip: Int, $customer: ID, $status: String, $priority: String) {
+    allTickets (first: $first, skip: $skip, customer: $customer, status: $status, priority: $priority) {
+      total
+      tickets {
         _id
-        email
-        role
-      }
-      customer {
-        fullname
-        _id
-        email
-        role
+        text
+        status
+        priority
+        category
+        createdAt
+        completedAt
+        like
+        userFeedback
+        author {
+          fullname
+          _id
+          email
+          role
+        }
+        customer {
+          fullname
+          _id
+          email
+          role
+        }
       }
     }
   }

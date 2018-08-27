@@ -102,7 +102,6 @@ class NotesComponent extends Component {
       <Query query={TICKET_NOTES} variables={{ ticket: this.props.ticket }} >
         {({ data, loading }) => {
           if (data && !loading) {
-            console.log(data)
             return (
               <div>
                 <NoteInput onEnter={this.newTicketNote} />

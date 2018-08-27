@@ -13,27 +13,55 @@ const Panel = styled(_Panel)`
 
 class Tickets extends Component {
   state = {
-    filter: 'new'
+    filter: 'new',
+    itemsByPage: 20,
+    skip: 0
   }
 
   onFilter = (filter) => {
     console.log(filter)
-    this.setState({ filter })
+    this.setState({ filter, skip: 0 })
+  }
+
+  onNextPage = (currentPage) => {
+    this.setState(state => ({ ...state, skip: state.itemsByPage * currentPage }))
+    // window.setTimeout(() => console.log('onNextPage', this.state, currentPage), 50)
+  }
+
+  onPrevPage = (currentPage) => {
+    this.setState(state => ({ ...state, skip: state.itemsByPage * currentPage }))
+    // window.setTimeout(() => console.log('onPrevPage', this.state, currentPage), 50)
+  }
+
+  force = () => {
+    console.log('FORCE')
+    this.forceUpdate()
   }
 
   render () {
     return (
       <Panel show={this.props.show} >
         <Header onFilter={this.onFilter} filter={this.state.filter} />
-        <Query query={TICKETS}>
+        <Query
+          query={TICKETS}
+          variables={{ status: this.state.filter, first: this.state.itemsByPage, skip: this.state.skip }}
+          fetchPolicy='network-only'
+        >
           {({ data, loading, error }) => {
-            if (loading) return <h1>Loadig</h1>
             if (error) return <h1>Error {error}</h1>
 
             return (
-              <Table tickets={data.tickets} />
+              <Table
+                allTickets={data.allTickets}
+                loading={loading}
+                onNextPage={this.onNextPage}
+                onPrevPage={this.onPrevPage}
+                itemsByPage={this.state.itemsByPage}
+                first={this.state.itemsByPage}
+                skip={this.state.skip}
+                force={this.force}
+              />
             )
-
           }}
         </Query>
       </Panel>

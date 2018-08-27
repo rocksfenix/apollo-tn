@@ -78,7 +78,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }).then(() => {
           }
         })))
 
-      server.get('/graphiql', graphiqlExpress({ endpointURL: '/graphql', subscriptionsEndpoint: '/subscriptions' }))
+      server.get('/graphiql', graphiqlExpress({ endpointURL: '/graphiql', subscriptionsEndpoint: '/subscriptions' }))
 
       // HOME PUBLIC
       server.get('/', (req, res) => {

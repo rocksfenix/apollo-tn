@@ -28,8 +28,13 @@ input TicketUpdate {
   category: String
 }
 
+type TicketsPagination {
+  tickets: [Ticket]!
+  total: Int
+}
+
 type Query {
-  tickets(first: Int, skip: Int, customer: ID): [Ticket]!
+  allTickets(first: Int, skip: Int, customer: ID, status: String, priority: String): TicketsPagination!
 }
 
 type Mutation {
