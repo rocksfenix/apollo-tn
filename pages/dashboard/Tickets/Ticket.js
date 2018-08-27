@@ -5,6 +5,9 @@ import TicketText from './TicketText'
 import Notes from './Notes'
 import TicketStatus from './TicketStatus'
 import { TICKET_UPDATE, DELETE_TICKET, CREATE_TICKET_NOTE, TICKET_NOTES, TICKETS } from '../Chats/chat-queries'
+import Priority from './Priority'
+import Status from './Status'
+import moment from 'moment'
 
 const Ticket = styled.div`
   display: flex;
@@ -12,12 +15,12 @@ const Ticket = styled.div`
   width: 100%;
   height: ${p => p.isColapsed ? '50px' : '330px'};
   background-color: #FFF;
-  border-bottom: ${p => p.isColapsed ? '1px solid #f3f3f3' : '2px solid #90afd6'};
-  will-change: height, background;
-  transition: height 150ms cubic-bezier(1,0,0,1), background 700ms ease-out;
+  border-bottom: ${p => p.isColapsed ? '1px solid #f3f3f3' : '2px solid #909090'};
+  will-change: height, background, border;
+  transition: height 150ms cubic-bezier(1,0,0,1), background 700ms ease-out, border 300ms ease-out;
   overflow: hidden;
   position: relative;
-  background-color: ${p => p.isColapsed ? '#FFF' : '#90afd6'};
+  background-color: ${p => p.isColapsed ? '#FFF' : '#f5fcff;'};
 
 
   &:hover {
@@ -51,8 +54,10 @@ const Details = styled.div`
 
 const Column = styled.div`
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: ${p => p.align || 'center'};
+  width: ${p => p.width};
+  font-size: 15px;
 `
 
 const TextTicket = styled.div`
@@ -63,6 +68,10 @@ const TextTicket = styled.div`
 const NotesTicket = styled.div`
   width: 50%;
   height: 100%;
+`
+
+const Date = styled.div`
+  font-size: 12px;
 `
 
 class TicketComponent extends Component {
@@ -121,15 +130,21 @@ class TicketComponent extends Component {
       variables: ticket
     })
 
+    const { first, skip } = this.props
+
     // Actualizamos cache de Apollo
     const { allTickets } = this.props.client.cache.readQuery({
-      query: TICKETS
+      query: TICKETS,
+      variables: { status: this.props.ticket.status, first, skip }
     })
+    // debugger
 
     this.props.client.cache.writeQuery({
       query: TICKETS,
+      variables: { status: this.props.ticket.status, first, skip },
       data: {
         allTickets: {
+          ...allTickets,
           tickets: allTickets.tickets.map(t => t._id === res.data.ticketUpdate._id ? res.data.ticketUpdate : t)
         }
       }
@@ -143,19 +158,24 @@ class TicketComponent extends Component {
       variables: { _id }
     })
 
+    const { first, skip } = this.props
+
     // Actualizamos cache de Apollo
-    const { tickets } = this.props.client.cache.readQuery({
+    const { allTickets } = this.props.client.cache.readQuery({
       query: TICKETS,
-      variables: {}
+      variables: { status: this.props.ticket.status, first, skip }
     })
 
     this.props.client.cache.writeQuery({
       query: TICKETS,
-      variables: {},
-      data: { tickets: tickets.filter(t => t._id !== _id) }
+      variables: { status: this.props.ticket.status, first, skip },
+      data: {
+        allTickets: {
+          ...allTickets,
+          tickets: allTickets.tickets.filter(t => t._id !== _id)
+        }
+      }
     })
-
-    this.props.onHidden()
   }
 
     // Crea una nota cada vez que cambia de estatus
@@ -190,12 +210,21 @@ class TicketComponent extends Component {
       return (
         <Ticket isColapsed={this.state.isColapsed} onClick={this.toggle}>
           <Header>
-            <Column>{ticket.priority}</Column>
-            <Column>{ticket.text.substring(0, 30)}</Column>
-            <Column>{ticket.status}</Column>
-            <Column>{ticket.createdAt}</Column>
-            <Column>{ticket.category}</Column>
-            <Column>{ticket.like ? 'SI' : 'NO'}</Column>
+            <Column width='10%'>
+              <Priority priority={ticket.priority} />
+            </Column>
+            <Column width='20%' align='left'>{ticket.text.substring(0, 35)}</Column>
+            <Column width='10%'>
+              <Status status={ticket.status} />
+            </Column>
+            <Column width='10%'>
+              <Date>
+                {moment(ticket.createdAt).format('MMMM D YYYY, h:mm:ss a')} <br />
+                ( {moment(ticket.createdAt).fromNow()} )
+              </Date>
+            </Column>
+            <Column width='10%'>{ticket.category}</Column>
+            <Column width='10%'>{ticket.like ? 'SI' : 'NO'}</Column>
           </Header>
           <Details isColapsed={this.state.isColapsed} onClick={this.prev}>
             <TextTicket>
