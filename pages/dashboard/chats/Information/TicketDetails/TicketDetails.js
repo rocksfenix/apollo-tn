@@ -91,7 +91,7 @@ class TicketDetailsComponent extends Component {
     })
 
     // Actualizamos cache de Apollo
-    const { tickets } = this.props.client.cache.readQuery({
+    const { allTickets } = this.props.client.cache.readQuery({
       query: TICKETS,
       variables: { customer: this.props.customerId }
     })
@@ -99,7 +99,12 @@ class TicketDetailsComponent extends Component {
     this.props.client.cache.writeQuery({
       query: TICKETS,
       variables: { customer: this.props.customerId },
-      data: { tickets: tickets.map(t => t._id === res.data.ticketUpdate._id ? res.data.ticketUpdate : t) }
+      data: {
+        allTickets: {
+          ...allTickets,
+          tickets: allTickets.tickets.map(t => t._id === res.data.ticketUpdate._id ? res.data.ticketUpdate : t)
+        }
+      }
     })
 
     this.createNote(status)
@@ -113,7 +118,7 @@ class TicketDetailsComponent extends Component {
     })
 
     // Actualizamos cache de Apollo
-    const { tickets } = this.props.client.cache.readQuery({
+    const { allTickets } = this.props.client.cache.readQuery({
       query: TICKETS,
       variables: { customer: this.props.customerId }
     })
@@ -121,7 +126,12 @@ class TicketDetailsComponent extends Component {
     this.props.client.cache.writeQuery({
       query: TICKETS,
       variables: { customer: this.props.customerId },
-      data: { tickets: tickets.map(t => t._id === res.data.ticketUpdate._id ? res.data.ticketUpdate : t) }
+      data: {
+        allTickets: {
+          ...allTickets,
+          tickets: allTickets.tickets.map(t => t._id === res.data.ticketUpdate._id ? res.data.ticketUpdate : t)
+        }
+      }
     })
   }
 
@@ -133,7 +143,7 @@ class TicketDetailsComponent extends Component {
     })
 
     // Actualizamos cache de Apollo
-    const { tickets } = this.props.client.cache.readQuery({
+    const { allTickets } = this.props.client.cache.readQuery({
       query: TICKETS,
       variables: { customer: this.props.customerId }
     })
@@ -141,7 +151,10 @@ class TicketDetailsComponent extends Component {
     this.props.client.cache.writeQuery({
       query: TICKETS,
       variables: { customer: this.props.customerId },
-      data: { tickets: tickets.filter(t => t._id !== _id) }
+      data: { allTickets: {
+        ...allTickets,
+        tickets: allTickets.tickets.filter(t => t._id !== _id)
+      }}
     })
 
     this.props.onHidden()

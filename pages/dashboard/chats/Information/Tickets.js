@@ -208,7 +208,7 @@ class TicketsComponent extends Component {
 
     // Actualizamos cache de Apollo
     // Listamos los tickets desde el cache
-    const { tickets } = this.props.client.cache.readQuery({
+    const { allTickets } = this.props.client.cache.readQuery({
       query: TICKETS,
       variables: { customer: this.props.customer._id }
     })
@@ -216,7 +216,11 @@ class TicketsComponent extends Component {
     this.props.client.cache.writeQuery({
       query: TICKETS,
       variables: { customer: this.props.customer._id },
-      data: { tickets: [ res.data.ticketCreate, ...tickets ] }
+      data: {
+        allTickets: {
+          ...allTickets,
+          tickets: [ res.data.ticketCreate, ...allTickets.tickets ]
+        }}
     })
 
     this.setState({
@@ -229,12 +233,10 @@ class TicketsComponent extends Component {
   }
 
   render () {
-    console.log('RENDER', this.state)
     return (
       <Query query={TICKETS} variables={{ customer: this.props.customer._id }}>
         {({ data, loading, error }) => {
           if (loading) return <h1>... Loading</h1>
-          console.log(error)
           if (error) return <h1>... Error</h1>
 
           return (
@@ -269,7 +271,7 @@ class TicketsComponent extends Component {
               </NewTicket>
 
               <TicketDetails
-                ticketInFocus={data.tickets.filter(t => t._id === this.state.ticketInFocus._id)[0]}
+                ticketInFocus={data.allTickets.tickets.filter(t => t._id === this.state.ticketInFocus._id)[0]}
                 customerId={this.props.customer._id}
                 show={this.state.show === 'details'}
                 onHidden={this.hidde}
@@ -277,7 +279,7 @@ class TicketsComponent extends Component {
 
               <Title>Tickets <ButtonNewTicket onClick={this.showNew}>Create New</ButtonNewTicket></Title>
               <Tickets>
-                {data.tickets.map(ticket => (
+                {data.allTickets.tickets.map(ticket => (
                   <Ticket onClick={() => this.showDetails(ticket)} ticket={ticket} />
                 ))}
               </Tickets>
