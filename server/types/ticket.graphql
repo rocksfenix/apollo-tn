@@ -33,6 +33,12 @@ type TicketsPagination {
   total: Int
 }
 
+type Subscription {
+  onTicketCreate: Ticket
+  onTicketUpdate: Ticket
+  onTicketDelete: Ticket
+}
+
 type Query {
   allTickets(first: Int, skip: Int, customer: ID, status: String, priority: String): TicketsPagination!
 }

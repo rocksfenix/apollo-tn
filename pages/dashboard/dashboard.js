@@ -63,6 +63,7 @@ const NavItem = styled.li`
     color: #FFF;
   }
 `
+
 const Icon = styled.i`
   color: ${p => p.active ? '#FFF' : '#01c2ff'};
   font-size: 24px;
@@ -78,11 +79,30 @@ const Notify = styled.div`
   font-size: 13px;
   padding: 0 .4em;
 `
+const Option = ({ item, onChangeTab, notification, count, active }) => (
+  <NavItem
+    key={item.title}
+    role='navegation'
+    onClick={() => onChangeTab(item.title)}
+    active={active}
+  >
+    {
+      notification
+        ? <Notify>{count}</Notify>
+        : null
+    }
+    <Icon
+      className={item.icon}
+      active={active}
+    />
+  </NavItem>
+)
 
 class DashboardPage extends Component {
   state = {
     tab: 'statistics',
-    unreadChats: 0
+    unreadChats: 0,
+    unReadTickets: 0
   }
 
   componentWillMount () {
@@ -112,28 +132,27 @@ class DashboardPage extends Component {
     }))
   }
 
+  onNewTicket = () => {
+    this.setState(state => ({
+      ...state,
+      unReadTickets: state.unReadTickets + 1
+    }))
+  }
+
   render () {
     console.log(this.props)
     return (
       <View>
         <Nav>
           {Tabs.map(item => (
-            <NavItem
+            <Option
               key={item.title}
-              role='navegation'
-              onClick={() => this.onChangeTab(item.title)}
+              item={item}
+              onChangeTab={this.onChangeTab}
+              notification={item.title === 'tickets' && this.state.unReadTickets}
+              count={this.state.unReadTickets}
               active={item.title === this.state.tab}
-            >
-              {
-                item.title === 'chats' && this.state.unreadChats
-                  ? <Notify>{this.state.unreadChats}</Notify>
-                  : null
-              }
-              <Icon
-                className={item.icon}
-                active={item.title === this.state.tab}
-              />
-            </NavItem>
+            />
           ))}
         </Nav>
         <Content>
@@ -141,7 +160,7 @@ class DashboardPage extends Component {
           <Users show={this.state.tab === 'users'} {...this.props} />
           <Courses show={this.state.tab === 'courses'} {...this.props} />
           <Lessons show={this.state.tab === 'lessons'} {...this.props} />
-          <Tickets show={this.state.tab === 'tickets'} />
+          <Tickets show={this.state.tab === 'tickets'} onNewTicket={this.onNewTicket} />
           <Chats show={this.state.tab === 'chats'} {...this.props} onNewChat={this.onNewChat} />
         </Content>
       </View>

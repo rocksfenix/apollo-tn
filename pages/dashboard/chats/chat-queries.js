@@ -6,6 +6,144 @@ export const SET_DISPONIBILITY = gql`
   }
 `
 
+export const ON_TICKET_CREATE = gql`
+  subscription {
+    onTicketCreate {
+      _id
+      text
+      status
+      priority
+      category
+      createdAt
+      completedAt
+      like
+      userFeedback
+      author {
+        fullname
+        _id
+        email
+        role
+      }
+      customer {
+        fullname
+        _id
+        email
+        role
+      }
+    }
+  }
+`
+
+export const ON_TICKET_UPDATE = gql`
+  subscription {
+    onTicketUpdate {
+      _id
+      text
+      status
+      priority
+      category
+      createdAt
+      completedAt
+      like
+      userFeedback
+      author {
+        fullname
+        _id
+        email
+        role
+      }
+      customer {
+        fullname
+        _id
+        email
+        role
+      }
+    }
+  }
+`
+
+export const ON_TICKET_DELETE = gql`
+  subscription {
+    onTicketDelete {
+      _id
+      text
+      status
+      priority
+      category
+      createdAt
+      completedAt
+      like
+      userFeedback
+      author {
+        fullname
+        _id
+        email
+        role
+      }
+      customer {
+        fullname
+        _id
+        email
+        role
+      }
+    }
+  }
+`
+
+export const ON_TICKET_NOTE_CREATE = gql`
+  subscription {
+    onTicketNoteCreate {
+      _id
+      text
+      createdAt
+      ticket
+      author {
+        _id
+        fullname
+        avatar {
+          s100
+        }
+      }
+    }
+  }
+`
+
+export const ON_TICKET_NOTE_UPDATE = gql`
+  subscription {
+    onTicketNoteUpdate {
+      _id
+      text
+      createdAt
+      ticket
+      author {
+        _id
+        fullname
+        avatar {
+          s100
+        }
+      }
+    }
+  }
+`
+
+export const ON_TICKET_NOTE_DELETE = gql`
+  subscription {
+    onTicketNoteDelete {
+      _id
+      text
+      createdAt
+      ticket
+      author {
+        _id
+        fullname
+        avatar {
+          s100
+        }
+      }
+    }
+  }
+`
+
 export const NEW_CHAT = gql`
   subscription {
     newChat {

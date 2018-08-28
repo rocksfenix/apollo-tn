@@ -4,7 +4,7 @@ import { withApollo } from 'react-apollo'
 import TicketText from './TicketText'
 import Notes from './Notes'
 import TicketStatus from './TicketStatus'
-import { TICKET_UPDATE, DELETE_TICKET, CREATE_TICKET_NOTE, TICKET_NOTES, TICKETS } from '../Chats/chat-queries'
+import { TICKET_UPDATE, DELETE_TICKET, CREATE_TICKET_NOTE } from '../Chats/chat-queries'
 import Priority from './Priority'
 import Status from './Status'
 import moment from 'moment'
@@ -95,82 +95,14 @@ class TicketComponent extends Component {
         status
       }
     })
-
-    // const prevStatus = this.props.ticket.status
-    // const { first, skip } = this.props
-    // Es mas usable dejar que se vea la actualizacion
-    // y no reaccionar solo con el click
-    // De deja para posterior revicion
-    // // Actualizamos cache de Apollo
-    // const { allTickets } = this.props.client.cache.readQuery({
-    //   query: TICKETS,
-    //   variables: { status: prevStatus, first, skip }
-    // })
-
-    // // Eliminamos de la consulta de estatus anterior
-    // this.props.client.cache.writeQuery({
-    //   query: TICKETS,
-    //   variables: { status: prevStatus, first, skip },
-    //   data: {
-    //     allTickets: {
-    //       ...allTickets,
-    //       tickets: allTickets.tickets.filter(t => t._id !== res.data.ticketUpdate._id)
-    //     }
-    //   }
-    // })
-
-    // try {
-    //   // Añadimos a la consulta de estatus actual
-    //   // solo si no existe en la consulta con ese estatus
-
-    //   const { allTickets } = this.props.client.cache.readQuery({
-    //     query: TICKETS,
-    //     variables: { status: status, first, skip }
-    //   })
-
-    //   if (!allTickets.tickets.filter(t => t._id === this.props.ticket._id)[0]) {
-    //     console.log('ANADIR', allTickets.tickets)
-    //     this.props.client.cache.writeQuery({
-    //       query: TICKETS,
-    //       variables: { status, first, skip },
-    //       data: {
-    //         allTickets: {
-    //           ...allTickets,
-    //           tickets: [ res.data.ticketUpdate, ...allTickets.tickets ]
-    //         }
-    //       }
-    //     })
-    //   }
-    // } catch (err) {}
-
     this.createNote(status)
   }
 
   // Actualiza el texto del ticket
   updateText = async (ticket) => {
-    const res = await this.props.client.mutate({
+    await this.props.client.mutate({
       mutation: TICKET_UPDATE,
       variables: ticket
-    })
-
-    const { first, skip } = this.props
-
-    // Actualizamos cache de Apollo
-    const { allTickets } = this.props.client.cache.readQuery({
-      query: TICKETS,
-      variables: { status: this.props.ticket.status, first, skip }
-    })
-    // debugger
-
-    this.props.client.cache.writeQuery({
-      query: TICKETS,
-      variables: { status: this.props.ticket.status, first, skip },
-      data: {
-        allTickets: {
-          ...allTickets,
-          tickets: allTickets.tickets.map(t => t._id === res.data.ticketUpdate._id ? res.data.ticketUpdate : t)
-        }
-      }
     })
   }
 
@@ -180,50 +112,17 @@ class TicketComponent extends Component {
       mutation: DELETE_TICKET,
       variables: { _id }
     })
-
-    const { first, skip } = this.props
-
-    // Actualizamos cache de Apollo
-    const { allTickets } = this.props.client.cache.readQuery({
-      query: TICKETS,
-      variables: { status: this.props.ticket.status, first, skip }
-    })
-
-    this.props.client.cache.writeQuery({
-      query: TICKETS,
-      variables: { status: this.props.ticket.status, first, skip },
-      data: {
-        allTickets: {
-          ...allTickets,
-          tickets: allTickets.tickets.filter(t => t._id !== _id)
-        }
-      }
-    })
-
-    this.props.force()
   }
 
     // Crea una nota cada vez que cambia de estatus
     createNote = async (status) => {
       const ticket = this.props.ticket._id
-      const res = await this.props.client.mutate({
+      await this.props.client.mutate({
         mutation: CREATE_TICKET_NOTE,
         variables: {
           ticket,
           text: `Se cambia status a ${status}.`
         }
-      })
-
-      // Actualizamos cache de Apollo
-      const { ticketNotes } = this.props.client.cache.readQuery({
-        query: TICKET_NOTES,
-        variables: { ticket }
-      })
-
-      this.props.client.cache.writeQuery({
-        query: TICKET_NOTES,
-        variables: { ticket },
-        data: { ticketNotes: [ res.data.ticketNoteCreate, ...ticketNotes ] }
       })
     }
 

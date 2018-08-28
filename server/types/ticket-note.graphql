@@ -7,6 +7,12 @@ type TicketNote {
   updatedAt: String
 }
 
+type Subscription {
+  onTicketNoteCreate: TicketNote
+  onTicketNoteUpdate: TicketNote
+  onTicketNoteDelete: TicketNote
+}
+
 type Query {
   ticketNotes(first: Int, skip: Int, ticket: ID): [TicketNote]!
 }

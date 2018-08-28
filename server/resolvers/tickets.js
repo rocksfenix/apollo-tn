@@ -1,5 +1,7 @@
 import models from '../models'
 import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../authorization/errors'
+import { withFilter } from 'graphql-subscriptions'
+import pubsub from '../pupsub'
 
 export default {
   Query: {
@@ -57,6 +59,10 @@ export default {
         { path: 'author customer', model: 'User' }
       )
 
+      pubsub.publish('onTicketCreate', {
+        onTicketCreate: ticketPopulated
+      })
+
       return ticketPopulated
     },
 
@@ -74,6 +80,10 @@ export default {
 
       await ticket.save()
 
+      pubsub.publish('onTicketUpdate', {
+        onTicketUpdate: ticket
+      })
+
       return ticket
     },
 
@@ -84,6 +94,11 @@ export default {
       const ticket = await models.Ticket.findById(_id).populate('author customer')
       if (!ticket) throw new NotFound()
       await ticket.remove()
+
+      pubsub.publish('onTicketDelete', {
+        onTicketDelete: ticket
+      })
+
       return ticket
     },
 
@@ -100,6 +115,26 @@ export default {
       await _ticket.save()
 
       return _ticket
+    }
+  },
+
+  Subscription: {
+    onTicketCreate: {
+      subscribe: withFilter(() => pubsub.asyncIterator('onTicketCreate'), (payload, variables, ctx) => {
+        return ctx.user.role === 'admin'
+      })
+    },
+
+    onTicketUpdate: {
+      subscribe: withFilter(() => pubsub.asyncIterator('onTicketUpdate'), (payload, variables, ctx) => {
+        return ctx.user.role === 'admin'
+      })
+    },
+
+    onTicketDelete: {
+      subscribe: withFilter(() => pubsub.asyncIterator('onTicketDelete'), (payload, variables, ctx) => {
+        return ctx.user.role === 'admin'
+      })
     }
   }
 }
