@@ -6,7 +6,6 @@ import TicketNote from './ticket-note'
 import Note from './note'
 import Comment from './comment'
 import Favorite from './favorite'
-import Bookmark from './bookmark'
 import Asset from './asset'
 import Message from './message'
 
@@ -19,7 +18,6 @@ export default {
   Note,
   Comment,
   Favorite,
-  Bookmark,
   Asset,
   Message
 }

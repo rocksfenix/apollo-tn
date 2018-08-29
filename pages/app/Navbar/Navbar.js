@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import styled from 'styled-components'
 import Link from 'next/link'
 import config from '../config'
+import Avatar from '../../../components/Avatar'
 
 const Panel = styled.div`
   position: fixed;
@@ -89,6 +90,14 @@ const Glow = styled.div`
   opacity: .5;
 `
 
+const AvatarBox = styled.div`
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
 const Item = ({ href, children, icon, active, onClick, theme }) => {
   // const sp = href.split('/')
   // const _href = `/app?tab=${sp[2]}&course=${sp[3]}&l2=${sp[4]}&l3=${sp[4]}`
@@ -148,6 +157,13 @@ class Navbar extends Component {
             {t.name}
           </Item>
         ))}
+        { this.props.user.avatar
+          ? (
+            <AvatarBox>
+              <Avatar src={this.props.user.avatar.s100} />
+            </AvatarBox>
+          ) : null }
+
       </Panel>
     )
   }

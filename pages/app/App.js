@@ -30,7 +30,7 @@ const Toolbar = styled.div`
   display: flex;
   position: fixed;
   top: 0;
-  transition: all .2s ease-in-out;
+  transition: all .2s cubic-bezier(1,0,0,1);
   justify-content: center;
   align-items: center;
   z-index: 600;
@@ -317,13 +317,13 @@ class App extends Component {
 
   render () {
     const { tab, showMainContent } = this.state
-    // console.log(this.props);
-    
+
     return (
       <View>
         <SeoHead title='Tecninja.io' />
         <PopText text={this.state.tab} />
         <Navbar
+          user={this.props.user}
           {...this.state}
           activeLesson={this.state.lesson}
           onChangeTab={this.onChangeTab}
@@ -356,7 +356,7 @@ class App extends Component {
           lesson={this.state.lesson}
           hasCourse={this.state.course._id}
         />
-        <Chat {...this.props} />
+        {/* <Chat {...this.props} /> */}
       </View>
     )
   }

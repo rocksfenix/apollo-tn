@@ -7,13 +7,14 @@ const History = styled.div`
   padding-left: 55px;
   display: flex;
   position: fixed;
-  transition: all .15s ease-in-out;
+  transition: all .15s cubic-bezier(1,0,0,1);
   justify-content: center;
   z-index: 600;
   flex-direction: column;
   overflow: auto;
   flex-grow: 0;
   top: 0;
+  background-color: #FFF;
 `
 
 const Item = styled.div`
