@@ -84,18 +84,16 @@ export default class extends Component {
   render () {
     return (
       <Chat>
-        <ChatMessages id='x-messages-panel' ref='messages' onScroll={this.onScroll}>
-          <div id='x-messages'>
-            {getSegments(this.props.messages).map((segment, i) => (
-              <Message
-                key={`sec_id${i}`}
-                segment={segment}
-                itsMe={segment[0].sender === this.props.sender._id}
-                me={this.props.sender}
-                receiver={this.props.receiver}
-              />
-            ))}
-          </div>
+        <ChatMessages id='dashboard-chat-messages' ref='messages' onScroll={this.onScroll}>
+          {getSegments(this.props.messages).map((segment, i) => (
+            <Message
+              key={`sec_id${i}`}
+              segment={segment}
+              itsMe={segment[0].sender === this.props.sender._id}
+              me={this.props.sender}
+              receiver={this.props.receiver}
+            />
+          ))}
         </ChatMessages>
       </Chat>
     )

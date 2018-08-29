@@ -55,6 +55,13 @@ class Textarea extends Component {
     if (e.key === 'Enter' && e.target.value.trim() !== '') {
       this.props.onEnter(e.target.value.trim())
       e.target.value = ''
+
+      // Scroll it
+      window.setTimeout(() => {
+        const m = document.getElementById('dashboard-chat-messages')
+        m.scrollTop = m.scrollHeight
+        console.log(m.scrollTop, m.scrollHeight)
+      }, 100)
     }
   }
 

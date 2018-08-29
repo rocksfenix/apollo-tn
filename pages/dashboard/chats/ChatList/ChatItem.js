@@ -103,8 +103,13 @@ class ChatItem extends Component {
         if (!subscriptionData.data) return prev
         const { newMessage } = subscriptionData.data
 
-        // document.getElementById('audio-newMessage').play()
         audios.newMessage.play()
+
+        // Scroll IT
+        window.setTimeout(() => {
+          const m = document.getElementById('dashboard-chat-messages')
+          m.scrollTop = m.scrollHeight
+        }, 100)
 
         if (newMessage.sender !== chat._id) {
           return {
