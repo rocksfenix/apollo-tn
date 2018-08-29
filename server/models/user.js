@@ -39,6 +39,8 @@ const UserSchema = new mongoose.Schema({
   },
 
   avatar: {
+    s30: { type: String, default: avatarDefault },
+    s50: { type: String, default: avatarDefault },
     s100: { type: String, default: avatarDefault },
     s300: { type: String, default: avatarDefault },
     s500: { type: String, default: avatarDefault }

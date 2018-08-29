@@ -147,7 +147,7 @@ class UserEditor extends Component {
         </Buttons>
         <Subpanel width='35%'>
           <Fields>
-            <Avatar src={this.state.user.avatar.s100} />
+            <Avatar src={this.state.user.avatar.s100} userId={this.state.user._id} />
             <TextField
               label='fullname'
               keyName='fullname'

@@ -39,8 +39,10 @@ class UploadFile extends Component {
       this.setState({ isFetching: true, hasImage: true, preview: '/static/quotes-warning.svg' })
     }
 
+    const { userId } = this.props
+
     const response = await this.props.mutate({
-      variables: { file }
+      variables: { file, userId }
     })
     console.log(response)
     this.setState({ isFetching: false, hasImage: false })
@@ -61,7 +63,9 @@ class UploadFile extends Component {
 }
 
 export default graphql(gql`
-  mutation($file: Upload!) {
-    assetUpload(file: $file)
+  mutation($file: Upload!, $userId: ID) {
+    uploadAvatar(file: $file, userId: $userId) {
+      _id
+    }
   }
 `)(UploadFile)

@@ -15,22 +15,22 @@ import uploadFile from './upload-s3'
 const uploadDir = './uploads'
 mkdirp.sync(uploadDir)
 
-export default async (file, sizes, folderS3) => {
+export default async (file, sizes, folderS3, endName) => {
   // Subir imagen a folder temporal y guardar su locacion
   const { stream, filename, mimetype } = await file
-  const { pathTemp, ext } = await storeFileTemp({ stream, filename })
+  const { pathTemp, ext } = await storeFileTemp({ stream, filename: filename.split('.').slice(0, -1).join('.') })
 
   let output = {}
 
   // Si es bitmap redimencionar
   if (ext !== '.svg') {
     let imagesTmp = await Promise.all(sizes.map(async file =>
-      resizeImg({ pathTemp, ext, filename, mimetype, ...file })
+      resizeImg({ pathTemp, ext, filename: filename.split('.').slice(0, -1).join('.'), mimetype, ...file })
     ))
 
     // Subir imagenes y conservar location
     await Promise.all(imagesTmp.map(async file => {
-      const location = await uploadFile({ ...file, folderS3 })
+      const location = await uploadFile({ ...file, folderS3, endName })
       output[file.suffix] = location
     }))
 
@@ -49,7 +49,8 @@ export default async (file, sizes, folderS3) => {
       filename,
       ext,
       suffix: 'vector',
-      mimetype: mimetype
+      mimetype: mimetype,
+      endName
     })
 
     sizes.forEach(file => {

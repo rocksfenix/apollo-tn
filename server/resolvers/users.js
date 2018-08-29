@@ -1,10 +1,13 @@
 import models from '../models'
 import { updateSelf, deleteSelf } from '../authorization'
-import { AuthenticationRequiredError, ForbiddenError } from '../authorization/errors'
+import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../authorization/errors'
 import { withFilter } from 'graphql-subscriptions'
 import pubsub from '../pupsub'
+import { GraphQLUpload } from 'apollo-upload-server'
+import uploadImage from '../util/upload-image'
 
 export default {
+  Upload: GraphQLUpload,
   Query: {
     userSelf: async (_, args, { user }) => {
       if (user) {
@@ -82,7 +85,38 @@ export default {
     userDelete: deleteSelf({
       model: 'User',
       only: 'admin'
-    }).createResolver((_, args, { doc }) => doc)
+    }).createResolver((_, args, { doc }) => doc),
+
+    uploadAvatar: async (obj, { file, userId }, { user }) => {
+      if (!user) throw new AuthenticationRequiredError()
+
+      let _id = user.sub
+
+      // Si userId se pasa y user.role es admin se setea el usuario
+      if (userId && user.role === 'admin') {
+        _id = userId
+      }
+
+      const member = await models.User.findById(_id)
+
+      if (!member) throw new NotFound()
+
+      const sizes = [
+        { size: 30, suffix: 's30' },
+        { size: 50, suffix: 's50' },
+        { size: 100, suffix: 's100' },
+        { size: 300, suffix: 's300' },
+        { size: 500, suffix: 's500' }
+      ]
+
+      const avatar = await uploadImage(file, sizes, 'avatar', member._id)
+
+      member.avatar = avatar
+
+      await member.save()
+
+      return member
+    }
   },
 
   Subscription: {

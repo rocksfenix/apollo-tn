@@ -71,6 +71,7 @@ type Mutation {
   userUpdate(input: UserSet!): User
   userDelete(_id: ID!): User
   online: String
+  uploadAvatar (file: Upload!, userId: ID): User
 }
 
 type Connection {
