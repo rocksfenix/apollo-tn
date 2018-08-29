@@ -65,7 +65,7 @@ const NavItem = styled.li`
 `
 
 const Icon = styled.i`
-  color: ${p => p.active ? '#FFF' : '#01c2ff'};
+  color: ${p => p.active ? '#FFF' : '#6f6f6f'};
   font-size: 24px;
 `
 

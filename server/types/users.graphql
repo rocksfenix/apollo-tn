@@ -48,6 +48,7 @@ input UserSet {
   _id: ID
   username: String
   fullname: String
+  role: String
   email: String
   password: String
   acceptTermsAndPrivacy: Boolean

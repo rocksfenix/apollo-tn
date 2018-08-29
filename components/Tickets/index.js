@@ -335,7 +335,11 @@ class TicketsComponent extends Component {
               <Title>Tickets <ButtonNewTicket onClick={this.showNew}>Create New</ButtonNewTicket></Title>
               <Tickets>
                 {data.allTickets.tickets.map(ticket => (
-                  <Ticket onClick={() => this.showDetails(ticket)} ticket={ticket} />
+                  <Ticket
+                    key={ticket._id}
+                    onClick={() => this.showDetails(ticket)}
+                    ticket={ticket}
+                  />
                 ))}
               </Tickets>
             </Panel>

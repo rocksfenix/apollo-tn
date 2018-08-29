@@ -223,7 +223,6 @@ export default class extends Component {
               updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data.onChangeConnection) return prev
 
-                console.log(subscriptionData.data.onChangeConnection)
                 return {
                   allUsers: {
                     ...prev.allUsers,

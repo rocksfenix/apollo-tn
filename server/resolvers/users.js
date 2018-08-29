@@ -77,10 +77,32 @@ export default {
       return 'ok'
     },
 
-    userUpdate: updateSelf({
-      model: 'User',
-      only: 'free pro admin'
-    }).createResolver((_, args, { doc }) => doc),
+    userUpdate: async (obj, { input }, { user }) => {
+      if (!user) throw new AuthenticationRequiredError()
+
+      let _id = user.sub
+
+      // Si userId se pasa y user.role es admin se setea el usuario
+      if (input._id && user.role === 'admin') {
+        _id = input._id
+      }
+
+      console.log(input, _id)
+
+      const member = await models.User.findById(_id)
+
+      if (!member) throw new NotFound()
+
+      console.log(member)
+
+      Object.keys(input).forEach(key => {
+        member[key] = input[key]
+      })
+
+      await member.save()
+
+      return member
+    },
 
     userDelete: deleteSelf({
       model: 'User',

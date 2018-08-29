@@ -2,16 +2,40 @@ import React, {Component} from 'react'
 import styled, {keyframes} from 'styled-components'
 import gql from 'graphql-tag'
 import { withApollo } from 'react-apollo'
-// import { Notification } from 'react-notification'
+import { Notification } from 'react-notification'
+import Avatar from './Avatar'
 import TextField from '../../../components/TextField'
 import Multioption from '../../../components/Multioption'
 import MemberStats from '../../../components/MemberStats'
-import Avatar from './Avatar'
 import Tickets from '../../../components/Tickets'
 
 const USER = gql`
   query user ($_id: ID!) {
     user(_id: $_id) {
+      _id
+      fullname
+      slug
+      email
+      username
+      role
+      status
+      emailConfirmed
+      acceptTermsAndPrivacy
+      acceptTermsAndPrivacyUpdated
+      createdAt
+      countViewPro
+      countViewSub
+      countAttemptsPaymentFailed
+      avatar {
+        s100
+      }
+    }
+  }
+`
+
+const USER_UPDATE = gql`
+  mutation userUpdate ($input: UserSet!) {
+    userUpdate(input: $input) {
       _id
       fullname
       slug
@@ -108,6 +132,10 @@ const Fields = styled.div`
 
 class UserEditor extends Component {
   state = {
+    notification: {
+      show: false,
+      message: 'Cambios Guardados Exitosamente'
+    },
     user: {
       _id: '',
       fullname: '',
@@ -134,6 +162,43 @@ class UserEditor extends Component {
         [key]: value
       }
     }))
+  }
+
+  saveChanges = async () => {
+    const seteables = [
+      '_id',
+      'role',
+      'fullname',
+      'email',
+      'status'
+    ]
+
+    let input = {}
+
+    const { user } = this.state
+
+    seteables.forEach(s => {
+      input[s] = user[s]
+    })
+
+    await this.props.client.mutate({
+      mutation: USER_UPDATE,
+      variables: { input }
+    })
+
+    this.setState({
+      notification: {
+        show: true,
+        message: 'Cambios Guardados Exitosamente'
+      }
+    })
+
+    window.setTimeout(() => this.setState(state => ({
+      notification: {
+        ...state.notification,
+        show: false
+      }}
+    )), 3000)
   }
 
   render () {
@@ -190,6 +255,11 @@ class UserEditor extends Component {
           <Tickets customer={this.state.user} />
         </Subpanel>
         <Subpanel width='28%' />
+        <Notification
+          isActive={this.state.notification.show}
+          dismissAfter
+          message={this.state.notification.message}
+        />
       </Panel>
     )
   }
