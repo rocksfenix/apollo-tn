@@ -35,11 +35,18 @@ class Tickets extends Component {
     this.forceUpdate()
   }
 
+  componentWillUnmount () {
+    if (this.subsCreate) this.subsCreate()
+    if (this.subsUpdate) this.subsUpdate()
+    if (this.subsDelete) this.subsDelete()
+  }
+
   subsCreate = null
-  subUpdate = null
+  subsUpdate = null
   subsDelete = null
 
   render () {
+    if (!this.props.show) return null
     return (
       <Panel show={this.props.show} >
         <Header onFilter={this.onFilter} filter={this.state.filter} />
@@ -50,6 +57,8 @@ class Tickets extends Component {
         >
           {({ data, loading, error, subscribeToMore }) => {
             if (error) return <h1>Error {error}</h1>
+
+            if (!data.allTickets) return null
 
             if (!this.subsCreate && process.browser) {
               this.subsCreate = subscribeToMore({
@@ -76,7 +85,7 @@ class Tickets extends Component {
                 document: ON_TICKET_UPDATE,
                 updateQuery: (prev, { subscriptionData }) => {
                   if (!subscriptionData.data) return prev
-                  window.setTimeout(() => this.force(), 300)
+                  window.setTimeout(() => this.force(), 100)
                   const { onTicketUpdate } = subscriptionData.data
 
                   return {

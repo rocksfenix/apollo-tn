@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import DOM from 'react-dom'
 import styled from 'styled-components'
 import moment from 'moment'
-import Avatar from '../Avatar'
+import Avatar from '../../Avatar'
 
 moment.locale('es')
 

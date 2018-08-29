@@ -2,9 +2,9 @@ import React, {Component} from 'react'
 import styled from 'styled-components'
 import { Query } from 'react-apollo'
 import moment from 'moment'
-import Tickets from './Tickets'
+import Tickets from '../../../../components/Tickets'
 import { USER } from '../chat-queries'
-import Stats from './Stats'
+import MemberStats from '../../../../components/MemberStats'
 
 const Panel = styled.div`
   width: 35%;
@@ -107,67 +107,6 @@ const Billing = styled.div`
   transition: right .2s ease-out;
 `
 
-const Ball = styled.div`
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: ${p => p.active ? '#abb3df' : '#ffa6c2'};
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
-const Confirmations = styled.div`
-  width: 35%;
-  padding: 0 .8em;
-`
-
-const ConfBox = styled.div`
-  display: flex;
-  align-items: center;
-  padding: .2em 0;
-  justify-content: flex-start;
-`
-
-const Label = styled.div`
-  color: #FFF;
-  font-size: 12px;
-  margin-left: .5em;
-`
-
-const IconConf = styled.i`
-  font-size: 8px;
-  color: #FFF;
-`
-
-const StatsBox = styled.div`
-  width: 65%;
-  height: 93%;
-  background: rgba(0, 0, 0, 0.52);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1em;
-`
-
-const Row = styled.div`
-  width: 100%;
-  height: 100px;
-  display: flex;
-`
-
-const Conf = ({ text, active }) => {
-  return (
-    <ConfBox>
-      <Ball active={active}>
-        { active ? <IconConf className='icon-success' /> : <IconConf className='icon-cross' />}
-      </Ball>
-      <Label>{ text }</Label>
-    </ConfBox>
-  )
-}
-
 const SignupAt = styled.span`
   font-size: 10px;
   color: #717171;
@@ -209,23 +148,7 @@ export default class extends Component {
                   </Tabs>
                   <View>
                     <Information active={tab === 'info'}>
-                      <Confirmations>
-                        <Conf text='Status' active={data.user.status} />
-                        <Conf text='Email Confirmed' active={data.user.emailConfirmed} />
-                        <Conf text='Accept Terms & Policy' active={data.user.acceptTermsAndPrivacy} />
-                      </Confirmations>
-                      <StatsBox>
-                        <Row>
-                          <Stats number='2' label='PRO' />
-                          <Stats number='1' label='Subscription' />
-                          <Stats number='0' label='Payments attemps' />
-                        </Row>
-                        <Row>
-                          <Stats number='32' label='Lessons Watched' />
-                          <Stats number='126' label='Points' />
-                          <Stats number='425' label='Minutes Watched' />
-                        </Row>
-                      </StatsBox>
+                      <MemberStats user={data.user} />
                     </Information>
                     <Billing active={tab === 'billing'}>Billing here!</Billing>
                   </View>

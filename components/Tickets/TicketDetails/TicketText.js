@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 import DOM from 'react-dom'
-import Icon from '../Icon'
+import Icon from '../../Icon'
 
 const Text = styled.div`
   margin: 1em;

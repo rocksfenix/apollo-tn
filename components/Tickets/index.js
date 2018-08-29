@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
 import { Query, withApollo } from 'react-apollo'
-import Textarea from '../../../../components/Textarea'
-import Multioption from '../../../../components/Multioption'
+import Textarea from '../Textarea'
+import Multioption from '../Multioption'
 import TicketDetails from './TicketDetails'
-import { TICKETS, NEW_TICKET } from '../chat-queries'
+import { TICKETS, NEW_TICKET, ON_TICKET_CREATE, ON_TICKET_UPDATE, ON_TICKET_DELETE } from './chat-queries'
 
 const Panel = styled.div`
   width: 100%;
@@ -201,27 +201,10 @@ class TicketsComponent extends Component {
       customer: this.props.customer._id
     }
 
-    const res = await this.props.client.mutate({
+    await this.props.client.mutate({
       mutation: NEW_TICKET,
       variables: ticket
     })
-
-    // // Actualizamos cache de Apollo
-    // // Listamos los tickets desde el cache
-    // const { allTickets } = this.props.client.cache.readQuery({
-    //   query: TICKETS,
-    //   variables: { customer: this.props.customer._id }
-    // })
-
-    // this.props.client.cache.writeQuery({
-    //   query: TICKETS,
-    //   variables: { customer: this.props.customer._id },
-    //   data: {
-    //     allTickets: {
-    //       ...allTickets,
-    //       tickets: [ res.data.ticketCreate, ...allTickets.tickets ]
-    //     }}
-    // })
 
     this.setState({
       show: '',
@@ -232,12 +215,84 @@ class TicketsComponent extends Component {
     })
   }
 
+  componentWillUnmount () {
+    if (this.subsCreate) this.subsCreate()
+    if (this.subsUpdate) this.subsUpdate()
+    if (this.subsDelete) this.subsDelete()
+  }
+
+  subsCreate = null
+  subsUpdate = null
+  subsDelete = null
+
+  force = () => {
+    this.forceUpdate()
+  }
+
   render () {
     return (
       <Query query={TICKETS} variables={{ customer: this.props.customer._id }}>
-        {({ data, loading, error }) => {
+        {({ data, loading, error, subscribeToMore }) => {
           if (loading) return <h1>... Loading</h1>
           if (error) return <h1>... Error</h1>
+
+          if (!this.subsCreate && process.browser) {
+            this.subsCreate = subscribeToMore({
+              document: ON_TICKET_CREATE,
+              updateQuery: (prev, { subscriptionData }) => {
+                if (!subscriptionData.data) return prev
+                // Informar nuevo ticket
+                window.setTimeout(() => this.force(), 100)
+                return {
+                  ...prev,
+                  allTickets: {
+                    ...prev.allTickets,
+                    total: prev.allTickets.total + 1,
+                    tickets: [subscriptionData.data.onTicketCreate, ...prev.allTickets.tickets]
+                  }
+                }
+              }
+            })
+          }
+
+          if (!this.subsUpdate && process.browser) {
+            this.subsUpdate = subscribeToMore({
+              document: ON_TICKET_UPDATE,
+              updateQuery: (prev, { subscriptionData }) => {
+                if (!subscriptionData.data) return prev
+                window.setTimeout(() => this.force(), 300)
+                const { onTicketUpdate } = subscriptionData.data
+
+                return {
+                  ...prev,
+                  allTickets: {
+                    ...prev.allTickets,
+                    tickets: prev.allTickets.tickets.map(t => t._id === onTicketUpdate._id ? onTicketUpdate : t)
+                  }
+                }
+              }
+            })
+          }
+
+          if (!this.subsDelete && process.browser) {
+            this.subsDelete = subscribeToMore({
+              document: ON_TICKET_DELETE,
+              updateQuery: (prev, { subscriptionData }) => {
+                if (!subscriptionData.data) return prev
+                window.setTimeout(() => this.force(), 100)
+                const { onTicketDelete } = subscriptionData.data
+
+                return {
+                  ...prev,
+                  allTickets: {
+                    ...prev.allTickets,
+                    total: prev.allTickets.total - 1,
+                    tickets: prev.allTickets.tickets.filter(t => t._id !== onTicketDelete._id)
+                  }
+                }
+              }
+            })
+          }
 
           return (
             <Panel>

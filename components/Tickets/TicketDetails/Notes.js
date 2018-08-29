@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { withApollo, Query } from 'react-apollo'
 import NoteInput from './NoteInput'
 import Note from './Note'
-import { DELETE_TICKET_NOTE, UPDATE_TICKET_NOTE, CREATE_TICKET_NOTE, TICKET_NOTES, ON_TICKET_NOTE_CREATE, ON_TICKET_NOTE_UPDATE, ON_TICKET_NOTE_DELETE } from '../../chat-queries'
+import { DELETE_TICKET_NOTE, UPDATE_TICKET_NOTE, CREATE_TICKET_NOTE, TICKET_NOTES, ON_TICKET_NOTE_CREATE, ON_TICKET_NOTE_UPDATE, ON_TICKET_NOTE_DELETE } from '../chat-queries'
 
 const Notes = styled.div`
   background-color: #FFF;
@@ -44,6 +44,12 @@ class NotesComponent extends Component {
       mutation: DELETE_TICKET_NOTE,
       variables: { _id }
     })
+  }
+
+  componentWillUnmount () {
+    if (this.subsCreate) this.subsCreate()
+    if (this.subsUpdate) this.subsUpdate()
+    if (this.subsDelete) this.subsDelete()
   }
 
   subsCreate = null

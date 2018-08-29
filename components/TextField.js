@@ -83,8 +83,8 @@ class TextFieldComponent extends Component {
     return (
       <Panel
         style={{
-          'border-bottom': borderBottom || '',
-          'border-right': borderRight || ''
+          borderBottom: borderBottom || '',
+          borderRight: borderRight || ''
         }}
       >
         <LabelField> { this.props.label } </LabelField>

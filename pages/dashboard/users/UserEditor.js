@@ -2,13 +2,12 @@ import React, {Component} from 'react'
 import styled, {keyframes} from 'styled-components'
 import gql from 'graphql-tag'
 import { withApollo } from 'react-apollo'
-import { Notification } from 'react-notification'
+// import { Notification } from 'react-notification'
 import TextField from '../../../components/TextField'
 import Multioption from '../../../components/Multioption'
-import Textarea from '../../../components/Textarea'
-import ColorField from '../../../components/ColorField'
-import ToggleField from '../../../components/ToggleField'
+import MemberStats from '../../../components/MemberStats'
 import Avatar from './Avatar'
+import Tickets from '../../../components/Tickets'
 
 const USER = gql`
   query user ($_id: ID!) {
@@ -97,17 +96,8 @@ const Subpanel = styled.div`
   top: 55px;
   position: relative;
   border-radius: 4px;
-`
-
-const Row = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-`
-
-const Column = styled.div`
-  width: 50%;
+  flex-direction: column;
 `
 
 const Fields = styled.div`
@@ -115,50 +105,6 @@ const Fields = styled.div`
   padding-top: 1em;
   margin: 0 auto;
 `
-
-const StatsBlockBox = styled.div`
-  width: 90px;
-  padding: 0 10px 0 10px;
-  height: 100%;
-  background-color: #FFF;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-direction: column;
-`
-const StastBlockNum = styled.div`
-  width: 100%;
-  height: 70px;
-  font-size: 50px;
-  font-family: Roboto;
-  font-weight: bold;
-  text-align: center;
-  color: #24314e;
-  border-bottom: 1px solid #efefef;
-`
-
-const StastBlockText = styled.div`
-  width: 100px;
-  font-size: 12px;
-  color: gray;
-  text-align: center;
-`
-
-const StatsBox = styled.div`
-  width: 80%;
-  height: 100px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0 auto;
-`
-
-const StatsBlock = ({ number, label }) => (
-  <StatsBlockBox>
-    <StastBlockNum>{ number }</StastBlockNum>
-    <StastBlockText>{ label }</StastBlockText>
-  </StatsBlockBox>
-)
 
 class UserEditor extends Component {
   state = {
@@ -176,7 +122,6 @@ class UserEditor extends Component {
         query: USER,
         variables: { _id: this.props.userId }
       })
-      console.log(result)
       this.setState({ user: result.data.user })
     }
   }
@@ -224,7 +169,7 @@ class UserEditor extends Component {
               options={[
                 { value: 'pro' },
                 { value: 'free' },
-                { value: 'public' }
+                { value: 'admin' }
               ]}
               onChange={this.onChange}
             />
@@ -238,14 +183,12 @@ class UserEditor extends Component {
               ]}
               onChange={this.onChange}
             />
-            <StatsBox>
-              <StatsBlock number={this.state.user.countViewPro} label='PRO' />
-              <StatsBlock number={this.state.user.countViewSub} label='Subscription' />
-              <StatsBlock number={this.state.user.countAttemptsPaymentFailed} label='Payments attemps' />
-            </StatsBox>
+            <MemberStats user={this.state.user} />
           </Fields>
         </Subpanel>
-        <Subpanel width='28%' />
+        <Subpanel width='28%'>
+          <Tickets customer={this.state.user} />
+        </Subpanel>
         <Subpanel width='28%' />
       </Panel>
     )

@@ -46,6 +46,12 @@ class NotesComponent extends Component {
     })
   }
 
+  componentWillUnmount () {
+    if (this.subsCreate) this.subsCreate()
+    if (this.subsUpdate) this.subsUpdate()
+    if (this.subsDelete) this.subsDelete()
+  }
+
   subsCreate = null
   subsUpdate = null
   subsDelete = null
