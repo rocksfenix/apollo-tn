@@ -39,10 +39,15 @@ const Textarea = styled.textarea`
 const ButtonSend = styled.button`
   border: 0;
   cursor: pointer;
+  outline: none;
 
   :hover {
     color: blue;
   }
+`
+
+const Icon = styled.i`
+  font-size: 25px;
 `
 
 class ChatImput extends Component {
@@ -65,27 +70,30 @@ class ChatImput extends Component {
   sendMessage = async (e) => {
     if (e.key === 'Enter') {
       e.target.value = ''
+      this.send()
+    }
+  }
 
-      if (this.state.text.trim() !== '') {
-        const { receiver, sender } = this.props
-        const res = await this.props.client.mutate({
-          mutation: CREATE_MESSAGE,
-          variables: { text: this.state.text.trim(), receiver: receiver._id }
-        })
-        const variables = { sender: sender._id, receiver: receiver._id }
+  send = async () => {
+    if (this.state.text.trim() !== '') {
+      const { receiver, sender } = this.props
+      const res = await this.props.client.mutate({
+        mutation: CREATE_MESSAGE,
+        variables: { text: this.state.text.trim(), receiver: receiver._id }
+      })
+      const variables = { sender: sender._id, receiver: receiver._id }
 
-        const { messages } = this.props.client.cache.readQuery({ query: MESSAGES, variables })
+      const { messages } = this.props.client.cache.readQuery({ query: MESSAGES, variables })
 
-        this.props.client.cache.writeQuery({
-          query: MESSAGES,
-          variables,
-          data: { messages: messages.concat([res.data.messageCreate]) }
-        })
+      this.props.client.cache.writeQuery({
+        query: MESSAGES,
+        variables,
+        data: { messages: messages.concat([res.data.messageCreate]) }
+      })
 
-        // Se forza la actualizacion de el padre
-        this.props.force()
-        this.setState({ text: '' })
-      }
+      // Se forza la actualizacion de el padre
+      this.props.force()
+      this.setState({ text: '' })
     }
   }
 
@@ -105,7 +113,9 @@ class ChatImput extends Component {
             onKeyUp={this.onKeyUp}
             // placeholder='cows are green'
           />
-          <ButtonSend type='submit' onClick={this.sendMessage}>></ButtonSend>
+          <ButtonSend type='submit' onClick={this.send}>
+            <Icon className='icon-send-line' />
+          </ButtonSend>
         </Container>
       </InputPanel>
 

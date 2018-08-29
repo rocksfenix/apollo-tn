@@ -136,30 +136,27 @@ const Panel = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-around;
+  flex-direction: column;
   z-index: 900;
   animation: .3s ease-in-out ${animation};
 `
 
 const Buttons = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 33px;
+  height: 55px;
   background-color: #060507;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-bottom: 2px solid #000;
-  user-select: none;
+  flex-shrink: 0;
 `
 
 const ButtonSave = styled.button`
-  background-color: #332e36;
+  background-color: #4d4b65;
   color: #FFF;
   border: 1px solid transparent;
   margin: 0 1em;
-  padding: 0 1.5em;
+  padding: .4em 1.5em;
   border-radius: 3px;
   font-family: Roboto;
   font-size: 15px;
@@ -172,14 +169,16 @@ const ButtonSave = styled.button`
   }
 `
 
+const Icon = styled.i`
+  margin-right: 1em;
+`
+
 const PanelButtons = styled.div`
   width: 100%;
   height: 35px;
   background-color: #1d1d28;
-  position: absolute;
-  top: 33px;
-  left: 0;
   user-select: none;
+  flex-shrink: 0;
 `
 
 const TabsPanel = styled.div`
@@ -189,6 +188,7 @@ const TabsPanel = styled.div`
   margin: 0 auto;
   display: flex;
   user-select: none;
+  flex-shrink: 0;
 `
 
 const ButtonTab = styled.button`
@@ -218,11 +218,10 @@ const Shine = styled.div`
 `
 
 const Content = styled.section`
-    width: 100%;
-    height: 100%;
-    top: 68px;
-    height: 100%;
-    position: relative;
+  width: 100%;
+  margin-top: 1em;
+  position: relative;
+  flex-grow: 1;
 `
 
 const Tab = (props) => (
@@ -366,10 +365,9 @@ class LessonEditor extends Component {
     return (
       <Panel>
         <Buttons>
-          <ButtonSave onClick={this.saveChanges}>Save</ButtonSave>
-          <ButtonSave onClick={this.props.hideEditor}>Close</ButtonSave>
-          <ButtonSave onClick={() => console.log(JSON.stringify(this.state, null, 2))}>Debugg</ButtonSave>
-          <ButtonSave onClick={this.deleteLesson}>Delete</ButtonSave>
+          <ButtonSave onClick={this.saveChanges}><Icon className='icon-save' /> Save </ButtonSave>
+          <ButtonSave onClick={this.props.hideEditor}> <Icon className='icon-cross' />Close</ButtonSave>
+          <ButtonSave onClick={this.deleteLesson}><Icon className='icon-remove' />Delete  </ButtonSave>
         </Buttons>
         <PanelButtons>
           <TabsPanel>

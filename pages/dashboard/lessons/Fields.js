@@ -9,7 +9,8 @@ import ScreenshotDropzone from './ScreenshotDropzone'
 
 const Panel = styled.div`
   width: 600px;
-  height: 100%;
+  /* height: -webkit-fill-available; */
+  min-height: 700px;
   margin: 0 auto;
   background-color: #FFF;
   padding-top: 1em;

@@ -96,11 +96,11 @@ const Buttons = styled.div`
 `
 
 const ButtonSave = styled.button`
-  background-color: #332e36;
+  background-color: #4d4b65;
   color: #FFF;
   border: 1px solid transparent;
   margin: 0 1em;
-  padding: 0 1.5em;
+  padding: .4em 1.5em;
   border-radius: 3px;
   font-family: Roboto;
   font-size: 15px;
@@ -111,6 +111,10 @@ const ButtonSave = styled.button`
   :hover {
     background: #3b96c0;
   }
+`
+
+const Icon = styled.i`
+  margin-right: 1em;
 `
 
 const Subpanel = styled.div`
@@ -206,9 +210,8 @@ class UserEditor extends Component {
     return (
       <Panel>
         <Buttons>
-          <ButtonSave onClick={this.saveChanges}>Save</ButtonSave>
-          <ButtonSave onClick={this.props.hideEditor}>Close</ButtonSave>
-          <ButtonSave onClick={() => console.log(JSON.stringify(this.state, null, 2))}>Debugg</ButtonSave>
+          <ButtonSave onClick={this.saveChanges}><Icon className='icon-save' /> Save </ButtonSave>
+          <ButtonSave onClick={this.props.hideEditor}> <Icon className='icon-cross' />Close</ButtonSave>
         </Buttons>
         <Subpanel width='35%'>
           <Fields>

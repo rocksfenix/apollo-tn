@@ -200,7 +200,7 @@ const Buttons = styled.div`
 `
 
 const ButtonSave = styled.button`
-  background-color: #332e36;
+  background-color: #4d4b65;
   color: #FFF;
   border: 1px solid transparent;
   margin: 0 1em;
@@ -210,6 +210,7 @@ const ButtonSave = styled.button`
   font-size: 15px;
   cursor: pointer;
   transition: all .2s ease-out;
+  outline: none;
 
   :hover {
     background: #3b96c0;
@@ -225,6 +226,10 @@ const Row = styled.div`
 
 const Column = styled.div`
   width: 50%;
+`
+
+const Icon = styled.i`
+  margin-right: 1em;
 `
 
 export default class extends Component {
@@ -589,10 +594,9 @@ export default class extends Component {
                 />
               </Fields>
               <Buttons>
-                <ButtonSave onClick={this.updateCourse}>Save</ButtonSave>
-                <ButtonSave onClick={this.props.hideEditor}>Close</ButtonSave>
-                <ButtonSave onClick={this.deleteCourse}>Delete</ButtonSave>
-                <ButtonSave onClick={() => console.log(JSON.stringify(this.state, null, 2))}>Debugg</ButtonSave>
+                <ButtonSave onClick={this.updateCourse}><Icon className='icon-save' /> Save </ButtonSave>
+                <ButtonSave onClick={this.props.hideEditor}> <Icon className='icon-cross' />Close</ButtonSave>
+                <ButtonSave onClick={this.deleteCourse}><Icon className='icon-remove' />Delete  </ButtonSave>
               </Buttons>
               <Notification
                 isActive={this.state.notification.show}
