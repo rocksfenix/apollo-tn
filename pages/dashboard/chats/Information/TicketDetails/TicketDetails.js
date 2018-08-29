@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { withApollo } from 'react-apollo'
 import TicketText from './TicketText'
 import Notes from './Notes'
-import { TICKET_UPDATE, DELETE_TICKET, CREATE_TICKET_NOTE, TICKET_NOTES, TICKETS } from '../../chat-queries'
+import { TICKET_UPDATE, DELETE_TICKET, CREATE_TICKET_NOTE } from '../../chat-queries'
 
 const Header = styled.div`
   width: 100%;
@@ -56,54 +56,22 @@ class TicketDetailsComponent extends Component {
   // Crea una nota cada vez que cambia de estatus
   createNote = async (status) => {
     const ticket = this.props.ticketInFocus._id
-    const res = await this.props.client.mutate({
+    await this.props.client.mutate({
       mutation: CREATE_TICKET_NOTE,
       variables: {
         ticket,
         text: `Se cambia status a ${status}.`
       }
     })
-
-    // Actualizamos cache de Apollo
-    const { ticketNotes } = this.props.client.cache.readQuery({
-      query: TICKET_NOTES,
-      variables: { ticket }
-    })
-
-    this.props.client.cache.writeQuery({
-      query: TICKET_NOTES,
-      variables: { ticket },
-      data: { ticketNotes: [ res.data.ticketNoteCreate, ...ticketNotes ] }
-    })
-
-    // Forzamos el renderizado
-    this.forceUpdate()
   }
 
   // Actualiza el status del ticket
   updateStatus = async (status) => {
-    const res = await this.props.client.mutate({
+    await this.props.client.mutate({
       mutation: TICKET_UPDATE,
       variables: {
         _id: this.props.ticketInFocus._id,
         status
-      }
-    })
-
-    // Actualizamos cache de Apollo
-    const { allTickets } = this.props.client.cache.readQuery({
-      query: TICKETS,
-      variables: { customer: this.props.customerId }
-    })
-
-    this.props.client.cache.writeQuery({
-      query: TICKETS,
-      variables: { customer: this.props.customerId },
-      data: {
-        allTickets: {
-          ...allTickets,
-          tickets: allTickets.tickets.map(t => t._id === res.data.ticketUpdate._id ? res.data.ticketUpdate : t)
-        }
       }
     })
 
@@ -112,26 +80,9 @@ class TicketDetailsComponent extends Component {
 
   // Actualiza el texto del ticket
   updateText = async (ticket) => {
-    const res = await this.props.client.mutate({
+    await this.props.client.mutate({
       mutation: TICKET_UPDATE,
       variables: ticket
-    })
-
-    // Actualizamos cache de Apollo
-    const { allTickets } = this.props.client.cache.readQuery({
-      query: TICKETS,
-      variables: { customer: this.props.customerId }
-    })
-
-    this.props.client.cache.writeQuery({
-      query: TICKETS,
-      variables: { customer: this.props.customerId },
-      data: {
-        allTickets: {
-          ...allTickets,
-          tickets: allTickets.tickets.map(t => t._id === res.data.ticketUpdate._id ? res.data.ticketUpdate : t)
-        }
-      }
     })
   }
 
@@ -140,21 +91,6 @@ class TicketDetailsComponent extends Component {
     await this.props.client.mutate({
       mutation: DELETE_TICKET,
       variables: { _id }
-    })
-
-    // Actualizamos cache de Apollo
-    const { allTickets } = this.props.client.cache.readQuery({
-      query: TICKETS,
-      variables: { customer: this.props.customerId }
-    })
-
-    this.props.client.cache.writeQuery({
-      query: TICKETS,
-      variables: { customer: this.props.customerId },
-      data: { allTickets: {
-        ...allTickets,
-        tickets: allTickets.tickets.filter(t => t._id !== _id)
-      }}
     })
 
     this.props.onHidden()

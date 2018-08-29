@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
 import Ticket from './Ticket'
+import Loading from './Loading'
 
 const Table = styled.div`
   width: 100%;
@@ -12,17 +13,18 @@ const Table = styled.div`
 const Tickets = styled.div`
   flex-grow: 1;
   width: 100%;
-  background-color: #FFF;
   overflow-y: auto;
+  background-color: red;
+  position: relative;
+  bottom: 100px;
+  top: 0;
 `
 
 const Buttons = styled.div`
   width: 100%;
   height: 100px;
   background-color: black;
-`
-
-const Loading = styled(Tickets)`
+  flex-shrink: 0;
 `
 
 class TableComponent extends Component {
@@ -51,24 +53,21 @@ class TableComponent extends Component {
     }
   }
   render () {
-    const { loading } = this.props
+    const { loading, allTickets } = this.props
     const totalItems = this.props.allTickets.total
     const totalPages = Math.ceil(totalItems / this.props.itemsByPage)
 
     return (
       <Table>
-        { loading
-          ? <Loading>.... Loading</Loading>
-          : (
-            <Tickets>
-              {this.props.allTickets.tickets.map(ticket => (
-                <Ticket key={ticket._id} ticket={ticket} {...this.props} />
-              ))}
-            </Tickets>
-          )
-        }
+        <Loading show={loading} />
+
+        <Tickets>
+          {allTickets.tickets.map(ticket => (
+            <Ticket key={ticket._id} ticket={ticket} {...this.props} />
+          ))}
+        </Tickets>
+
         <Buttons>
-          {/* TOtal de paginas */}
           Total Pages { totalPages } - Total Items { totalItems } - ItemsByPage {this.props.itemsByPage}
           <button onClick={this.onPrevPage}>PREV PAGE</button>
           <button onClick={this.onNextPage}>NEXT PAGE</button>

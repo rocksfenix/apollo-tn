@@ -206,22 +206,22 @@ class TicketsComponent extends Component {
       variables: ticket
     })
 
-    // Actualizamos cache de Apollo
-    // Listamos los tickets desde el cache
-    const { allTickets } = this.props.client.cache.readQuery({
-      query: TICKETS,
-      variables: { customer: this.props.customer._id }
-    })
+    // // Actualizamos cache de Apollo
+    // // Listamos los tickets desde el cache
+    // const { allTickets } = this.props.client.cache.readQuery({
+    //   query: TICKETS,
+    //   variables: { customer: this.props.customer._id }
+    // })
 
-    this.props.client.cache.writeQuery({
-      query: TICKETS,
-      variables: { customer: this.props.customer._id },
-      data: {
-        allTickets: {
-          ...allTickets,
-          tickets: [ res.data.ticketCreate, ...allTickets.tickets ]
-        }}
-    })
+    // this.props.client.cache.writeQuery({
+    //   query: TICKETS,
+    //   variables: { customer: this.props.customer._id },
+    //   data: {
+    //     allTickets: {
+    //       ...allTickets,
+    //       tickets: [ res.data.ticketCreate, ...allTickets.tickets ]
+    //     }}
+    // })
 
     this.setState({
       show: '',

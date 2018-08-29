@@ -96,7 +96,7 @@ class TicketText extends Component {
   render () {
     const { isEditing } = this.state
     const { ticket } = this.props
-    console.log(ticket)
+
     if (isEditing) {
       return (
         <Panel>

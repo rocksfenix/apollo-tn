@@ -62,6 +62,17 @@ class NotesComponent extends Component {
               document: ON_TICKET_NOTE_CREATE,
               updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data) return prev
+
+                // La subscripcion se dispara para cada ticket
+                // De esta forma validamos que solo agrege la nota al ticket
+                // correspondiente
+                if (subscriptionData.data.onTicketNoteCreate.ticket !== this.props.ticket) return prev
+
+                // Se agrega solo si no existe, evitar duplicidad
+                if (prev.ticketNotes.filter(n => n._id === subscriptionData.data.onTicketNoteCreate._id)[0]) {
+                  return prev
+                }
+
                 return {
                   ...prev,
                   ticketNotes: [
@@ -79,6 +90,10 @@ class NotesComponent extends Component {
               updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data) return prev
                 const { onTicketNoteUpdate } = subscriptionData.data
+
+                // Solo al ticket correspondiente
+                if (onTicketNoteUpdate.ticket !== this.props.ticket) return prev
+
                 return {
                   ...prev,
                   ticketNotes: prev.ticketNotes.map(n => n._id === onTicketNoteUpdate._id ? onTicketNoteUpdate : n)
@@ -93,6 +108,10 @@ class NotesComponent extends Component {
               updateQuery: (prev, { subscriptionData }) => {
                 if (!subscriptionData.data) return prev
                 const { onTicketNoteDelete } = subscriptionData.data
+
+                // Solo al ticket correspondiente
+                if (onTicketNoteDelete.ticket !== this.props.ticket) return prev
+
                 return {
                   ...prev,
                   ticketNotes: prev.ticketNotes.filter(n => n._id !== onTicketNoteDelete._id)

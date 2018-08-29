@@ -62,6 +62,7 @@ class Tickets extends Component {
                   return {
                     ...prev,
                     allTickets: {
+                      ...prev.allTickets,
                       total: prev.allTickets.total + 1,
                       tickets: [subscriptionData.data.onTicketCreate, ...prev.allTickets.tickets]
                     }
@@ -81,7 +82,7 @@ class Tickets extends Component {
                   return {
                     ...prev,
                     allTickets: {
-                      total: prev.allTickets.total,
+                      ...prev.allTickets,
                       tickets: prev.allTickets.tickets.map(t => t._id === onTicketUpdate._id ? onTicketUpdate : t)
                     }
                   }
@@ -100,6 +101,7 @@ class Tickets extends Component {
                   return {
                     ...prev,
                     allTickets: {
+                      ...prev.allTickets,
                       total: prev.allTickets.total - 1,
                       tickets: prev.allTickets.tickets.filter(t => t._id !== onTicketDelete._id)
                     }
