@@ -14,7 +14,6 @@ const Tickets = styled.div`
   flex-grow: 1;
   width: 100%;
   overflow-y: auto;
-  background-color: red;
   position: relative;
   bottom: 100px;
   top: 0;
@@ -25,6 +24,24 @@ const Buttons = styled.div`
   height: 100px;
   background-color: black;
   flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+
+const Info = styled.div`
+`
+const Button = styled.button`
+  background-color: #FFF;
+  border: 0;
+  padding: 1em 2em;
+  cursor: pointer;
+  opacity: .7;
+  transition: 250ms ease-out;
+
+  :hover {
+    opacity: 1;
+  }
 `
 
 class TableComponent extends Component {
@@ -68,9 +85,11 @@ class TableComponent extends Component {
         </Tickets>
 
         <Buttons>
-          Total Pages { totalPages } - Total Items { totalItems } - ItemsByPage {this.props.itemsByPage}
-          <button onClick={this.onPrevPage}>PREV PAGE</button>
-          <button onClick={this.onNextPage}>NEXT PAGE</button>
+          <Button onClick={this.onPrevPage}>PREV PAGE</Button>
+          <Info>
+              Page {this.state.currentPage + 1} of { totalPages } - Total Items { totalItems } - {this.props.itemsByPage} Items By Page
+          </Info>
+          <Button onClick={this.onNextPage}>NEXT PAGE</Button>
         </Buttons>
       </Table>
     )
