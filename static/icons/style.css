@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?h2iyic');
-  src:  url('fonts/icomoon.eot?h2iyic#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?h2iyic') format('truetype'),
-    url('fonts/icomoon.woff?h2iyic') format('woff'),
-    url('fonts/icomoon.svg?h2iyic#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?9czumk');
+  src:  url('fonts/icomoon.eot?9czumk#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?9czumk') format('truetype'),
+    url('fonts/icomoon.woff?9czumk') format('woff'),
+    url('fonts/icomoon.svg?9czumk#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -24,6 +24,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-confused:before {
+  content: "\e91d";
+}
+.icon-sleep:before {
+  content: "\e928";
+}
+.icon-love:before {
+  content: "\e929";
+}
+.icon-angry:before {
+  content: "\e92a";
+}
 .icon-save:before {
   content: "\e91e";
 }
@@ -123,8 +135,8 @@
 .icon-snippet:before {
   content: "\e91c";
 }
-.icon-statistics:before {
-  content: "\e91d";
+.icon-statistics-2:before {
+  content: "\e927";
 }
 .icon-success:before {
   content: "\e91f";

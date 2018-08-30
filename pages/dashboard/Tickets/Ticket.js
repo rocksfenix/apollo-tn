@@ -69,6 +69,26 @@ const Date = styled.div`
   font-size: 12px;
 `
 
+const FeedbackBox = styled.div`
+  width: 55px;
+  height: 30px;
+  font-size: 30px;
+  color: #00b6ff;
+  display: flex;
+  justify-content: center;
+  justify-content: center;
+`
+
+const Feedback = ({ ticket }) => {
+  if (!ticket.userFeedback) return <div>*</div>
+
+  return (
+    <FeedbackBox>
+      { ticket.like ? <i className='icon-love' /> : <i className='icon-angry' /> }
+    </FeedbackBox>
+  )
+}
+
 class TicketComponent extends Component {
   state = { isColapsed: true }
 
@@ -128,6 +148,7 @@ class TicketComponent extends Component {
 
     render () {
       const { ticket } = this.props
+      console.log(this.props)
       return (
         <Ticket isColapsed={this.state.isColapsed} onClick={this.toggle}>
           <Header>
@@ -145,7 +166,7 @@ class TicketComponent extends Component {
               </Date>
             </Column>
             <Column width='10%'>{ticket.category}</Column>
-            <Column width='10%'>{ticket.like ? 'SI' : 'NO'}</Column>
+            <Column width='10%'><Feedback ticket={ticket} /></Column>
           </Header>
           <Details isColapsed={this.state.isColapsed} onClick={this.prev}>
             <TextTicket>
