@@ -1,15 +1,12 @@
-import React, { Component } from 'react'
-import styled, {keyframes} from 'styled-components'
-import ReactSwipeEvents from 'react-swipe-events'
+import React from 'react'
+import styled from 'styled-components'
 
 const Panel = styled.div`
   width: 100%;
-  /* height: 100vh; */
   overflow: hidden;
   position: relative;
   
   top: 0;
-  /* bottom: 0; */
   left: 0;
   right: 0;
 `
@@ -39,18 +36,15 @@ const Push = styled.div`
   z-index:1;
 
   @media screen and (orientation: landscape) {
-    /* background-color: orange; */
     height: 85%;
   }
 
   @media screen and (orientation: portrait) {
-    /* background-color: purple; */
     height: 70%;
   }
 
 `
 export default ({ videoSource }) => {
-  // debugger
   if (videoSource) {
     return (
       <Panel>
@@ -62,5 +56,5 @@ export default ({ videoSource }) => {
     )
   }
 
-  return <h1>LEVEL UPPPPPPPPPPPPPPPPPPPPPPPPPPP</h1>
+  return <h1>LEVEL UP</h1>
 }

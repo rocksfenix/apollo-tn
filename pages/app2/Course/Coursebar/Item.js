@@ -4,7 +4,8 @@ import Router from 'next/router'
 import warna from 'warna'
 import getTechIcon from '../../getTechIcon'
 
-const gostColor = 'rgba(0, 0, 0, 0.2)'
+const gostColorLight = 'rgba(0, 0, 0, 0.2)'
+const gostColorDark = 'rgba(255, 255, 255, 0.2)'
 
 const Itembox = styled.li`
   width: 100%;
@@ -32,7 +33,7 @@ const Advance = styled.span`
 const Text = styled.span`
   width: 220px;
   font-size: 14px;
-  color: #2d2f3f;
+  color: ${p => p.colorMode === 'light' ? '#2d2f3f' : '#FFF'};
   opacity: ${props => props.isWatched ? '0.7' : '1'};
   font-weight: ${props => props.isHover ? 'bold' : 'normal'};
   display: ${p => p.hide ? 'none' : 'block'};
@@ -60,7 +61,7 @@ const Line = styled.div`
     if (props.isWatched) {
       return props.color
     }
-    return gostColor
+    return props.colorMode === 'light' ? gostColorLight : gostColorDark
   }};
   position: absolute;
   left: 50%;
@@ -73,8 +74,8 @@ const BallInactive = styled.div`
   border-radius: 50%;
   position: relative;
   z-index: 500;
-  border: 2px solid ${gostColor};
-  background-color: #FFF;
+  border: 2px solid ${p => p.colorMode === 'light' ? gostColorLight : gostColorDark};
+  background-color: ${p => p.colorMode === 'light' ? '#FFF' : '#232427'};
 `
 
 const BallWatchedBox = styled.div`
@@ -230,21 +231,27 @@ export default class extends Component {
   pushLesson = () => {
     const { slug, course } = this.props
     this.props.onChangeLesson(slug)
-    Router.push(`/app2?tab=curso&course=${course.slug}&lesson=${slug}`, `/app2/curso/${course.slug}/${slug}`)
+    Router.push(
+      `/app2?tab=curso&course=${course.slug}&lesson=${slug}`,
+      `/app2/curso/${course.slug}/${slug}`
+    )
   }
 
   render () {
-    const { children, isWatched, next, tech, slug, course, active, size, ripple, index } = this.props
+    const { children, isWatched, next, tech, active, size, ripple, index, colorMode } = this.props
     const { hover } = this.state
     const { color } = this.props.course
     const colorLighten = warna.lighten(color, 0.85).hex
-    const gradient = `linear-gradient(90deg, ${warna.lighten(color, 0.8).hex}, ${warna.lighten(color, 1).hex})`
+
+    const gradientLight = `linear-gradient(90deg, ${warna.lighten(color, 0.8).hex}, ${warna.lighten(color, 1).hex})`
+    const gradientDark = `linear-gradient(90deg, ${warna.darken(color, 0.6).hex}, #232427)`
+
+    const gradient = colorMode === 'light' ? gradientLight : gradientDark
     // Ball
-    let Ball = <BallInactive />
+    let Ball = <BallInactive colorMode={colorMode} />
     if (isWatched) Ball = <BallWatched color={color} isWatched={isWatched} />
     if (hover && !isWatched) Ball = <BallPlay color={color} />
     if (active) Ball = <BallPlaying color={color} />
-    console.log(active, color, gradient)
 
     return (
 
@@ -254,7 +261,6 @@ export default class extends Component {
         onMouseEnter={this.onMouseEnter}
         onMouseLeave={this.onMouseLeave}
         size={size}
-        // onTouchEnd={this.pushLesson}
         onClick={this.pushLesson}
       >
         <Gradient show={active} gradient={gradient} />
@@ -265,6 +271,7 @@ export default class extends Component {
           <BallBox>
             { Ball }
             <Line
+              colorMode={colorMode}
               isWatched={isWatched}
               isPartial={!next.isWatched}
               color={color}
@@ -276,6 +283,7 @@ export default class extends Component {
           <LogoGlow color={color} isHover={hover || active} />
         </LogoBox>
         <Text
+          colorMode={colorMode}
           isHover={hover}
           isWatched={isWatched}
           hide={this.props.size === 'small'}

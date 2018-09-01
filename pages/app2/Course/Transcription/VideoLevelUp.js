@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import styled, {keyframes} from 'styled-components'
-import Icon from '../../../../components/Icon'
+import styled, { keyframes } from 'styled-components'
 import Link from 'next/link'
+import Icon from '../../../../components/Icon'
 
 const Screenshot = styled.div`
   width: 100%;

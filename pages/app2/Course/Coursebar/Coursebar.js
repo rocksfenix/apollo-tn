@@ -1,7 +1,9 @@
 import React, {Component} from 'react'
-import ReactDOM from 'react-dom'
+// import ReactDOM from 'react-dom'
 import styled from 'styled-components'
 import Item from './Item'
+import Autoplay from './Autoplay'
+import ColorMode from './ColorMode'
 
 const Panel = styled.div`
   position: relative;
@@ -17,7 +19,7 @@ const Panel = styled.div`
   will-change: transform;
   transition: transform 530ms cubic-bezier(1,0,0,1);
   z-index: 600;
-  background-color: #FFF;
+  background-color: ${p => p.colorMode === 'light' ? '#FFF' : '#232427'};
   display: flex;
   flex-direction: column;
 
@@ -26,38 +28,112 @@ const Panel = styled.div`
   }
 `
 
+const Lessons = styled.div`
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  @media (min-width: 900px) {
+    ::-webkit-scrollbar {
+      width: 5px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background-color: #FFF
+  }
+  
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+      background: gray;
+      border-radius: 10px;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+      background: #b30000; 
+  }
+  }
+`
+
 const Header = styled.header`
   width: 100%;
   height: 150px;
   background-color: transparent;
   flex-shrink: 0;
+  box-shadow: ${p => p.colorMode === 'light' ? '0 0 32px rgba(0, 0, 0, 0.1)' : '0 0 32px rgba(255, 255, 255, 0.25)'};
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+
+  @media screen and (orientation: landscape) and (max-width: 900px) {
+    height: 100px
+    flex-direction: row;
+    };
+  }
+
+   @media (max-width: 900px) {
+    padding-left: 55px;
+  }
 `
 
-const Lessons = styled.div`
-  flex-grow: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
+const Buttons = styled.div`
+  width: 100%;
+  height: 30px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+`
+
+const CoverImage = styled.img`
+  width: 80px;
+
+`
+
+const CourseTitle = styled.div`
+  color: ${p => p.colorMode === 'light' ? 'black' : '#FFF'};
+`
+
+const Cover = styled.div`
+  width: 100%;
+  height:120px;
+  display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 `
 
 export default class extends Component {
   render () {
-    const { isMobile, tab, course, showMobileNav } = this.props
+    const { isMobile, course, showMobileNav, colorMode, autoplay } = this.props
     let show = true
 
-    let orientation = ''
-
-    if (process.browser) {
-      orientation = window.screen.orientation.type
-    }
     // Si es mobile y no esta mostrado ocultar
     if (isMobile && !showMobileNav) {
       show = false
     }
 
-    console.log(course)
     return (
-      <Panel ref={this.coursebar} show={show}>
-        <Header>*</Header>
+      <Panel ref={this.coursebar} show={show} colorMode={colorMode}>
+        <Header colorMode={colorMode}>
+          <Cover>
+            <CoverImage src={course.cover.s100} />
+            <CourseTitle colorMode={colorMode}>
+              {course.title}
+            </CourseTitle>
+          </Cover>
+          <Buttons>
+            <ColorMode
+              colorMode={colorMode}
+              onSetColorMode={this.props.onSetColorMode}
+            />
+            <Autoplay
+              autoplay={autoplay}
+              onSetAutoplay={this.props.onSetAutoplay}
+            />
+          </Buttons>
+        </Header>
         <Lessons>
           {course.lessons.map((lesson, index, a) => (
             <Item

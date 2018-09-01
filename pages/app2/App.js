@@ -45,7 +45,12 @@ class App extends Component {
   }
 
   state = {
-    theme: themes['chemist'], // || user.preferences.theme
+    theme: themes['fire'], // || user.preferences.theme
+
+    // Dark or Light
+    colorMode: 'light',
+
+    autoplay: false,
 
     // Tab activa por defecto es home
     // cambia si hay curso activo
@@ -186,9 +191,21 @@ class App extends Component {
 
   onLessonsSetScroll = () => this.setState({ setScroll: false })
 
+  onSetColorMode = () => {
+    const colorMode = this.state.colorMode === 'light' ? 'dark' : 'light'
+    this.setState({ colorMode })
+  }
+
+  onSetAutoplay = () => {
+    this.setState(state => ({
+      ...state,
+      autoplay: !state.autoplay
+    }))
+  }
+
   render () {
     const { course, mainContent, isMobile, tab, lesson, showMobileNav } = this.state
-    console.log(mainContent === 'course', course._id)
+
     // show tools si tab es diferente de course y home
     let showTools = false
 
@@ -227,6 +244,8 @@ class App extends Component {
                 {...this.state}
                 onChangeLesson={this.onChangeLesson}
                 onLessonsSetScroll={this.onLessonsSetScroll}
+                onSetColorMode={this.onSetColorMode}
+                onSetAutoplay={this.onSetAutoplay}
               />
               : <Home {...this.state} />
           }

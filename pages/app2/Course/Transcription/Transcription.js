@@ -1,6 +1,5 @@
 import React from 'react'
 import styled from 'styled-components'
-import VideoLevelUp from './VideoLevelUp'
 import Header from './Header'
 import Markdown from '../../../../components/md/Markdown'
 import gql from 'graphql-tag'
@@ -84,7 +83,6 @@ const Button = ({ children, icon, border }) => (
 const FullContent = styled.div`
   overflow-y: auto;
   height: 100vh;
-  /* max-width: 700px; */
   margin: 0 auto;
 `
 
@@ -101,27 +99,14 @@ export default ({ width, left, course, lesson }) => {
   // })
 
   // const nextLesson = course.lessons[current + 1] || {}
-
-  // const style = {
-  //   width,
-  //   left
-  // }
-
-  
-
-
-
   return (
     <Query query={LESSON} variables={{ slug: lesson.slug }}>
       {({ data, loading, error }) => {
         if (loading) return <h1>Loading*************************************</h1>
         if (error) return <h1>Error {error}</h1>
-        // debugger
-        console.log(data.lesson)
         return (
           <Content>
             <FullContent>
-              {/* <VideoLevelUp color={course.color} /> */}
               <Video videoSource={data.lesson.videoSource} />
               <AditionalButtons>
                 <Button icon='icon-snippet' />
@@ -130,7 +115,6 @@ export default ({ width, left, course, lesson }) => {
               </AditionalButtons>
               <Header course={course} lesson={lesson} />
               <MarkdownContent>
-                {/* {lesson.slug} {lesson._id} */}
                 <Markdown
                   markdown={lesson.transcription}
                 />

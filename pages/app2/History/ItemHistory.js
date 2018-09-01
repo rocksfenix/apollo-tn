@@ -24,6 +24,11 @@ const CoverPanel = styled.div`
     return 'row'
   }};
   padding-left: 1em;
+
+  @media screen and (orientation: landscape) {
+    flex-direction: ${p => p.isMobile ? 'row' : ''};
+  }
+
 `
 
 const CoverImg = styled.img`
@@ -65,30 +70,59 @@ const LesonTitle = styled.div`
 `
 
 const ItemBox = styled.div`
-  min-height:  ${p => {
-    if (p.size === 'mini' || p.size === 'full') return '55px'
-    if (p.size === 'playing') return '150px'
-  }};
   width: 100%;
   flex-shrink: 0;
   z-index: 500;
   font-size: 11px;
-  border-bottom: 1px solid whitesmoke;
-  /* transition: all ease-out .3s; */
+  border-bottom: ${p => {
+    if (p.size === 'mini' || p.size === 'full') return '1px solid whitesmoke'
+    if (p.size === 'playing') return '0'
+  }};
+
+  display: flex;
+  align-items: center;
   position: relative;
   background-color: #FFF;
   animation: ${p => p.animated ? `.4s ease-out ${Anima}` : ''};
   animation-fill-mode: forwards;
-  padding: .5em 0;
+  padding: ${p => {
+    if (p.size === 'mini' || p.size === 'full') return '.5em 0'
+    if (p.size === 'playing') return '0'
+  }};
+
+  @media screen and (orientation: landscape) and (max-width: 900px){
+    min-height:  ${p => {
+    if (p.size === 'mini') return '100px'
+    if (p.size === 'full') return '55px'
+    if (p.size === 'playing') return '100px'
+  }};
+  };
+
+  @media screen and (orientation: portrait) and (max-width: 900px) {
+    min-height:  ${p => {
+    if (p.size === 'mini') return '100px'
+    if (p.size === 'full') return '55px'
+    if (p.size === 'playing') return '150px'
+  }};
+  };
+  }
+
+  @media (min-width: 900px){
+    min-height:  ${p => {
+    if (p.size === 'mini' || p.size === 'full') return '55px'
+    if (p.size === 'playing') return '150px'
+  }};
+  }};
+  };
 
   :hover {
     background-color: #f3f3f3;
   }
 `
 
-export default ({ size, item, animated }) => (
+export default ({ size, item, animated, isMobile }) => (
   <ItemBox size={size} animated={animated}>
-    <CoverPanel size={size}>
+    <CoverPanel size={size} isMobile={isMobile}>
       <CoverImg
         src={getTechIcon(item.tech)}
         size={size}

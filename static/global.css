@@ -6,6 +6,15 @@ strong {
   color: #675cfd;
 }
 
+p::-moz-selection {
+  background-color: rgb(52, 34, 212) !important;
+  color: #FFF !important;
+}
+p::selection {
+  background-color: rgb(52, 34, 212) !important;
+  color: #FFF !important;
+}
+
 /******** NINJA LOGO ICONO ********/
 
 .slideUpNinja-exit.slideUpNinja-exit-active {

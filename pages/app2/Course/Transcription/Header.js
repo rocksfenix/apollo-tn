@@ -72,31 +72,21 @@ const Glow = styled.div`
   opacity: .5;
 `
 
-// linear-gradient(90deg, #0b4178, #01010b)
-const Comp = ({ lesson, course }) => {
-  return (
-    <Header>
-      <Box>
-        <TechLogo src={getTechIcon(lesson.tech)} />
-        <TitleBox>
-          <Title>{ lesson.title }</Title>
-          <VersionBox>
-            <Glow color={course.color} />
-            <Version
-              gradient={`linear-gradient(90deg, ${warna.darken(course.color, 0.7).hex}, #01010b)`}
-            >@{ lesson.techVersion }</Version>
-          </VersionBox>
-        </TitleBox>
-      </Box>
-    </Header>
-  )
-}
-
-// Comp.defaultProps = {
-//   title: 'Para que son las props en React.js',
-//   techVersion: '@16.3.1',
-//   mainTech: 'node.png',
-//   color: '#f94401'
-// }
+const Comp = ({ lesson, course }) => (
+  <Header>
+    <Box>
+      <TechLogo src={getTechIcon(lesson.tech)} />
+      <TitleBox>
+        <Title>{ lesson.title }</Title>
+        <VersionBox>
+          <Glow color={course.color} />
+          <Version
+            gradient={`linear-gradient(90deg, ${warna.darken(course.color, 0.7).hex}, #01010b)`}
+          >@{ lesson.techVersion }</Version>
+        </VersionBox>
+      </TitleBox>
+    </Box>
+  </Header>
+)
 
 export default Comp

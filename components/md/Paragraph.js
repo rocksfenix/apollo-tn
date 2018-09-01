@@ -16,8 +16,11 @@ const P = styled.p`
   line-height: 1.58;
   margin-top: 38px;
   margin-bottom: 29px;
-
   font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  
+  @media (max-width: 900px) {
+    font-size: 16px;
+  }
 `
 
 function uid (len) {

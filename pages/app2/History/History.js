@@ -7,7 +7,7 @@ const Panel = styled.div`
   width: ${p => p.isMobile ? '100%' : '355px'};
   height: ${p => p.height};
   padding-left: 55px;
-  display: flex;
+  display: ${p => p.size === 'playing' ? 'none' : 'flex'};
   position: fixed;
   justify-content: center;
   z-index: 1000;
@@ -16,13 +16,24 @@ const Panel = styled.div`
   flex-grow: 0;
   top: 0;
   background-color: #FFF;
-  /* transition: transform 200ms cubic-bezier(1,0,0,1), height 200ms cubic-bezier(1,0,0,1); */
   transition: transform .2s cubic-bezier(1,0,0,1);
   transform: ${p => p.show ? 'translateX(0%)' : 'translateX(-100%)'};
   justify-content: ${p => p.expanded ? 'flex-start' : 'center'};
   will-change: transform, height;
   border-right: 1px solid whitesmoke;
   overflow:  ${p => p.expanded ? 'auto' : 'hidden'};
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.06);
+
+  @media screen and (orientation: landscape) and (max-width: 900px){
+      height: ${p => {
+    if (p.size === 'mini') return '55px'
+    if (p.size === 'full') return p.height
+    if (p.size === 'playing' || p.size === 'full') return '100px'
+  }};
+    };
+  }
+
+
 
    /* width */
    ::-webkit-scrollbar {
@@ -104,6 +115,8 @@ class HistoryComponent extends Component {
     // ocula la barra de navegacion
     if (isMobile && !showMobileNav) _show = false
 
+    console.log(height)
+
     return (
       <Panel
         id='scrollableHistory'
@@ -111,6 +124,7 @@ class HistoryComponent extends Component {
         height={height}
         expanded={expanded}
         isMobile={isMobile}
+        size={size}
       >
         <InfiniteScroll
           dataLength={historyItems.length + 1}
@@ -126,7 +140,7 @@ class HistoryComponent extends Component {
             )
           }
         >
-          <ItemHistory item={lastWatched} size={size} />
+          <ItemHistory item={lastWatched} size={size} isMobile={isMobile} />
           <HistoryItems show={expanded} historyItems={historyItems} size={size} />
         </InfiniteScroll>
       </Panel>

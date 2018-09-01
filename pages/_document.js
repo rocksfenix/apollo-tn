@@ -15,7 +15,15 @@ export default class MyDocument extends Document {
       <html>
         <Head>
           {this.props.styleTags}
-          <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=yes' />
+          <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no' />
+          {/* PWA */}
+          <meta name='theme-color' content='#25fff8' />
+          <link rel='apple-touch-icon' href='/static/icon.png' />
+          <meta name='apple-mobile-web-app-title' content='Hacker News' />
+          <meta name='apple-mobile-web-app-status-bar-style' content='default' />
+          <meta name='apple-mobile-web-app-capable' content='yes' />
+          <meta name='mobile-web-app-capable' content='yes' />
+          {/* PWA */}
           <link rel='stylesheet' type='text/css' href='/static/global.css' />
           <link rel='stylesheet' type='text/css' href='/static/icons/style.css' />
           <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,700,900' rel='stylesheet' />
