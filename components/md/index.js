@@ -28,10 +28,16 @@ import Paragraph from './Paragraph'
 
 const PLACEHOLDER = 'THIS_IS_A_BUG_PLEASE_OPEN_AN_ISSUE_IN_OUR_WEBSITE_REPO'
 
-const ImageZoom = styled(Zoom)`
-  display: block;
-  height: 200px;
+const ImageBlock = styled.div`
+  height: 400px;
   margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  @media (max-width:900px) {
+    height: 270px;
+  } 
 `
 
 const isValid = node => {
@@ -119,7 +125,7 @@ const md = (strings, ...values) => {
           return <Terminal language={language} literal={literal} onCopy={onCopy} />
         }
 
-        return <CodeBlock onCopy={onCopy}  code={code} language={language} filename={filename} onChange={(e) => console.log(e)} />
+        return <CodeBlock onCopy={onCopy} code={code} language={language} filename={filename} onChange={(e) => console.log(e)} />
       },
 
       BlockQuote (p) {
@@ -133,20 +139,22 @@ const md = (strings, ...values) => {
 
       Image ({ src, title, alt }) {
         return (
-          <ImageZoom
-            style={{ zIndex: 2000 }}
-            image={{
-              src,
-              alt,
-              className: 'img',
-              style: { maxHeight: '400px', width: 'initial', margin: '0 auto', display: 'block', zIndex: 3000 }
-            }}
-            zoomImage={{
-              src,
-              alt,
-              style: { width: '100%', height: 'auto', margin: '0 auto', display: 'block' }
-            }}
-          />
+          <ImageBlock>
+            <Zoom
+              style={{ zIndex: 2000 }}
+              image={{
+                src,
+                alt,
+                className: 'img',
+                style: { maxHeight: '100%', maxWidth: '100%', margin: '0 auto', display: 'block' }
+              }}
+              zoomImage={{
+                src,
+                alt,
+                style: { width: '100%' }
+              }}
+            />
+          </ImageBlock>
         )
       },
 
@@ -196,11 +204,7 @@ const md = (strings, ...values) => {
   })
 
   return (
-    <div style={{
-      width: '100%',
-      margin: '0 auto',
-      maxWidth: '700px'
-    }}>
+    <div>
       {renderer.render(ast)}
     </div>
   )

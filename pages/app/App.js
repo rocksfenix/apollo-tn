@@ -24,9 +24,10 @@ import Chat from './Chat'
 
 const Toolbar = styled.div`
   width: 100%;
-  width: 280px;
+  width: 300px;
   height: 100vh;
   left: ${props => props.show ? '0;' : '-100%'};
+  background-color: red;
   display: flex;
   position: fixed;
   top: 0;

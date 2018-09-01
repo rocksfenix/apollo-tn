@@ -97,6 +97,22 @@ const UserSchema = new mongoose.Schema({
   // Position dentro de la empresa
   position: { type: String, default: 'Member' },
 
+  // preferences
+  preferences: {
+    theme: { type: String, default: 'fire' },
+    shourtcuts: {
+      prevTool: String,
+      nextTool: String,
+      history: String,
+      find: String,
+      course: String,
+      snippets: String,
+      notes: String,
+      account: String
+    }
+  },
+
+  // Se usa para poder Banear a un usuario
   status: {
     type: String,
     enum: ['active', 'hold'],

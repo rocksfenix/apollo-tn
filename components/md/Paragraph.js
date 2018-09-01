@@ -5,7 +5,7 @@ import Highlightable from 'highlightable'
 const P = styled.p`
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
-  font-size: 16px;
+  font-size: 19px;
   line-height: 24px;
   margin: 24px 0;
   font-family: 'Open Sans', sans-serif;
@@ -16,6 +16,8 @@ const P = styled.p`
   line-height: 1.58;
   margin-top: 38px;
   margin-bottom: 29px;
+
+  font-family: -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 `
 
 function uid (len) {
@@ -44,7 +46,8 @@ export default class extends Component {
   render () {
     return (
       <P>
-        <Highlightable
+        {this.props.children}
+        {/* <Highlightable
           ranges={this.state.ranges}
           enabled
           onTextHighlighted={this.onSelect}
@@ -55,7 +58,7 @@ export default class extends Component {
             color: '#FFF'
           }}
           text={this.props.children}
-        />
+        /> */}
       </P>
     )
   }

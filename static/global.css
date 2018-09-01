@@ -2,6 +2,10 @@
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
 
+strong {
+  color: #675cfd;
+}
+
 /******** NINJA LOGO ICONO ********/
 
 .slideUpNinja-exit.slideUpNinja-exit-active {
