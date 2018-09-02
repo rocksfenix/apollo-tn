@@ -19,22 +19,13 @@ const CoverPanel = styled.div`
   display: flex;
   align-items: center;
   justify-content: start;
-  flex-direction: ${p => {
-    if (p.size === 'playing') return 'column'
-    return 'row'
-  }};
+  flex-direction: row;
   padding-left: 1em;
-
-  @media screen and (orientation: landscape) {
-    flex-direction: ${p => p.isMobile ? 'row' : ''};
-  }
-
 `
 
 const CoverImg = styled.img`
   width: ${p => {
     if (p.size === 'mini' || p.size === 'full') return '20px'
-    if (p.size === 'playing') return '100px'
   }};
   max-width: 150px;
   will-change: width;
@@ -74,10 +65,7 @@ const ItemBox = styled.div`
   flex-shrink: 0;
   z-index: 500;
   font-size: 11px;
-  border-bottom: ${p => {
-    if (p.size === 'mini' || p.size === 'full') return '1px solid whitesmoke'
-    if (p.size === 'playing') return '0'
-  }};
+  border-bottom: 1px solid whitesmoke;
 
   display: flex;
   align-items: center;
@@ -85,16 +73,12 @@ const ItemBox = styled.div`
   background-color: #FFF;
   animation: ${p => p.animated ? `.4s ease-out ${Anima}` : ''};
   animation-fill-mode: forwards;
-  padding: ${p => {
-    if (p.size === 'mini' || p.size === 'full') return '.5em 0'
-    if (p.size === 'playing') return '0'
-  }};
+  padding: .5em 0;
 
   @media screen and (orientation: landscape) and (max-width: 900px){
     min-height:  ${p => {
     if (p.size === 'mini') return '100px'
     if (p.size === 'full') return '55px'
-    if (p.size === 'playing') return '100px'
   }};
   };
 
@@ -102,17 +86,12 @@ const ItemBox = styled.div`
     min-height:  ${p => {
     if (p.size === 'mini') return '100px'
     if (p.size === 'full') return '55px'
-    if (p.size === 'playing') return '150px'
   }};
   };
   }
 
   @media (min-width: 900px){
-    min-height:  ${p => {
-    if (p.size === 'mini' || p.size === 'full') return '55px'
-    if (p.size === 'playing') return '150px'
-  }};
-  }};
+    min-height: 55px;
   };
 
   :hover {

@@ -28,7 +28,6 @@ const Panel = styled.div`
       height: ${p => {
     if (p.size === 'mini') return '55px'
     if (p.size === 'full') return p.height
-    if (p.size === 'playing' || p.size === 'full') return '100px'
   }};
     };
   }

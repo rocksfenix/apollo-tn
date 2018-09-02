@@ -13,7 +13,6 @@ const Panel = styled.div`
   background-color: ${props => props.bg};
   color: #aaa;
   width: 55px;
-  border-right: 1px solid #e5e5e5;
   will-change: transform;
   transition: transform .2s cubic-bezier(1,0,0,1);
   overflow-y: auto;
