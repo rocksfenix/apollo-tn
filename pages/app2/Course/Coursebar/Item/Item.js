@@ -2,10 +2,8 @@ import React, {Component} from 'react'
 import styled, {keyframes} from 'styled-components'
 import Router from 'next/router'
 import warna from 'warna'
-import getTechIcon from '../../getTechIcon'
-
-const gostColorLight = 'rgba(0, 0, 0, 0.2)'
-const gostColorDark = 'rgba(255, 255, 255, 0.2)'
+import getTechIcon from '../../../getTechIcon'
+import Advance from './Advance'
 
 const Itembox = styled.li`
   width: 100%;
@@ -22,14 +20,6 @@ const Itembox = styled.li`
   }
 `
 
-const Advance = styled.span`
-  width: 25px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
 const Text = styled.span`
   width: 220px;
   font-size: 14px;
@@ -38,117 +28,6 @@ const Text = styled.span`
   font-weight: ${props => props.isHover ? 'bold' : 'normal'};
   display: ${p => p.hide ? 'none' : 'block'};
 `
-
-const BallBox = styled.div`
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
-const Line = styled.div`
-  width: 50%;
-  height: 50px;
-  top: 50%;
-  width: 2px;
-  background: ${props => {
-    if (props.isPartial && props.isWatched) {
-      return `linear-gradient(${props.color}, white);`
-    }
-    if (props.isWatched) {
-      return props.color
-    }
-    return props.colorMode === 'light' ? gostColorLight : gostColorDark
-  }};
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-
-`
-const BallInactive = styled.div`
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  position: relative;
-  z-index: 500;
-  border: 2px solid ${p => p.colorMode === 'light' ? gostColorLight : gostColorDark};
-  background-color: ${p => p.colorMode === 'light' ? '#FFF' : '#232427'};
-`
-
-const BallWatchedBox = styled.div`
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background-color: ${props => {
-    if (props.isPartial) {
-      return `linear-gradient(${props.color}, white);`
-    }
-    return props.color
-  }};
-  position: relative;
-  z-index: 500;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
-const BallWatchedIcon = styled.i`
-  color: #FFF;
-  font-size: 6px;
-  position: relative;
-  left: 1px;
-`
-
-const BallWatched = ({ isWatched, color }) => (
-  <BallWatchedBox isWatched={isWatched} color={color}>
-    <BallWatchedIcon className='icon-success' />
-  </BallWatchedBox>
-)
-
-const Ani = keyframes`
-  0% {
-    transform: scale(.2)
-  }
-  10% {
-    transform: scale(1)
-  }
-`
-
-const BallPlayBox = styled.div`
-  width: 16px;
-  height: 16px;
-  background: #FFF;
-  border: ${props => `solid 2px ${props.color}`};
-  border-radius: 50%;
-  position: relative;
-  z-index: 500;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: .8s ease-out ${Ani};
-  animation-fill-mode: forwards;
-`
-
-const BallPlayIcon = styled.i`
-  color:${props => props.color};
-  font-size: 6px;
-  position: relative;
-  left: 1px;
-`
-const BallPlay = ({ color }) => (
-  <BallPlayBox color={color}>
-    <BallPlayIcon className='icon-play' color={color} />
-  </BallPlayBox>
-)
-
-const BallPlaying = ({ isWatched, color }) => (
-  <BallWatchedBox isWatched={isWatched} color={color}>
-    <BallWatchedIcon className='icon-play' />
-  </BallWatchedBox>
-)
 
 const LogoBox = styled.div`
   width: ${props => props.isHover ? '20px' : '0px'};
@@ -245,13 +124,7 @@ export default class extends Component {
 
     const gradientLight = `linear-gradient(90deg, ${warna.lighten(color, 0.8).hex}, ${warna.lighten(color, 1).hex})`
     const gradientDark = `linear-gradient(90deg, ${warna.darken(color, 0.6).hex}, #232427)`
-
     const gradient = colorMode === 'light' ? gradientLight : gradientDark
-    // Ball
-    let Ball = <BallInactive colorMode={colorMode} />
-    if (isWatched) Ball = <BallWatched color={color} isWatched={isWatched} />
-    if (hover && !isWatched) Ball = <BallPlay color={color} />
-    if (active) Ball = <BallPlaying color={color} />
 
     return (
 
@@ -264,24 +137,24 @@ export default class extends Component {
         onClick={this.pushLesson}
       >
         <Gradient show={active} gradient={gradient} />
+
         <RippleBallBox>
           <RippleBall show={index === ripple} color={color} />
         </RippleBallBox>
-        <Advance>
-          <BallBox>
-            { Ball }
-            <Line
-              colorMode={colorMode}
-              isWatched={isWatched}
-              isPartial={!next.isWatched}
-              color={color}
-            />
-          </BallBox>
-        </Advance>
+
+        <Advance
+          colorMode={colorMode}
+          color={color}
+          isWatched={isWatched}
+          hover={hover}
+          active={active}
+          next={next}
+        />
         <LogoBox isHover={hover || active}>
           <LogoImg src={getTechIcon(tech)} />
           <LogoGlow color={color} isHover={hover || active} />
         </LogoBox>
+
         <Text
           colorMode={colorMode}
           isHover={hover}

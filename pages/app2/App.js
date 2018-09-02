@@ -50,6 +50,8 @@ class App extends Component {
     // Dark or Light
     colorMode: 'light',
 
+    // Si es true se ponde en play el video y se
+    // reproduce la siguiente leccion automaticamente
     autoplay: false,
 
     // Tab activa por defecto es home
@@ -163,21 +165,13 @@ class App extends Component {
     this.setState({ tab })
   }
 
-  goLeft = () => {
-    this.setState({ showMobileNav: true })
-    // const url = window.location.href
-    // if (url.indexOf('#openTools') === -1) {
-    //   window.location.href = url + '#openTools'
-    // }
-  }
-  
-  // this.setState({ showMobileNav: true }, () => {
-  //   window.location.href = window.location.href + '#openTools'
-  // })
+  // Se dispara con el gesto touch hacia left
+  // Oculta la barra de navegaicon en mobil
+  goLeft = () => this.setState({ showMobileNav: true })
 
-  goRight = () => this.setState({ showMobileNav: false }, () => {
-    // window.location.href = window.location.href.replace('#openTools', '#')
-  })
+  // Se dispara con el gesto touch hacia right
+  // Muestra la barra de navegaicon en mobil
+  goRight = () => this.setState({ showMobileNav: false })
 
   // Al hacer click en navegacion
   // Se usa para recargar leccion en browser

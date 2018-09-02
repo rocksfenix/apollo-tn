@@ -16,7 +16,6 @@ const ColorModeIcon = styled.i`
   transition: all 150ms ease-out;
   right: 0;
   font-size: 30px;
-  /* transition: all .4s cubic-bezier(1,0,0,1); */
 `
 
 const TextBox = styled.div`
@@ -29,12 +28,14 @@ const TextBox = styled.div`
 export default ({ onSetAutoplay, autoplay }) => {
   const off = {
     transform: autoplay ? 'translateX(-100%)' : 'translateX(0%)',
-    opacity: autoplay ? '0' : '1'
+    opacity: autoplay ? '0' : '1',
+    willChange: 'transform, opacity'
   }
 
   const on = {
     transform: autoplay ? 'translateX(0%)' : 'translateX(100%)',
-    opacity: autoplay ? '1' : '0'
+    opacity: autoplay ? '1' : '0',
+    willChange: 'transform, opacity'
   }
 
   return (
