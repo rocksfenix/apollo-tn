@@ -21,6 +21,7 @@ const LESSONS = gql`
         isPublished
         duration
         createdAt
+        courseSlug
         screenshot {
           s100
         }
@@ -44,6 +45,7 @@ const LESSON = gql`
       tags
       duration
       createdAt
+      courseSlug
       screenshot {
         s100
       }
@@ -55,36 +57,8 @@ const LESSON = gql`
 `
 
 const LESSON_UPDATE = gql`
-  mutation lesson (
-      $_id: ID!
-      $title: String
-      $slug: String
-      $synopsis: String
-      $videoSource: String
-      $tech: String
-      $techVersion: String
-      $role: String
-      $tags: [String]
-      $duration: String
-      $isPublished: Boolean
-      $isTranscriptionPublic: Boolean
-      $transcription: String
-    ) {
-    lessonUpdate(input: {
-      _id: $_id
-      title: $title
-      slug: $slug
-      synopsis: $synopsis
-      videoSource: $videoSource
-      tech: $tech
-      techVersion: $techVersion
-      role: $role
-      tags: $tags
-      duration: $duration
-      isPublished: $isPublished
-      isTranscriptionPublic: $isTranscriptionPublic
-      transcription: $transcription
-    }) {
+  mutation lesson ($input: LessonSet) {
+    lessonUpdate(input: $input) {
       _id
       title
       slug
@@ -92,6 +66,7 @@ const LESSON_UPDATE = gql`
       videoSource
       tech
       techVersion
+      courseSlug
       role
       tags
       duration
@@ -284,9 +259,35 @@ class LessonEditor extends Component {
   }
 
   saveChanges = async () => {
+    const seteables = [
+      '_id',
+      'title',
+      'courseSlug',
+      'slug',
+      'synopsis',
+      'transcription',
+      'tech',
+      'techVersion',
+      'lessonVersion',
+      'videoSource',
+      'tags',
+      'duration',
+      'role',
+      'isPublished',
+      'isTranscriptionPublic'
+    ]
+
+    let input = {}
+
+    const { lesson } = this.state
+
+    seteables.forEach(s => {
+      input[s] = lesson[s]
+    })
+
     const response = await this.props.client.mutate({
       mutation: LESSON_UPDATE,
-      variables: { ...this.state.lesson }
+      variables: { input }
     })
 
     if (!response.data.lessonUpdate) {

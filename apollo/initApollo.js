@@ -98,10 +98,10 @@ function create (initialState, { getTokens, csrf, Cookie, xoxo }) {
         }
 
         if (token) {
-          console.log(`REHYDRATE TOKEN
-            ${token}
-            ${cookie.get(JWT_KEY)}
-          `)
+          // console.log(`REHYDRATE TOKEN
+          //   ${token}
+          //   ${cookie.get(JWT_KEY)}
+          // `)
           cookie.set(JWT_KEY, token, { expires: 30 })
         }
       }

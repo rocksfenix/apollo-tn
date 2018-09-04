@@ -12,6 +12,7 @@ import SeoHead from '../../components/SeoHead'
 import Home from './Home'
 import History from './History'
 import Course from './Course'
+import Search from './Search'
 
 const Panel = styled.div`
   position: relative;
@@ -30,8 +31,7 @@ const Toolbar = styled.div`
   transition: transform .2s cubic-bezier(1,0,0,1);
   justify-content: center;
   align-items: center;
-  z-index: 600;
-  background-color: orange;
+  z-index: 1000;
   will-change: transform;
 
   @media (max-width:900px) {
@@ -45,7 +45,7 @@ class App extends Component {
   }
 
   state = {
-    theme: themes['fire'], // || user.preferences.theme
+    theme: themes['chemist'], // || user.preferences.theme
 
     // Dark or Light
     colorMode: 'light',
@@ -113,6 +113,8 @@ class App extends Component {
     }
   }
 
+  find = () => this.setState({ tab: 'search' })
+
   toolUp = () => {
     console.log('UP')
   }
@@ -120,36 +122,6 @@ class App extends Component {
   toolDown = () => {
     console.log('DOWN')
   }
-
-  // Este evento se dispara cuando
-  // se navega el el historial a travez
-  // de las flechaz de navegacion del navegador
-  // onPopState = (e) => {
-  //   // Metodo que parsea la URL para obtener
-  //   // Sus params
-
-  //   if (this.state.isMobile && this.state.showMobileNav) {
-  //     // Router.push(`/app2/curso/${this.state.course.slug}/${this.state.lesson.slug}`)
-  //     this.setState({ showMobileNav: false })
-  //     // alert('splash')
-  //   }
-  //   console.log(e)
-  //   // const parseUrl = (href) => {
-  //   //   const s = href.split('/')
-  //   //   return {
-  //   //     course: s[5],
-  //   //     lesson: s[6] ? s[6].replace(/(#)\w+/gm, '') : null
-  //   //   }
-  //   // }
-
-  //   // const url = parseUrl(window.location.href)
-  //   // const lessonSlug = window.location.href.split('/')[6]
-
-  //   // this.setState({
-  //   //   url,
-  //   //   lesson: this.state.course.lessons.filter(l => l.slug === lessonSlug)[0]
-  //   // })
-  // }
 
   // Cuando se selecciona otra tab
   onChangeTab = (tab) => {
@@ -175,12 +147,36 @@ class App extends Component {
 
   // Al hacer click en navegacion
   // Se usa para recargar leccion en browser
-  onChangeLesson = (lesson) => {
+  onChangeLesson = (lessonSlug) => {
     this.setState(state => ({
       ...state,
-      lesson: this.state.course.lessons.filter(l => l.slug === lesson)[0],
-      showMobileNav: false
+      lesson: this.state.course.lessons.filter(l => l.slug === lessonSlug)[0],
+      showMobileNav: false,
+      tab: 'course'
     }))
+  }
+
+  onChangeCourse = async (courseSlug, lessonSlug) => {
+    // Actualizamos curso
+    const result = await this.props.client.query({
+      query: COURSE,
+      variables: { slug: courseSlug }
+    })
+
+    this.setState({
+      showMainContent: 'course',
+      tab: 'course',
+      toolIndex: 2,
+      showMobileNav: false,
+      course: result.data.course,
+      lesson: lessonSlug
+        ? result.data.course.lessons.filter(l => l.slug === lessonSlug)[0]
+        : result.data.course.lessons[0],
+      url: {
+        courseSlug,
+        lessonSlug
+      }
+    })
   }
 
   onLessonsSetScroll = () => this.setState({ setScroll: false })
@@ -246,7 +242,7 @@ class App extends Component {
 
           {/* ==========  Las tools solo si es diferente al content ============ */}
           <Toolbar show={showTools} >
-            * { tab }
+            <Search tab={tab} isMobile={isMobile} onChangeLesson={this.onChangeLesson} onChangeCourse={this.onChangeCourse} />
           </Toolbar>
 
           {/* ================== Si esta seleccionado se expande =============== */}

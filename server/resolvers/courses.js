@@ -131,7 +131,7 @@ export default {
         { size: 800, suffix: 's800' }
       ]
 
-      const cover = await uploadImage(file, sizes, 'cover')
+      const cover = await uploadImage(file, sizes, 'cover', course.slug)
 
       course.cover = cover
 

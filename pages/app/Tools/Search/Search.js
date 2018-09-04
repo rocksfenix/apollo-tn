@@ -9,7 +9,7 @@ import CourseDatails from './CourseDetails'
 import { Ellipsis } from '../../../../components/Spinners'
 import Router from 'next/router'
 
-const ALL_COURSES = gpl`
+const SEARCH = gpl`
 query search($text: String!) {
   search(text: $text) {
     ... on Course {
@@ -359,7 +359,7 @@ class SearchComponent extends Component {
   onSearch = async (text) => {
     this.setState({ searchFetching: true, hasSearched: true })
     const result = await this.props.client.query({
-      query: ALL_COURSES,
+      query: SEARCH,
       variables: { text }
     })
 
@@ -402,7 +402,7 @@ class SearchComponent extends Component {
           <Item>{ index1 } - { isInputFocus ? 'true' : 'false' } - { sectionInFocus } - { index2 }</Item>
           <List leftAnimate={pop} >
             { showSpinner ? <Ellipsis width='100px' show /> : null }
-            { showNotFound ? 'Not found' : null }
+            { showNotFound ? 'Woops, no hay coincidencias!' : null }
             { showItems
               ? (
                 <div>

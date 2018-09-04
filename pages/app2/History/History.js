@@ -83,9 +83,12 @@ const Spinner = styled.img`
 `
 
 class HistoryComponent extends Component {
-  //
   fetchMoreData = () => {
     console.log('GET MORE ITEMS')
+  }
+
+  shouldComponentUpdate (nextProps, nextState) {
+    return nextProps.tab !== this.props.tab
   }
 
   render () {
@@ -113,8 +116,6 @@ class HistoryComponent extends Component {
     // Se oculta si es mobile y esta
     // ocula la barra de navegacion
     if (isMobile && !showMobileNav) _show = false
-
-    console.log(height)
 
     return (
       <Panel

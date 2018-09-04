@@ -51,6 +51,13 @@ class LessonEditor extends Component {
             value={this.props.lesson.slug}
             onChange={this.props.onChange}
           />
+          <TextField
+            size='small'
+            label='Course Slug'
+            keyName='courseSlug'
+            value={this.props.lesson.courseSlug}
+            onChange={this.props.onChange}
+          />
           <Textarea
             label='Synopsis'
             keyName='synopsis'

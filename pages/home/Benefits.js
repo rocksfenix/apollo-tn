@@ -16,7 +16,7 @@ export default () => (
     <Benefit
       direction='left'
       title='Metodología LEAP'
-      description='(Learning Easy and Progressive) Es nuestra metodología para que cada leccion sea consistente y de alta calidad.'
+      description='(Learning Easy and Progressive) Es nuestra metodología para que cada leccion sea consistente eficiente y de alta calidad.'
       imageSrc='/static/leap.svg'
       alt='Imagen de Metodologia LEAP'
     />

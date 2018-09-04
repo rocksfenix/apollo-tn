@@ -129,7 +129,7 @@ export default {
         { size: 800, suffix: 's800' }
       ]
 
-      const screenshot = await uploadImage(file, sizes, 'screenshot')
+      const screenshot = await uploadImage(file, sizes, 'screenshot', lesson.slug)
 
       lesson.screenshot = screenshot
 

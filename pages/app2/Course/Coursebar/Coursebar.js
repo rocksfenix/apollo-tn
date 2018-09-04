@@ -105,6 +105,18 @@ const Cover = styled.div`
 `
 
 export default class extends Component {
+  // Performance
+  shouldComponentUpdate (nextProps, nextState) {
+    return (
+      nextProps.colorMode !== this.props.colorMode ||
+      nextProps.course._id !== this.props.course._id ||
+      nextProps.autoplay !== this.props.autoplay ||
+      nextProps.showMobileNav !== this.props.showMobileNav ||
+      nextProps.isMobile !== this.props.isMobile ||
+      nextProps.lesson.slug !== this.props.lesson.slug
+    )
+  }
+
   render () {
     const { isMobile, course, showMobileNav, colorMode, autoplay } = this.props
     let show = true

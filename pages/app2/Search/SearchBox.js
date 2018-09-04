@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import ReactDOM from 'react-dom'
 import styled from 'styled-components'
+import PropTypes from 'prop-types'
 
 const Search = styled.input`
   padding: 5px 13px;
@@ -24,54 +25,37 @@ const Search = styled.input`
 `
 
 class SearchComponent extends Component {
-  state = {
-    // Representa los items de la caja de busqueda
-    search: [],
-
-    // Representa el indice activo // primer nivel
-    index1: 0,
-
-    // Represeta el indice activo // Segundo nivel Course details
-    index2: 0,
-
-    // Representa que seccion esta en foco search or course details
-    // search | courseDetails | lessonDetails
-    sectionInFocus: 'search',
-
-    searchFetching: false,
-
-    // Si ya realizo alguna busqueda o no
-    hasSearched: false,
-
-    // Objeto usado para consumir el curso en foco
-    courseInFocus: { lessons: [], cover: {} },
-
-    // Objeto que se carga con los datos del servidor
-    courseDetails: { lessons: [], cover: {} }
+  static propTypes = {
+    onEnter: PropTypes.func,
+    onArrowDown: PropTypes.func,
+    onArrowUp: PropTypes.func,
+    focus: PropTypes.bool
   }
 
   textInput = React.createRef()
 
-  componentWillReceiveProps (nextProps) {
-    if (nextProps.focus) {
+  componentDidMount () {
+    this.input = ReactDOM.findDOMNode(this.textInput.current)
+  }
+
+  componentDidUpdate () {
+    if (this.props.focus) {
       this.focus()
     } else {
       this.blur()
     }
   }
 
-  componentDidMount () {
+  focus = () => {
     window.setTimeout(() => {
-      this.focus()
+      this.input.focus()
     }, 200)
   }
 
-  focus = () => {
-    ReactDOM.findDOMNode(this.textInput.current).focus()
-  }
-
   blur = () => {
-    ReactDOM.findDOMNode(this.textInput.current).blur()
+    window.setTimeout(() => {
+      this.input.blur()
+    }, 200)
   }
 
   handleKeyPress = (e) => {
