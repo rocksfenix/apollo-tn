@@ -6,6 +6,7 @@
     "scripts": {
         "start": "NODE_ENV=developmen npm run build && node build/index.js",
         "dev": "cls && babel-node server/index.js",
+        "dev-debugg": "cls && babel-node --inspect-brk server/index.js",
         "serve": "node build/index.js",
         "build": "babel server -d build --copy-files",
         "heroku-postbuild": "next build",

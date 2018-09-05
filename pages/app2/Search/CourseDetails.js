@@ -62,9 +62,10 @@ const Panel = styled.div`
 
   @media (max-width: 900px) {
     padding-top: 55px;
+    width: 100%;
   }
 `
-// #00b8ff azul focus
+
 const ButtonPlay = styled.button`
   border: ${p => p.focus ? `2px solid ${p.color}` : '2px solid transparent'};
   background-color: #eeeeee;
@@ -180,8 +181,8 @@ const BarTitle = styled.div`
   color: #FFF;
 `
 
-const Bar = ({ color, hasStartted, title }) => (
-  <BarPanel color={color}>
+const Bar = ({ color, hasStartted, title, playCourse }) => (
+  <BarPanel color={color} onTouchStart={playCourse}>
     <BarGradient />
     <BarTextBlockMobile>
       <BarText>Reproducir</BarText>
@@ -234,7 +235,7 @@ export default class extends Component {
           Reproducir <i className='icon-play' />
         </ButtonPlay>
 
-        <Bar color={courseInFocus.color} title={courseInFocus.courseTitle} />
+        <Bar color={courseInFocus.color} title={courseInFocus.courseTitle} playCourse={this.props.playCourse} />
         { loadingDetails
           ? <Ellipsis width='100px' show />
           : (
@@ -242,6 +243,7 @@ export default class extends Component {
             <Lessons>
               {courseDetails.lessons.map((lesson, index) => (
                 <DetailsItem
+                  key={lesson._id}
                   color={courseInFocus.color}
                   lesson={lesson}
                   course={courseInFocus}

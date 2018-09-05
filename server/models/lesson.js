@@ -20,8 +20,8 @@ const LessonSchema = new mongoose.Schema({
 
   // Esta propiedad no se cambia, solo se deja de registro ya que sera
   // cambiada o fusionada con el modelo LessonChecked
-  isCompleted: { Type: Boolean, default: false },
-  isWatched: { Type: Boolean, default: false },
+  isCompleted: { type: Boolean, default: false },
+  isWatched: { type: Boolean, default: false },
   title: { type: String, required: [true, 'El titulo es requerido'] },
   synopsis: { type: String, default: 'Una asombrosa leccion...' },
   transcription: { type: String, default: '# Tecninja.io' },
@@ -120,6 +120,7 @@ LessonSchema.methods.getDataByRole = function (userRole) {
     'slug',
     'author',
     'synopsis',
+    'isWatched',
     'techVersion',
     'lessonVersion',
     'type',

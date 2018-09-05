@@ -3,6 +3,7 @@ import models from '../models'
 import uploadImage from '../util/upload-image'
 import { createSelf, deleteSelf } from '../authorization'
 import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../authorization/errors'
+import cloneDeep from 'clone-deep'
 
 export default {
   Upload: GraphQLUpload,
@@ -69,9 +70,23 @@ export default {
 
       let course = await models.Course.findOne(query).populate('author lessons')
 
-      if (role !== 'admin') {
-        return course.getDataByRole(role)
+      if (user.sub) {
+        // Buscamos las watched de ese curso y usuario
+        const watched = await models.Watched.find({ course: course._id, author: user.sub })
+
+        const result = course.lessons.map(lesson => {
+          if (watched.filter(l => l.lesson === lesson._id).length) {
+            lesson.isWatched = true
+          }
+
+          return lesson
+        })
+        course.lessons = result
       }
+
+      // if (role !== 'admin') {
+      //   return course.getDataByRole(role)
+      // }
 
       return course
     }

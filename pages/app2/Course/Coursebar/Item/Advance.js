@@ -22,7 +22,10 @@ const Line = styled.div`
   width: 2px;
   background: ${props => {
     if (props.isPartial && props.isWatched) {
-      return `linear-gradient(${props.color}, white)`
+      if (props.colorMode === 'light') {
+        return `linear-gradient(${props.color}, white)`
+      }
+      return `linear-gradient(${props.color}, rgba(255,255,255,0.2))`
     }
     if (props.isWatched) {
       return props.color

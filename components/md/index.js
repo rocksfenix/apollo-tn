@@ -181,7 +181,7 @@ const md = (strings, ...values) => {
         })
 
         const hash = `${idPrefix}${titleToDash(title)}`
-        console.log(hash)
+        // console.log(hash)
 
         return (
           <Anchor id={hash} level={level}>

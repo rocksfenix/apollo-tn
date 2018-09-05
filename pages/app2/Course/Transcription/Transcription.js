@@ -5,6 +5,7 @@ import Markdown from '../../../../components/md/Markdown'
 import gql from 'graphql-tag'
 import { Query } from 'react-apollo'
 import Video from './Video'
+import PushWatched from './PushWatched'
 
 const LESSON = gql`
   query lesson ($slug: String!) {
@@ -86,7 +87,7 @@ const FullContent = styled.div`
   margin: 0 auto;
 `
 
-export default ({ width, left, course, lesson }) => {
+export default ({ force, course, lesson }) => {
   // if (!lesson) {
   //   return null
   // }
@@ -104,11 +105,14 @@ export default ({ width, left, course, lesson }) => {
       {({ data, loading, error }) => {
         if (loading) return <h1>Loading*************************************</h1>
         if (error) return <h1>Error {error}</h1>
+
+        // console.log(course)
         return (
           <Content>
             <FullContent>
               <Video videoSource={data.lesson.videoSource} />
               <AditionalButtons>
+                <PushWatched course={course} lesson={lesson} force={force} />
                 <Button icon='icon-snippet' />
                 <Button icon='icon-love' />
                 <Button icon='icon-arrow-right' border>{ lesson.title || 'Curso Completado' }</Button>

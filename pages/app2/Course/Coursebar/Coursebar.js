@@ -68,9 +68,8 @@ const Header = styled.header`
   justify-content: center;
 
   @media screen and (orientation: landscape) and (max-width: 900px) {
-    height: 100px
+    height: 100px;
     flex-direction: row;
-    };
   }
 
    @media (max-width: 900px) {
@@ -106,16 +105,16 @@ const Cover = styled.div`
 
 export default class extends Component {
   // Performance
-  shouldComponentUpdate (nextProps, nextState) {
-    return (
-      nextProps.colorMode !== this.props.colorMode ||
-      nextProps.course._id !== this.props.course._id ||
-      nextProps.autoplay !== this.props.autoplay ||
-      nextProps.showMobileNav !== this.props.showMobileNav ||
-      nextProps.isMobile !== this.props.isMobile ||
-      nextProps.lesson.slug !== this.props.lesson.slug
-    )
-  }
+  // shouldComponentUpdate (nextProps, nextState) {
+  //   return (
+  //     nextProps.colorMode !== this.props.colorMode ||
+  //     nextProps.course._id !== this.props.course._id ||
+  //     nextProps.autoplay !== this.props.autoplay ||
+  //     nextProps.showMobileNav !== this.props.showMobileNav ||
+  //     nextProps.isMobile !== this.props.isMobile ||
+  //     nextProps.lesson.slug !== this.props.lesson.slug
+  //   )
+  // }
 
   render () {
     const { isMobile, course, showMobileNav, colorMode, autoplay } = this.props
@@ -125,6 +124,8 @@ export default class extends Component {
     if (isMobile && !showMobileNav) {
       show = false
     }
+
+    // console.log('UP COURSEBAR')
 
     return (
       <Panel ref={this.coursebar} show={show} colorMode={colorMode}>
@@ -149,7 +150,7 @@ export default class extends Component {
         <Lessons>
           {course.lessons.map((lesson, index, a) => (
             <Item
-              key={lesson.title}
+              key={lesson._id}
               next={a[index + 1] || { isWatched: false }}
               active={(!this.props.lesson.slug && index === 0) || this.props.lesson.slug === lesson.slug}
               index={index}

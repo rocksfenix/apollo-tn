@@ -6,7 +6,7 @@ const uploadDir = './uploads'
 
 const storeFileTemp = ({ stream, filename }) => {
   const id = shortid.generate()
-  const pathTemp = `${uploadDir}/${id}-${filename}`
+  const pathTemp = `${uploadDir}/${id}`
   const ext = path.extname(filename)
   return new Promise((resolve, reject) =>
     stream

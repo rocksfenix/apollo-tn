@@ -92,7 +92,7 @@ class App extends Component {
 
   // Agregamos el evento de cambio de navegacion
   // ver onPopState y se agregan shourtcuts
-  componentDidMount () {
+  async componentDidMount () {
     if (process.browser) {
       window.addEventListener('popstate', this.onPopState)
 
@@ -109,6 +109,21 @@ class App extends Component {
         if (window.innerWidth <= 900) {
           this.setState({ device: 'mobile', isMobile: true })
         }
+
+        // window.setTimeout(() => {
+        //   const todo = this.props.client.readFragment({
+        //     id: `Watched:30CkDjnOU`,
+        //     fragment: gql`
+        //       fragment watched on Watched {
+        //         _id
+        //         lessonSlug
+        //         tech
+        //       }
+        //     `
+        //   })
+        //   console.log(todo)
+        //   // debugger
+        // }, 5000)
       }
     }
   }
@@ -163,6 +178,8 @@ class App extends Component {
       variables: { slug: courseSlug }
     })
 
+    console.log(result)
+
     this.setState({
       showMainContent: 'course',
       tab: 'course',
@@ -193,8 +210,15 @@ class App extends Component {
     }))
   }
 
+  force = () => {
+    // this.forceUpdate()
+    // debugger
+  }
+
   render () {
     const { course, mainContent, isMobile, tab, lesson, showMobileNav } = this.state
+
+    console.log(course)
 
     // show tools si tab es diferente de course y home
     let showTools = false
@@ -236,6 +260,7 @@ class App extends Component {
                 onLessonsSetScroll={this.onLessonsSetScroll}
                 onSetColorMode={this.onSetColorMode}
                 onSetAutoplay={this.onSetAutoplay}
+                force={this.force}
               />
               : <Home {...this.state} />
           }
@@ -252,6 +277,9 @@ class App extends Component {
             playing={course._id}
             tab={tab}
             showMobileNav={showMobileNav}
+            course={this.state.course}
+            lesson={this.state.lesson}
+            onChangeCourse={this.onChangeCourse}
           />
 
         </Panel>

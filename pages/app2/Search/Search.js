@@ -130,12 +130,14 @@ class SearchComponent extends Component {
 
     const itemInFocus = search[index1 - 1]
 
-    if (itemInFocus.__typename === 'Course') {
-      this.setState({
-        sectionInFocus: 'courseDetails',
-        courseInFocus: itemInFocus
-      })
-      this.getCourseDetails(itemInFocus.slug)
+    if (itemInFocus) {
+      if (itemInFocus.__typename === 'Course') {
+        this.setState({
+          sectionInFocus: 'courseDetails',
+          courseInFocus: itemInFocus
+        })
+        this.getCourseDetails(itemInFocus.slug)
+      }
     }
   }
 
@@ -159,15 +161,17 @@ class SearchComponent extends Component {
     if (sectionInFocus === 'search') {
       const itemInFocus = search[index1 - 1]
 
-      console.log(itemInFocus)
-      // Si es un curso, carga el curso
-      if (itemInFocus.__typename === 'Course') {
-        this.push(itemInFocus.slug, '')
-      }
-
-      // Si es una leccion, ir al curso/leccion
-      if (itemInFocus.__typename === 'Lesson') {
-        this.push(itemInFocus.courseSlug, itemInFocus.slug)
+      // Solo para items no para input
+      if (itemInFocus) {
+        // Si es un curso, carga el curso
+        if (itemInFocus.__typename === 'Course') {
+          this.push(itemInFocus.slug, '')
+        }
+  
+        // Si es una leccion, ir al curso/leccion
+        if (itemInFocus.__typename === 'Lesson') {
+          this.push(itemInFocus.courseSlug, itemInFocus.slug)
+        }
       }
     }
 
@@ -342,6 +346,7 @@ class SearchComponent extends Component {
             hideDetails={this.hideDetails}
             onPlayCourse={this.onPlayCourse}
             onSetIndex2={this.onSetIndex2}
+            playCourse={this.onPlayCourse}
           />
         </Panel>
       </Box>

@@ -115,7 +115,10 @@ function create (initialState, { getTokens, csrf, Cookie, xoxo }) {
     })
   })
 
-  const cache = new InMemoryCache({ fragmentMatcher }).restore(initialState || {})
+  const cache = new InMemoryCache({
+    fragmentMatcher
+    // dataIdFromObject: object => object._id
+  }).restore(initialState || {})
 
   const stateLink = withClientState({
     defaults: {

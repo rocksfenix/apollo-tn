@@ -1,0 +1,39 @@
+
+# No hay necesidad de obtener info
+# adicional por eso usamos Strings
+type Watched {
+  _id: ID!
+  author: String
+  lesson: String
+  course: String
+  watchedAt: String
+  tech: String
+  lessonTitle: String
+  courseTitle: String
+  courseSlug: String
+  lessonSlug: String
+}
+
+input WatchedCreate {
+  lesson: String!
+  course: String!
+  tech: String!
+  lessonTitle: String!
+  courseTitle: String!
+  courseSlug: String!
+  lessonSlug: String!
+}
+
+type HistoryPagination {
+  items: [Watched]!,
+  hasMore: Boolean!
+}
+
+type Query {
+  history(limit: Int, offset: Int): HistoryPagination
+}
+
+type Mutation {
+  watchedCreate(input: WatchedCreate): Watched
+  watchedUpdate(course: String!, lesson: String!): Watched
+}

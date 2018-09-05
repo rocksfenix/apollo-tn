@@ -1,6 +1,8 @@
-import React from 'react'
+import React, {Component} from 'react'
 import styled, {keyframes} from 'styled-components'
-import getTechIcon from '../getTechIcon'
+import Router from 'next/router'
+// import getTechIcon from '../getTechIcon'
+// import slugify from 'slugify'
 
 const Anima = keyframes`
   0% {
@@ -99,17 +101,35 @@ const ItemBox = styled.div`
   }
 `
 
-export default ({ size, item, animated, isMobile }) => (
-  <ItemBox size={size} animated={animated}>
-    <CoverPanel size={size} isMobile={isMobile}>
-      <CoverImg
-        src={getTechIcon(item.tech)}
-        size={size}
-      />
-      <TitleBlock>
-        <Title size={size}>{item.courseTitle}</Title>
-        <LesonTitle show={size !== 'playing'}>{item.title}</LesonTitle>
-      </TitleBlock>
-    </CoverPanel>
-  </ItemBox>
-)
+export default class extends Component {
+  handleClick = () => {
+    const { courseSlug, lessonSlug } = this.props.item
+    Router.push(
+      `/app2?tab=curso&curso=${courseSlug}&lesson=${lessonSlug}`,
+      `/app2/curso/${courseSlug}/${lessonSlug}`
+    )
+    // Se empujan los cambios al App
+    // TODO - Con el cambio de arquitectura basado en Query
+    // Posiblemente no se requiera
+    this.props.onChangeCourse(courseSlug, lessonSlug)
+  }
+
+  render () {
+    const { size, item, animated, isMobile } = this.props
+    return (
+      <ItemBox size={size} animated={animated} onClick={this.handleClick}>
+        <CoverPanel size={size} isMobile={isMobile}>
+          <CoverImg
+            // src={getTechIcon(item.tech)}
+            src={`https://dxpdcvj89hnue.cloudfront.net/cover/${item.courseSlug}-s100`}
+            size={size}
+          />
+          <TitleBlock>
+            <Title size={size}>{item.lessonTitle}</Title>
+            <LesonTitle show={size !== 'playing'}>{item.courseTitle}</LesonTitle>
+          </TitleBlock>
+        </CoverPanel>
+      </ItemBox>
+    )
+  }
+}
