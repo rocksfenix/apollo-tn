@@ -44,7 +44,7 @@ export default App => {
         xoxo = req.getXoxoToken(req)
       }
 
-      console.info('MODO ::: ', process.env.SAFE_ENV === 'safe', csrf)
+      // console.info('MODO ::: ', process.env.SAFE_ENV === 'safe', csrf)
 
       const apollo = initApollo({}, {
         // Obtenemos el Token JWT

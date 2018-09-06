@@ -1,6 +1,5 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
-import { tabs } from '../config'
 import Avatar from '../../../components/Avatar'
 
 const Panel = styled.div`
@@ -140,7 +139,7 @@ class Navbar extends Component {
         <Item label='search' icon='search' {...this.props} />
         {/* El play solo se muestra si esta viendo un curso */}
         {
-          this.props.course._id
+          this.props.course
             ? <Item label='course' icon='play-2' {...this.props} />
             : null
         }

@@ -1,8 +1,8 @@
 import React from 'react'
-import styled from 'styled-components'
 import gql from 'graphql-tag'
 import { Mutation } from 'react-apollo'
 import { COURSE, HISTORY } from '../../queries'
+import uniqBy from 'lodash/uniqBy'
 
 const WATCHED = gql`
   mutation watchedCreate ($input: WatchedCreate) {
@@ -15,6 +15,8 @@ const WATCHED = gql`
       tech
       lessonTitle
       courseTitle
+      courseSlug
+      lessonSlug
     }
   }
 `
@@ -23,8 +25,6 @@ export default ({ course, lesson, force }) => (
   <Mutation
     mutation={WATCHED}
     update={(cache, { data }) => {
-      console.log(course.slug)
-
       // Actualizamos el cache de lecciones vistas
       const c = cache.readQuery({ query: COURSE, variables: { slug: course.slug } })
       const lessons = c.course.lessons.map(l => {
@@ -44,31 +44,28 @@ export default ({ course, lesson, force }) => (
         }
       })
 
-      // Actualizamos el chache de history
-      const { history } = cache.readQuery({ query: HISTORY, variables: { limit: 20, offset: 0 } })
-      console.log(history)
+      const { history } = cache.readQuery({ query: HISTORY })
+
+      // Filtramos por unicos, porque puede pasar
+      // que en el mismo history ya se haya visto la leccion
+      const items = uniqBy([ data.watchedCreate, ...history.items ], (e) => e._id)
+
       cache.writeQuery({
         query: HISTORY,
         data: {
           history: {
-            items: [
-              data.watchedCreate,
-              ...history.items
-            ],
-            ...history
+            ...history,
+            items,
+            hasMore: history.hasMore
           }
         }
       })
-      // Forzamos renderizado
-      force()
     }}
 
   >
     {(watchedCreate, { data, error, loading }) => {
       if (loading) return <h1>Loading</h1>
       if (error) return <h1>error {error}</h1>
-
-      if (data) console.log(data)
 
       return (
         <button

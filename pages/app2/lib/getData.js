@@ -12,19 +12,17 @@ export default async (ctx) => {
     params = ctx.req.params
 
     // Si existe curso se precarga
-    if (params.course) {
-      const res = await ctx.apolloClient.query({
-        query: COURSE,
-        variables: { slug: params.course }
-      })
-      course = res.data.course
-    }
+    // if (params.course) {
+    //   const res = await ctx.apolloClient.query({
+    //     query: COURSE,
+    //     variables: { slug: params.course }
+    //   })
+    //   course = res.data.course
+    // }
   } catch (error) {}
 
   try {
-    const res = await ctx.apolloClient.query({
-      query: ME
-    })
+    const res = await ctx.apolloClient.query({ query: ME })
 
     user = res.data.userSelf || {}
 

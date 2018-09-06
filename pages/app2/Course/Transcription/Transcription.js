@@ -1,32 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
-import Header from './Header'
-import Markdown from '../../../../components/md/Markdown'
-import gql from 'graphql-tag'
 import { Query } from 'react-apollo'
+import Header from './Header'
 import Video from './Video'
 import PushWatched from './PushWatched'
-
-const LESSON = gql`
-  query lesson ($slug: String!) {
-    lesson(slug: $slug) {
-      _id
-      slug
-      title
-      role
-      tech
-      transcription
-      videoSource
-      isTranscriptionPublic
-      isPublished
-      duration
-      createdAt
-      screenshot {
-        s100
-      }
-    }
-  }
-`
+import { LESSON } from '../../queries'
+import Markdown from '../../../../components/md/Markdown'
 
 const Content = styled.div`
   position: relative;
@@ -87,10 +66,7 @@ const FullContent = styled.div`
   margin: 0 auto;
 `
 
-export default ({ force, course, lesson }) => {
-  // if (!lesson) {
-  //   return null
-  // }
+export default ({ force, course, lessonSlug }) => {
   // let current = 0
   // course.lessons.forEach((l, index) => {
   //   // debugger
@@ -98,15 +74,16 @@ export default ({ force, course, lesson }) => {
   //     current = index
   //   }
   // })
-
   // const nextLesson = course.lessons[current + 1] || {}
+
+  if (!lessonSlug) return null
+
   return (
-    <Query query={LESSON} variables={{ slug: lesson.slug }}>
+    <Query query={LESSON} variables={{ slug: lessonSlug }}>
       {({ data, loading, error }) => {
         if (loading) return <h1>Loading*************************************</h1>
         if (error) return <h1>Error {error}</h1>
-
-        // console.log(course)
+        const { lesson } = data
         return (
           <Content>
             <FullContent>

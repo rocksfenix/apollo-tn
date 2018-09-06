@@ -1,9 +1,10 @@
 import React, {Component} from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 import styled from 'styled-components'
+import uniqBy from 'lodash/uniqBy'
 import ItemHistory from './ItemHistory'
 import { Query } from 'react-apollo'
-import { HISTORY } from '../queries'
+import { HISTORY, LESSON } from '../queries'
 
 const Panel = styled.div`
   width: ${p => p.isMobile ? '100%' : '355px'};
@@ -55,12 +56,28 @@ const Panel = styled.div`
   }
 `
 
-const HistoryItems = ({ show, size, historyItems, onChangeCourse }) => {
+const HistoryItems = ({ show, size, historyItems, onChangeCourse, color, current }) => {
+  let items = historyItems
+
+  // Para evitar que se duplique si el de repreduccion
+  // actual es el firmo que el primer elemento de items
+  // se elimina
+  if (current.lessonSlug === historyItems[0].lessonSlug) {
+    items = items.slice(1)
+  }
+
   if (show) {
     return (
       <React.Fragment>
-        {historyItems.map(item => (
-          <ItemHistory item={item} size={size} animated onChangeCourse={onChangeCourse} />
+        {items.map(item => (
+          <ItemHistory
+            animated
+            key={item._id}
+            item={item}
+            size={size}
+            onChangeCourse={onChangeCourse}
+            color={color}
+          />
         ))}
       </React.Fragment>
     )
@@ -87,7 +104,7 @@ class HistoryComponent extends Component {
   // }
 
   render () {
-    const { show, tab, playing, course, lesson, showMobileNav, isMobile } = this.props
+    const { show, tab, playing, course, lessonSlug, showMobileNav, isMobile } = this.props
     // Existen solo 3 tamaños diferentes
     // full - mini - playing
     // show indica si esta visible
@@ -114,27 +131,14 @@ class HistoryComponent extends Component {
     // ocula la barra de navegacion
     if (isMobile && !showMobileNav) _show = false
 
-    const currentItem = {
-      _id: lesson._id + '1-',
-      author: lesson.author,
-      lesson: lesson._id,
-      course: course._id,
-      watchedAt: Date.now(),
-      tech: lesson.tech,
-      lessonTitle: lesson.title,
-      courseTitle: course.title,
-      courseSlug: course.slug,
-      lessonSlug: lesson.slug
-    }
-
     return (
       <Query query={HISTORY} variables={{ limit: 20, offset: 0 }}
 
       >
-        {({ data, error, loading, fetchMore, updateQuery }) => {
-          if (loading) return <h1>Loading</h1>
+        {({ data, error, loading, fetchMore, client }) => {
+          if (!data || loading) return <h1>Loading</h1>
           if (error) return <h1>error {error}</h1>
-
+          //
           return (
             <Panel
               id='scrollableHistory'
@@ -145,7 +149,7 @@ class HistoryComponent extends Component {
               size={size}
             >
               <InfiniteScroll
-                dataLength={data.history.length + 1}
+                dataLength={data.history.items.length + 1}
                 next={() => {
                   fetchMore({
                     variables: {
@@ -153,15 +157,17 @@ class HistoryComponent extends Component {
                     },
                     updateQuery: (prev, { fetchMoreResult }) => {
                       if (!fetchMoreResult) return prev
-                      // debugger
+
+                      // Filtramos duplicados
+                      const items = uniqBy([
+                        ...prev.history.items,
+                        ...fetchMoreResult.history.items
+                      ], (i) => i._id)
+
                       return {
-                        ...prev,
                         history: {
                           ...prev.history,
-                          items: [
-                            ...fetchMoreResult.history.items,
-                            ...prev.history.items
-                          ],
+                          items,
                           hasMore: fetchMoreResult.history.hasMore
                         }
                       }
@@ -179,8 +185,59 @@ class HistoryComponent extends Component {
                   )
                 }
               >
-                <ItemHistory item={currentItem} size={size} isMobile={isMobile} />
-                <HistoryItems show={expanded} historyItems={data.history.items} size={size} onChangeCourse={this.props.onChangeCourse} />
+                {/* Obtenemos la leccion activa */}
+                <Query query={LESSON} variables={{ slug: lessonSlug }}>
+                  {({ data: { lesson }, loading }) => {
+                    if (loading) return null
+                    if (lesson) {
+
+                      if (lesson) {
+                        const current = {
+                          _id: lesson._id + '1-',
+                          author: lesson.author,
+                          lesson: lesson._id,
+                          course: course._id,
+                          watchedAt: Date.now(),
+                          tech: lesson.tech,
+                          lessonTitle: lesson.title,
+                          courseTitle: course.title,
+                          courseSlug: course.slug,
+                          lessonSlug: lesson.slug
+                        }
+                        return (
+                          <div>
+                            <ItemHistory
+                              current
+                              color={course.color}
+                              hideSidebar={this.props.hideSidebar}
+                              item={current}
+                              size={size}
+                              isMobile={isMobile}
+                            />
+                            <HistoryItems
+                              show={expanded}
+                              current={current}
+                              historyItems={data.history.items}
+                              size={size}
+                              onChangeCourse={this.props.onChangeCourse}
+                              color={course.color}
+                            />
+                          </div>
+                        )
+                      }
+
+                      return (
+                        <HistoryItems
+                          show={expanded}
+                          historyItems={data.history.items}
+                          size={size}
+                          onChangeCourse={this.props.onChangeCourse}
+                          color={course.color}
+                        />
+                      )
+                    }
+                  }}
+                </Query>
               </InfiniteScroll>
             </Panel>
           )

@@ -98,9 +98,9 @@ const Cover = styled.div`
   width: 100%;
   height:120px;
   display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 `
 
 export default class extends Component {
@@ -124,8 +124,6 @@ export default class extends Component {
     if (isMobile && !showMobileNav) {
       show = false
     }
-
-    // console.log('UP COURSEBAR')
 
     return (
       <Panel ref={this.coursebar} show={show} colorMode={colorMode}>
@@ -152,7 +150,7 @@ export default class extends Component {
             <Item
               key={lesson._id}
               next={a[index + 1] || { isWatched: false }}
-              active={(!this.props.lesson.slug && index === 0) || this.props.lesson.slug === lesson.slug}
+              active={(!this.props.lessonSlug && index === 0) || this.props.lessonSlug === lesson.slug}
               index={index}
               // ripple={this.state.ripple}
               lessons={course.lessons}

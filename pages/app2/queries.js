@@ -1,8 +1,30 @@
 import gql from 'graphql-tag'
 
+export const LESSON = gql`
+  query lesson ($slug: String!) {
+    lesson(slug: $slug) {
+      _id
+      slug
+      title
+      role
+      tech
+      transcription
+      videoSource
+      techVersion
+      isTranscriptionPublic
+      isPublished
+      duration
+      createdAt
+      screenshot {
+        s100
+      }
+    }
+  }
+`
+
 export const HISTORY = gql`
   query history($limit: Int, $offset: Int) {
-    history(limit: $limit, offset: $offset) {
+    history(limit: $limit, offset: $offset) @connection(key: "history") {
       hasMore
       items {
         _id
@@ -14,7 +36,7 @@ export const HISTORY = gql`
         lessonTitle
         courseTitle
         courseSlug
-      lessonSlug
+        lessonSlug
       }
     }
   }

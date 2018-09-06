@@ -1,8 +1,6 @@
 import React, {Component} from 'react'
 import styled, {keyframes} from 'styled-components'
 import Router from 'next/router'
-// import getTechIcon from '../getTechIcon'
-// import slugify from 'slugify'
 
 const Anima = keyframes`
   0% {
@@ -68,7 +66,6 @@ const ItemBox = styled.div`
   z-index: 500;
   font-size: 11px;
   border-bottom: 1px solid whitesmoke;
-
   display: flex;
   align-items: center;
   position: relative;
@@ -101,27 +98,99 @@ const ItemBox = styled.div`
   }
 `
 
+const AnimaPlay = keyframes`
+  0% {
+    opacity: 0;
+    transform: scale3d(0.3, 0.3, 0.3);
+  }
+
+  20% {
+    transform: scale3d(1.1, 1.1, 1.1);
+  }
+
+  40% {
+    transform: scale3d(0.9, 0.9, 0.9);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale3d(1.03, 1.03, 1.03);
+  }
+
+  80% {
+    transform: scale3d(0.97, 0.97, 0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+`
+
+const PlayBox = styled.div`
+  width: 33px;
+  height: 33px;
+  border-radius: 50%;
+  background-color: ${p => p.color || '#fe6a0c'};
+  position: absolute;
+  right: 1em;
+  animation: 1.2s ease-out ${AnimaPlay};
+  will-change: transform, opacity;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  & > i {
+    color: #FFF;
+    font-size: 11px;
+    position: relative;
+    left: 1px;
+  }
+`
+
+const Play = ({ color }) => (
+  <PlayBox color={color}>
+    <i className='icon-play' />
+  </PlayBox>
+)
+
+const ColorBox = styled.div`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-color: ${p => p.color || '#FFF'};
+  opacity: 0.07;
+  z-index: -1;
+`
+
 export default class extends Component {
   handleClick = () => {
-    const { courseSlug, lessonSlug } = this.props.item
-    Router.push(
-      `/app2?tab=curso&curso=${courseSlug}&lesson=${lessonSlug}`,
-      `/app2/curso/${courseSlug}/${lessonSlug}`
-    )
-    // Se empujan los cambios al App
-    // TODO - Con el cambio de arquitectura basado en Query
-    // Posiblemente no se requiera
-    this.props.onChangeCourse(courseSlug, lessonSlug)
+    // Current es la leccion actual
+    const { current, item } = this.props
+    const { courseSlug, lessonSlug } = item
+
+    if (current) {
+      this.props.hideSidebar()
+    } else {
+      Router.push(
+        `/app2?tab=curso&curso=${courseSlug}&lesson=${lessonSlug}`,
+        `/app2/curso/${courseSlug}/${lessonSlug}`
+      )
+      // Se empujan los cambios al App
+      // TODO - Con el cambio de arquitectura basado en Query
+      // Posiblemente no se requiera
+      this.props.onChangeCourse(courseSlug, lessonSlug)
+    }
   }
 
   render () {
-    const { size, item, animated, isMobile } = this.props
+    const { size, item, animated, isMobile, current, color } = this.props
     return (
       <ItemBox size={size} animated={animated} onClick={this.handleClick}>
         <CoverPanel size={size} isMobile={isMobile}>
           <CoverImg
             // src={getTechIcon(item.tech)}
-            src={`https://dxpdcvj89hnue.cloudfront.net/cover/${item.courseSlug}-s100`}
+            src={`https://dxpdcvj89hnue.cloudfront.net/cover/${item.courseSlug}-s50`}
             size={size}
           />
           <TitleBlock>
@@ -129,6 +198,8 @@ export default class extends Component {
             <LesonTitle show={size !== 'playing'}>{item.courseTitle}</LesonTitle>
           </TitleBlock>
         </CoverPanel>
+        { current ? <Play color={color} /> : null }
+        { current ? <ColorBox color={color} /> : null }
       </ItemBox>
     )
   }

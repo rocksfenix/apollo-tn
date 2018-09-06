@@ -3,7 +3,6 @@ import models from '../models'
 import uploadImage from '../util/upload-image'
 import { createSelf, deleteSelf } from '../authorization'
 import { AuthenticationRequiredError, ForbiddenError, NotFound } from '../authorization/errors'
-import cloneDeep from 'clone-deep'
 
 export default {
   Upload: GraphQLUpload,

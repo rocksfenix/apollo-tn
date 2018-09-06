@@ -167,7 +167,7 @@ class SearchComponent extends Component {
         if (itemInFocus.__typename === 'Course') {
           this.push(itemInFocus.slug, '')
         }
-  
+
         // Si es una leccion, ir al curso/leccion
         if (itemInFocus.__typename === 'Lesson') {
           this.push(itemInFocus.courseSlug, itemInFocus.slug)
@@ -194,7 +194,8 @@ class SearchComponent extends Component {
   // Se ejecuta desde el CourseDetails
   // En boton Reproducir / Reanudar
   onPlayCourse = () => {
-    this.push(this.state.courseDetails.slug, '')
+    // debugger
+    this.push(this.state.courseDetails.slug, this.state.courseDetails.lessons[0].slug)
   }
 
   // Se dispara al hacer enter en InputSearch

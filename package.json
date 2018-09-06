@@ -81,6 +81,7 @@
         "react-live": "^1.11.0",
         "react-medium-image-zoom": "^3.0.13",
         "react-notification": "^6.8.2",
+        "react-outside-click-handler": "^1.2.2",
         "react-recaptcha": "^2.3.10",
         "react-scrolllock": "^3.0.1",
         "react-sortable-hoc": "^0.8.3",

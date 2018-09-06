@@ -33,6 +33,13 @@ const BallWatchedBox = styled.div`
 
 const BallWatchedIcon = styled.i`
   color: #FFF;
+  font-size: 8px;
+  position: relative;
+  top: 2px;
+`
+
+const BallWatchedIconPlay = styled.i`
+  color: #FFF;
   font-size: 6px;
   position: relative;
   left: 1px;
@@ -83,7 +90,7 @@ const BallPlay = ({ color, colorMode }) => (
 
 const BallPlaying = ({ isWatched, color }) => (
   <BallWatchedBox isWatched={isWatched} color={color}>
-    <BallWatchedIcon className='icon-play' />
+    <BallWatchedIconPlay className='icon-play' />
   </BallWatchedBox>
 )
 
