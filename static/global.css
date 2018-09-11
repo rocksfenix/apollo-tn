@@ -1,10 +1,14 @@
-/* @import url('https://fonts.googleapis.com/css?family=Merriweather'); */
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
 @import url('https://fonts.googleapis.com/css?family=Montserrat');
+@import url('/static/highlight/tomorrow-night.css');
+
+html, body {
+  overflow: hidden;
+}
 
 @media (min-width: 900px) {
   ::-webkit-scrollbar {
-      width: 5px;
+      width: 4px;
   }
 
   /* Track */
@@ -15,12 +19,11 @@
   /* Handle */
   ::-webkit-scrollbar-thumb {
       background: gray;
-      border-radius: 10px;
   }
 
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-      background: #b30000; 
+      background: #4ea6e0; 
   }
 }
 

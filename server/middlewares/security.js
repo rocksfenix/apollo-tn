@@ -30,6 +30,7 @@ const cspConfig = {
     scriptSrc: [
       // Allow scripts hosted from our application.
       "'self'",
+      'blob:',
       // Note: We will execution of any inline scripts that have the following
       // nonce identifier attached to them.
       // This is useful for guarding your application whilst allowing an inline

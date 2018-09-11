@@ -14,6 +14,8 @@ import History from './History'
 import Course from './Course'
 import Search from './Search'
 import SeoHead from '../../components/SeoHead'
+import Snippets from './Snippets'
+import md from '../../components/md'
 
 const Panel = styled.div`
   position: relative;
@@ -228,40 +230,43 @@ class App extends Component {
                     }
 
                     {/* ==========  Las tools solo si es diferente al content ============ */}
-                    <OutsideClickHandler onOutsideClick={this.hideSidebar}>
-                      {/* Se muestra en desktop, o en mobile si esta en showMobileNav */}
-                      <Navegation
-                        {...this.state}
-                        show={!isMobile || showMobileNav}
-                        course={course}
-                        user={this.props.user}
-                        onChangeTab={this.onChangeTab}
-                        activeTab={tab}
-                      />
+                    {/* <OutsideClickHandler onOutsideClick={this.hideSidebar} userCapture={false}> */}
+                    {/* Se muestra en desktop, o en mobile si esta en showMobileNav */}
+                    <Navegation
+                      {...this.state}
+                      show={!isMobile || showMobileNav}
+                      course={course}
+                      user={this.props.user}
+                      onChangeTab={this.onChangeTab}
+                      activeTab={tab}
+                    />
 
-                      <Toolbar show={showTools} >
-                        <Search
-                          tab={tab}
-                          isMobile={isMobile}
-                          onChangeLesson={this.onChangeLesson}
-                          onChangeCourse={this.onChangeCourse}
-                        />
-                      </Toolbar>
-
-                      {/* ================== Si esta seleccionado se expande =============== */}
-                      <History
-                        show={showTools || tab === 'history' || (tab === 'course' && course._id)}
-                        isMobile={isMobile}
-                        playing={course._id}
+                    <Toolbar show={showTools} >
+                      <Search
                         tab={tab}
-                        showMobileNav={showMobileNav}
-                        lessonSlug={lessonSlug}
-                        course={course}
-                        hideSidebar={this.hideSidebar}
+                        isMobile={isMobile}
+                        onChangeLesson={this.onChangeLesson}
                         onChangeCourse={this.onChangeCourse}
                       />
+                      <Snippets
+                        tab={tab}
+                      />
+                    </Toolbar>
 
-                    </OutsideClickHandler>
+                    {/* ================== Si esta seleccionado se expande =============== */}
+                    <History
+                      show={showTools || tab === 'history' || (tab === 'course' && course._id)}
+                      isMobile={isMobile}
+                      playing={course._id}
+                      tab={tab}
+                      showMobileNav={showMobileNav}
+                      lessonSlug={lessonSlug}
+                      course={course}
+                      hideSidebar={this.hideSidebar}
+                      onChangeCourse={this.onChangeCourse}
+                    />
+
+                    {/* </OutsideClickHandler> */}
 
                   </Panel>
                 )

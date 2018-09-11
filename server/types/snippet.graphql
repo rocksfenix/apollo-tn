@@ -1,0 +1,39 @@
+
+# No hay necesidad de obtener info
+# adicional por eso usamos Strings
+type Snippet {
+  _id: ID!
+  lang: String
+  filename: String
+  code: String
+  author: String
+  lessonTitle: String
+  courseTitle: String
+  lessonSlug: String
+  courseSlug: String
+}
+
+input SnippetCreate {
+  lang: String
+  filename: String
+  code: String
+  lessonTitle: String
+  courseTitle: String
+  lessonSlug: String
+  courseSlug: String
+}
+
+type SnippetsPagination {
+  items: [Snippet]!,
+  hasMore: Boolean!
+}
+
+type Query {
+  snippets(limit: Int, offset: Int): SnippetsPagination
+}
+
+type Mutation {
+  snippetCreate(input: SnippetCreate): Snippet
+  snippetUpdate(_id: ID!, code: String!): Snippet
+  snippetDelete(_id: ID!): Snippet
+}

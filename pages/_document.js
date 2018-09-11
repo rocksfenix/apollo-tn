@@ -15,6 +15,7 @@ export default class MyDocument extends Document {
       <html>
         <Head>
           {this.props.styleTags}
+          <link rel='stylesheet' href='/_next/static/style.css' />
           <meta name='viewport' content='width=device-width, initial-scale=1.0, user-scalable=no' />
           {/* PWA */}
           <meta name='theme-color' content='#25fff8' />
@@ -32,6 +33,7 @@ export default class MyDocument extends Document {
         <body>
           <Main />
           <NextScript />
+          <div id='modal-root' />
         </body>
       </html>
     )

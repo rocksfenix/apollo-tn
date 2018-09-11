@@ -9,6 +9,7 @@ import Favorite from './favorite'
 import Asset from './asset'
 import Message from './message'
 import Watched from './watched'
+import Snippet from './snippet'
 
 export default {
   User,
@@ -21,5 +22,6 @@ export default {
   Favorite,
   Asset,
   Message,
-  Watched
+  Watched,
+  Snippet
 }

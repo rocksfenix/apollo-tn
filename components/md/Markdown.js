@@ -22,6 +22,6 @@ export default class extends Component {
     if (hasError) {
       return <h1>Error en markdown</h1>
     }
-    return md(this.props.markdown)
+    return md(this.props.markdown, this.props)
   }
 }

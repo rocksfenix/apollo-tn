@@ -15,28 +15,14 @@ const Panel = styled.section`
     padding-left: 0;
   }
 `
-export default class extends Component {
-  render () {
-    return (
-      <Panel>
-        <Coursebar
-          {...this.props}
-          // size={this.props.panelSize}
-          // onChangeLesson={this.props.onChangeLesson}
-          // lessonSlug={this.props.lesson.slug}
-          // coursebarHeight={'100'}
-          // setScroll={this.props.setScroll}
-          // onLessonsSetScroll={this.props.onLessonsSetScroll}
-          // course={this.props.course}
-        />
-        <Transcription
-          {...this.props}
-          // width={this.props.contentWidth}
-          // left={this.props.contentLeft}
-          // lesson={this.props.lesson}
-          // course={this.props.course}
-        />
-      </Panel>
-    )
-  }
-}
+//  onMouseUp={props.hideSidebar}
+export default (props) => (
+  <Panel>
+    <Coursebar
+      {...props}
+    />
+    <Transcription
+      {...props}
+    />
+  </Panel>
+)

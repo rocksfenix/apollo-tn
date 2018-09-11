@@ -66,7 +66,7 @@ const isValid = node => {
   return true
 }
 
-const md = (strings, ...values) => {
+const md = (strings, values) => {
   // Check if it's called as a normal function or as a tagged function
   const input = typeof strings === 'string'
     ? stripIndent(strings)
@@ -122,10 +122,10 @@ const md = (strings, ...values) => {
         const code = literal.substr(endLine + 1, literal.length)
 
         if (language === 'terminal' && process.browser) {
-          return <Terminal language={language} literal={literal} onCopy={onCopy} />
+          return <Terminal language={language} literal={literal} onCopy={onCopy} {...values} />
         }
 
-        return <CodeBlock onCopy={onCopy} code={code} language={language} filename={filename} onChange={(e) => console.log(e)} />
+        return <CodeBlock onCopy={onCopy} code={code} language={language} filename={filename} {...values} onChange={(e) => console.log(e)} />
       },
 
       BlockQuote (p) {

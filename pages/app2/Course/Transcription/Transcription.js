@@ -67,15 +67,6 @@ const FullContent = styled.div`
 `
 
 export default ({ force, course, lessonSlug }) => {
-  // let current = 0
-  // course.lessons.forEach((l, index) => {
-  //   // debugger
-  //   if (l.slug === lesson.slug) {
-  //     current = index
-  //   }
-  // })
-  // const nextLesson = course.lessons[current + 1] || {}
-
   if (!lessonSlug) return null
 
   return (
@@ -97,6 +88,8 @@ export default ({ force, course, lessonSlug }) => {
               <Header course={course} lesson={lesson} />
               <MarkdownContent>
                 <Markdown
+                  course={course}
+                  lesson={lesson}
                   markdown={lesson.transcription}
                 />
               </MarkdownContent>

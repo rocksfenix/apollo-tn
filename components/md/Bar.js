@@ -1,6 +1,24 @@
 import React, {Component} from 'react'
-import styled, {keyframes} from 'styled-components'
-import Notify from './Notify'
+import styled from 'styled-components'
+// import Notify from './Notify'
+import gql from 'graphql-tag'
+import { withApollo } from 'react-apollo'
+
+const SNIPPET_CREATE = gql`
+  mutation snippetCreate($input: SnippetCreate) {
+    snippetCreate(input: $input) {
+      _id
+      lang
+      filename
+      code
+      author
+      lessonTitle
+      courseTitle
+      lessonSlug
+      courseSlug
+    }
+  }
+`
 
 const Bar = styled.div`
   width: 100%;
@@ -68,12 +86,9 @@ const Button = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-  /* color: gray; */
   border-radius: 6px;
   font-size: 16px;
   outline: none;
-  /* margin-right: 3em; */
-  /* background-color: red; */
   cursor: pointer;
   &:hover > i {
     color: #5856c0;
@@ -81,86 +96,49 @@ const Button = styled.button`
   }
 `
 
-const Anima = keyframes`
-  0% {
-    top: 0;
-    opacity: .2;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    top: -70px;
-    opacity: 0;
-  }
+class BarComponent extends Component {
+  onFavorite = async () => {
+    const { language, literal, code, filename, lesson, course } = this.props
+
+    // Curso
+    const preCode = `
+// Snippet parte de la leccion: * ${lesson.title}
+// En el curso ~ ${course.title}
+// https://tecninja.io/app/curso/${course.slug}/${lesson.slug}
+
 `
 
-const SusBox = styled.div`
-  position: absolute;
-  top: 0;
-  width: 200px;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: 1.5s ease-out ${Anima};
-  animation-fill-mode: forwards;
-`
+    const input = {
+      lang: language || 'javascript',
+      filename: filename || 'snippet.js',
+      code: preCode + (literal || code),
+      lessonTitle: lesson.title,
+      courseTitle: course.title,
+      lessonSlug: lesson.slug,
+      courseSlug: course.slug
+    }
 
-const SusIcon = styled.i`
-  color: red;
-`
-const Suspended = () => (
-  <SusBox>
-    <SusIcon className='icon-heart-1' /> Agregado a Snippets
-  </SusBox>
-)
+    const res = await this.props.client.mutate({
+      mutation: SNIPPET_CREATE,
+      variables: { input }
+    })
 
-export default class extends Component {
-  state = { }
-  onCopy = () => {
-    const { language, literal, code } = this.props
-    console.log('COPY')
-    this.setState({ action: 'copy' })
-    // window.setTimeout(() => {
-    //   this.setState({ action: null })
-    // }, 50)
-    this.props.onCopy({language, text: literal || code})
+    console.log(res)
   }
 
-  onFavorite = () => {
-    const { language, literal, code } = this.props
-    console.log('COPY')
-    this.setState({ action: 'Fue agregado a Favoritos' })
-    window.setTimeout(() => {
-      this.setState({ action: null })
-    }, 1200)
-    this.props.onCopy({language, text: literal || code})
-  }
-
-  onDownload = () => {
-    const { language, literal, code } = this.props
-    console.log('COPY')
-    this.setState({ action: 'Download' })
-    // window.setTimeout(() => {
-    //   this.setState({ action: null })
-    // }, 50)
-    this.props.onCopy({language, text: literal || code})
-  }
   render () {
-    const { colors = [], title = '', onCopy, language, literal, code, icon } = this.props
+    const { colors = [], filename = 'terminal', icon } = this.props
+
     return (
       <Bar>
         <Balls colors={colors} />
         <div>
           { icon ? <Icon src='/static/react.svg' /> : ''}
-          { title }
+          { filename }
         </div>
-        <Notify text={this.state.action} />
         <Buttons>
           <Button onClick={this.onFavorite}>
-            {/* <Suspended /> */}
-            <IconBtn className='icon-favorite-line' />
+            <IconBtn className='icon-favorite-line' />F
           </Button>
           <Button onClick={this.onCopy}>
             <IconBtn className='icon-copy' />
@@ -173,3 +151,5 @@ export default class extends Component {
     )
   }
 }
+
+export default withApollo(BarComponent)

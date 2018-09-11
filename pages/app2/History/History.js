@@ -8,7 +8,7 @@ import { HISTORY, LESSON } from '../queries'
 
 const Panel = styled.div`
   width: ${p => p.isMobile ? '100%' : '355px'};
-  height: ${p => p.height};
+  height: ${p => p.expanded ? '100vh' : '55px'};
   padding-left: 55px;
   display: ${p => p.size === 'playing' ? 'none' : 'flex'};
   position: fixed;
@@ -92,6 +92,8 @@ const LoadingBox = styled.div`
   flex-shrink: 0;
   justify-content: center;
   align-items: center;
+  position: absolute;
+  bottom: 0;
 `
 
 const Spinner = styled.img`
@@ -109,6 +111,7 @@ class HistoryComponent extends Component {
     // full - mini - playing
     // show indica si esta visible
 
+    // debugger
     // if (!show) return null
     let height = '55px'
 
@@ -117,19 +120,23 @@ class HistoryComponent extends Component {
     // Tamaños
     let size = 'mini'
     if (tab === 'history') size = 'full'
-    if (playing && tab === 'course') size = 'playing'
+    // if (playing && tab === 'course') size = 'playing'
 
     // Si esta expandido el Height es del 100vh
-    if (expanded) height = '100vh'
+    // if (expanded) height = '100vh'
 
     // Si la tab es course y hay curso activo el height es 155px
-    if (playing && tab === 'course') height = '155px'
+    // if (playing && tab === 'course') height = '155px'
 
     let _show = show
 
     // Se oculta si es mobile y esta
     // ocula la barra de navegacion
     if (isMobile && !showMobileNav) _show = false
+
+    // debugger
+
+    if (tab === 'course') _show = false
 
     return (
       <Query query={HISTORY} variables={{ limit: 20, offset: 0 }}
@@ -190,52 +197,49 @@ class HistoryComponent extends Component {
                   {({ data: { lesson }, loading }) => {
                     if (loading) return null
                     if (lesson) {
-
-                      if (lesson) {
-                        const current = {
-                          _id: lesson._id + '1-',
-                          author: lesson.author,
-                          lesson: lesson._id,
-                          course: course._id,
-                          watchedAt: Date.now(),
-                          tech: lesson.tech,
-                          lessonTitle: lesson.title,
-                          courseTitle: course.title,
-                          courseSlug: course.slug,
-                          lessonSlug: lesson.slug
-                        }
-                        return (
-                          <div>
-                            <ItemHistory
-                              current
-                              color={course.color}
-                              hideSidebar={this.props.hideSidebar}
-                              item={current}
-                              size={size}
-                              isMobile={isMobile}
-                            />
-                            <HistoryItems
-                              show={expanded}
-                              current={current}
-                              historyItems={data.history.items}
-                              size={size}
-                              onChangeCourse={this.props.onChangeCourse}
-                              color={course.color}
-                            />
-                          </div>
-                        )
+                      const current = {
+                        _id: lesson._id + '1-',
+                        author: lesson.author,
+                        lesson: lesson._id,
+                        course: course._id,
+                        watchedAt: Date.now(),
+                        tech: lesson.tech,
+                        lessonTitle: lesson.title,
+                        courseTitle: course.title,
+                        courseSlug: course.slug,
+                        lessonSlug: lesson.slug
                       }
-
                       return (
-                        <HistoryItems
-                          show={expanded}
-                          historyItems={data.history.items}
-                          size={size}
-                          onChangeCourse={this.props.onChangeCourse}
-                          color={course.color}
-                        />
+                        <div>
+                          <ItemHistory
+                            current
+                            color={course.color}
+                            hideSidebar={this.props.hideSidebar}
+                            item={current}
+                            size={size}
+                            isMobile={isMobile}
+                          />
+                          <HistoryItems
+                            show={expanded}
+                            current={current}
+                            historyItems={data.history.items}
+                            size={size}
+                            onChangeCourse={this.props.onChangeCourse}
+                            color={course.color}
+                          />
+                        </div>
                       )
                     }
+
+                    return (
+                      <HistoryItems
+                        show={expanded}
+                        historyItems={data.history.items}
+                        size={size}
+                        onChangeCourse={this.props.onChangeCourse}
+                        color={course.color}
+                      />
+                    )
                   }}
                 </Query>
               </InfiniteScroll>

@@ -13,7 +13,7 @@ const CodeBlock = styled((props) => {
       <Bar
         icon
         colors={[ ]}
-        title={props.filename}
+        filename={props.filename}
         {...props} />
       <Editor {...props} language={language} onChange={props.onChange} />
     </div>
