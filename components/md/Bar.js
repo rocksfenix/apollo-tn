@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
 // import Notify from './Notify'
+import copy from 'copy-to-clipboard'
+import { saveAs } from 'file-saver/FileSaver'
 import gql from 'graphql-tag'
 import { withApollo } from 'react-apollo'
 
@@ -126,6 +128,25 @@ class BarComponent extends Component {
     console.log(res)
   }
 
+  onCopy = () => {
+    const { literal, code } = this.props
+    const text = literal || code
+    copy(text)
+  }
+
+  onDownload = () => {
+    const { language, literal, code, filename, lesson, course } = this.props
+    const preCode = `
+// Snippet parte de la leccion: * ${lesson.title}
+// En el curso ~ ${course.title}
+// https://tecninja.io/app/curso/${course.slug}/${lesson.slug}
+
+`
+    const finalCode = preCode + (literal || code)
+    var blob = new window.Blob([finalCode], { type: 'text/plain;charset=utf-8' })
+    saveAs(blob, filename || 'file')
+  }
+
   render () {
     const { colors = [], filename = 'terminal', icon } = this.props
 
@@ -138,7 +159,7 @@ class BarComponent extends Component {
         </div>
         <Buttons>
           <Button onClick={this.onFavorite}>
-            <IconBtn className='icon-favorite-line' />F
+            <IconBtn className='icon-snippet' />
           </Button>
           <Button onClick={this.onCopy}>
             <IconBtn className='icon-copy' />

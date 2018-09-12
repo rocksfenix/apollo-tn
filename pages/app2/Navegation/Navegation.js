@@ -147,6 +147,7 @@ class Navbar extends Component {
         <Item label='snippets' icon='snippet' {...this.props} />
         <Item label='notes' icon='notes' {...this.props} />
         <Item label='pro' icon='thunder' {...this.props} />
+        <Item label='config' icon='config' {...this.props} />
 
         <AvatarBox onClick={() => this.props.onChangeTab('account')}>
           <Avatar src={this.props.user.avatar.s100} />

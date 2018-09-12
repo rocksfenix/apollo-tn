@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import Router from 'next/router'
 import { withApollo, Query } from 'react-apollo'
 import ReactSwipeEvents from 'react-swipe-events'
-import OutsideClickHandler from 'react-outside-click-handler'
+// import OutsideClickHandler from 'react-outside-click-handler'
 import { COURSE, ONLINE } from './queries'
 import getData from './lib/getData'
 import sc from './lib/shourtcuts'
@@ -15,7 +15,6 @@ import Course from './Course'
 import Search from './Search'
 import SeoHead from '../../components/SeoHead'
 import Snippets from './Snippets'
-import md from '../../components/md'
 
 const Panel = styled.div`
   position: relative;
@@ -48,7 +47,7 @@ class App extends Component {
   }
 
   state = {
-    theme: themes['chemist'], // || user.preferences.theme
+    theme: themes['fire'], // || user.preferences.theme
 
     // Dark or Light
     colorMode: 'light',
