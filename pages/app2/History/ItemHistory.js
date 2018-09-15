@@ -24,9 +24,7 @@ const CoverPanel = styled.div`
 `
 
 const CoverImg = styled.img`
-  width: ${p => {
-    if (p.size === 'mini' || p.size === 'full') return '20px'
-  }};
+  width: 20px;
   max-width: 150px;
   will-change: width;
 
@@ -42,21 +40,11 @@ const TitleBlock = styled.div`
 const Title = styled.div`
   color: #333;
   font-weight: bold;
-  font-size: ${p => p.size === 'playing' ? '17px' : '15px'};
+  font-size: 15px;
   transition: all .2s ease-in;
 
   @media (max-width:900px) {
     font-size: 15px;
-  }
-`
-
-const LesonTitle = styled.div`
-  color: gray;
-  display: ${p => p.show ? 'block' : 'none'};
-  font-size: 14px;
-
-  @media (max-width:900px) {
-    font-size: 13px;
   }
 `
 
@@ -74,20 +62,13 @@ const ItemBox = styled.div`
   animation-fill-mode: forwards;
   padding: .5em 0;
 
-  @media screen and (orientation: landscape) and (max-width: 900px){
-    min-height:  ${p => {
-    if (p.size === 'mini') return '100px'
-    if (p.size === 'full') return '55px'
-  }};
+  @media screen and (orientation: landscape) and (max-width: 900px) {
+    min-height: ${p => p.expanded ? '55px' : '100px'};
   };
 
   @media screen and (orientation: portrait) and (max-width: 900px) {
-    min-height:  ${p => {
-    if (p.size === 'mini') return '100px'
-    if (p.size === 'full') return '55px'
-  }};
+    min-height:  ${p => p.expanded ? '55px' : '100px'};
   };
-  }
 
   @media (min-width: 900px){
     min-height: 55px;
@@ -163,6 +144,16 @@ const ColorBox = styled.div`
   z-index: -1;
 `
 
+const LesonTitle = styled.div`
+  color: gray;
+  display: ${p => p.show ? 'block' : 'none'};
+  font-size: 14px;
+
+  @media (max-width:900px) {
+    font-size: 13px;
+  }
+`
+
 export default class extends Component {
   handleClick = () => {
     // Current es la leccion actual
@@ -184,18 +175,16 @@ export default class extends Component {
   }
 
   render () {
-    const { size, item, animated, isMobile, current, color } = this.props
+    const { expanded, item, animated, isMobile, current, color } = this.props
     return (
-      <ItemBox size={size} animated={animated} onClick={this.handleClick}>
-        <CoverPanel size={size} isMobile={isMobile}>
+      <ItemBox expanded={expanded} animated={animated} onClick={this.handleClick}>
+        <CoverPanel expanded={expanded} isMobile={isMobile}>
           <CoverImg
-            // src={getTechIcon(item.tech)}
             src={`https://dxpdcvj89hnue.cloudfront.net/cover/${item.courseSlug}-s50`}
-            size={size}
           />
           <TitleBlock>
-            <Title size={size}>{item.lessonTitle}</Title>
-            <LesonTitle show={size !== 'playing'}>{item.courseTitle}</LesonTitle>
+            <Title expanded={expanded}>{item.lessonTitle}</Title>
+            <LesonTitle show>{item.courseTitle}</LesonTitle>
           </TitleBlock>
         </CoverPanel>
         { current ? <Play color={color} /> : null }

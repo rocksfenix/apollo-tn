@@ -97,7 +97,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }).then(() => {
       })
 
       // HOME LOGGED 2  '/app:tab?/course?/:lesson?'
-      server.get('/app2/:tab/:course?/:lesson?', (req, res) => {
+      server.get('/app2/:tab/:courseSlug?/:lessonSlug?', (req, res) => {
         app.render(req, res, '/app2', {
           query: req.query,
           params: req.params

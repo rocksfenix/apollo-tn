@@ -5,20 +5,18 @@ import { COURSE, ME } from '../queries'
 // Caso contrario lo redirige para que
 // vuelva a iniciar session
 export default async (ctx) => {
-  let params = { lesson: null, course: null }
+  // const { lessonSlug, courseSlug } = ctx.req.params
   let course = null
+  // let lesson = null
   let user = {}
   try {
-    params = ctx.req.params
-
-    // Si existe curso se precarga
-    // if (params.course) {
-    //   const res = await ctx.apolloClient.query({
-    //     query: COURSE,
-    //     variables: { slug: params.course }
-    //   })
-    //   course = res.data.course
-    // }
+    if (ctx.req.params.courseSlug) {
+      const res = await ctx.apolloClient.query({
+        query: COURSE,
+        variables: { slug: ctx.req.params.courseSlug }
+      })
+      course = res.data.course
+    }
   } catch (error) {}
 
   try {
@@ -34,8 +32,23 @@ export default async (ctx) => {
   } catch (error) {
     ctx.res.redirect('/?expired=true2')
   }
+
+  if (ctx.req) {
+    return {
+      params: {
+        courseSlug: ctx.req.params.courseSlug || null,
+        lessonSlug: ctx.req.params.lessonSlug || null
+      },
+      course,
+      user
+    }
+  }
+
   return {
-    params,
+    params: {
+      courseSlug: null,
+      lessonSlug: null
+    },
     course,
     user
   }

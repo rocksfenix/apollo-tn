@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import styled from 'styled-components'
 import Router from 'next/router'
-import { withApollo, Query } from 'react-apollo'
+import { withApollo } from 'react-apollo'
 import ReactSwipeEvents from 'react-swipe-events'
 // import OutsideClickHandler from 'react-outside-click-handler'
 import { COURSE, ONLINE } from './queries'
@@ -67,18 +67,28 @@ class App extends Component {
     isMobile: false,
 
     // Contenido principal, course o home
-    mainContent: 'home',
+    // mainContent: 'home',
 
-    setScroll: false
+    setScroll: false,
+    course: {},
+    lesson: {},
+    courseSlug: null,
+    lessonSlug: null
   }
 
   componentWillMount = async () => {
-    const { course, lesson } = this.props.params
+    const { course, params } = this.props
+    const { courseSlug, lessonSlug } = params
+    const tab = courseSlug ? 'course' : 'home'
+    const mainContent = courseSlug ? 'course' : 'home'
+
     this.setState({
-      mainContent: 'course',
-      tab: 'course',
-      courseSlug: course,
-      lessonSlug: lesson
+      mainContent,
+      tab,
+      course,
+      // lesson,
+      courseSlug,
+      lessonSlug
     })
   }
 
@@ -150,13 +160,18 @@ class App extends Component {
 
   onChangeCourse = async (courseSlug, lessonSlug) => {
     // Actualizamos curso
+    const res = await this.props.client.query({
+      query: COURSE,
+      variables: { slug: courseSlug }
+    })
+
     this.setState({
-      showMainContent: 'course',
       tab: 'course',
       toolIndex: 2,
       showMobileNav: false,
       courseSlug,
-      lessonSlug
+      lessonSlug,
+      course: res.data.course
     })
   }
 
@@ -179,7 +194,9 @@ class App extends Component {
   }
 
   render () {
-    const { mainContent, isMobile, tab, courseSlug, showMobileNav } = this.state
+    const { isMobile, tab, course, showMobileNav, lessonSlug } = this.state
+
+    console.log(this.state)
 
     // show tools si tab es diferente de course y home
     let showTools = false
@@ -198,102 +215,54 @@ class App extends Component {
         onSwipedRight={this.goLeft}
         threshold={showMobileNav ? 110 : 80}
       >
-        { courseSlug
-          ? (
-            <Query query={COURSE} variables={{ slug: courseSlug }}>
-              {({ data, loading, error }) => {
-                if (error) return <div>Error: {error}</div>
 
-                const { course } = data
+        <Panel>
+          <SeoHead title='Tecninja.io' />
+          { course && tab !== 'home'
+            ? <Course
+              {...this.state}
+              course={course}
+              lessonSlug={lessonSlug}
+              onChangeLesson={this.onChangeLesson}
+              onLessonsSetScroll={this.onLessonsSetScroll}
+              onSetColorMode={this.onSetColorMode}
+              onSetAutoplay={this.onSetAutoplay}
+              hideSidebar={this.hideSidebar}
+            />
+            : <Home {...this.state} /> }
+          {/* Se muestra en desktop, o en mobile si esta en showMobileNav */}
+          <Navegation
+            {...this.state}
+            show={!isMobile || showMobileNav}
+            course={course}
+            user={this.props.user}
+            onChangeTab={this.onChangeTab}
+            activeTab={tab}
+          />
 
-                const lessonSlug = this.state.lessonSlug || course.lessons[0].slug
+          <Toolbar show={showTools} >
+            <Search
+              tab={tab}
+              isMobile={isMobile}
+              onChangeLesson={this.onChangeLesson}
+              onChangeCourse={this.onChangeCourse}
+            />
+            <Snippets
+              tab={tab}
+            />
+          </Toolbar>
 
-                return (
-                  <Panel>
-                    <SeoHead title='Tecninja.io' />
-
-                    {/* ===================== El contenido principal ===================== */}
-                    {
-                      mainContent === 'course' && course._id
-                        ? <Course
-                          {...this.state}
-                          course={course}
-                          lessonSlug={lessonSlug}
-                          onChangeLesson={this.onChangeLesson}
-                          onLessonsSetScroll={this.onLessonsSetScroll}
-                          onSetColorMode={this.onSetColorMode}
-                          onSetAutoplay={this.onSetAutoplay}
-                          hideSidebar={this.hideSidebar}
-                        />
-                        : <Home {...this.state} />
-                    }
-
-                    {/* ==========  Las tools solo si es diferente al content ============ */}
-                    {/* <OutsideClickHandler onOutsideClick={this.hideSidebar} userCapture={false}> */}
-                    {/* Se muestra en desktop, o en mobile si esta en showMobileNav */}
-                    <Navegation
-                      {...this.state}
-                      show={!isMobile || showMobileNav}
-                      course={course}
-                      user={this.props.user}
-                      onChangeTab={this.onChangeTab}
-                      activeTab={tab}
-                    />
-
-                    <Toolbar show={showTools} >
-                      <Search
-                        tab={tab}
-                        isMobile={isMobile}
-                        onChangeLesson={this.onChangeLesson}
-                        onChangeCourse={this.onChangeCourse}
-                      />
-                      <Snippets
-                        tab={tab}
-                      />
-                    </Toolbar>
-
-                    {/* ================== Si esta seleccionado se expande =============== */}
-                    <History
-                      show={showTools || tab === 'history' || (tab === 'course' && course._id)}
-                      isMobile={isMobile}
-                      playing={course._id}
-                      tab={tab}
-                      showMobileNav={showMobileNav}
-                      lessonSlug={lessonSlug}
-                      course={course}
-                      hideSidebar={this.hideSidebar}
-                      onChangeCourse={this.onChangeCourse}
-                    />
-
-                    {/* </OutsideClickHandler> */}
-
-                  </Panel>
-                )
-              }}
-            </Query>
-          )
-          : (
-            <Panel>
-              <SeoHead title='Tecninja.io' />
-              <Navegation
-                show={!isMobile || showMobileNav}
-                user={this.props.user}
-                {...this.state}
-                activeTab={tab}
-                onChangeTab={this.onChangeTab}
-              />
-              <Home {...this.state} />
-              <Toolbar show={showTools} >
-                <Search
-                  tab={tab}
-                  isMobile={isMobile}
-                  onChangeLesson={this.onChangeLesson}
-                  onChangeCourse={this.onChangeCourse}
-                />
-              </Toolbar>
-            </Panel>
-          )
-        }
+          <History
+            show={showTools || tab === 'history' || (tab === 'course' && course)}
+            isMobile={isMobile}
+            tab={tab}
+            showMobileNav={showMobileNav}
+            lessonSlug={lessonSlug}
+            course={course}
+            hideSidebar={this.hideSidebar}
+            onChangeCourse={this.onChangeCourse}
+          />
+        </Panel>
 
       </ReactSwipeEvents>
     )
