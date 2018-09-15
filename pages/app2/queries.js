@@ -1,5 +1,24 @@
 import gql from 'graphql-tag'
 
+export const SNIPPETS = gql`
+  query snippets($limit: Int, $offset: Int) {
+    snippets(limit: $limit, offset: $offset) @connection(key: "snippets") {
+      items {
+        _id
+        lang
+        filename
+        code
+        author
+        lessonTitle
+        courseTitle
+        lessonSlug
+        courseSlug
+      }
+      hasMore
+    }
+  }
+`
+
 export const LESSON = gql`
   query lesson ($slug: String!) {
     lesson(slug: $slug) {

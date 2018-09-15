@@ -5,6 +5,9 @@ import copy from 'copy-to-clipboard'
 import { saveAs } from 'file-saver/FileSaver'
 import gql from 'graphql-tag'
 import { withApollo } from 'react-apollo'
+import moment from 'moment'
+
+moment.lang('es')
 
 const SNIPPET_CREATE = gql`
   mutation snippetCreate($input: SnippetCreate) {
@@ -18,6 +21,25 @@ const SNIPPET_CREATE = gql`
       courseTitle
       lessonSlug
       courseSlug
+    }
+  }
+`
+
+const SNIPPETS = gql`
+  query snippets($limit: Int, $offset: Int) {
+    snippets(limit: $limit, offset: $offset) @connection(key: "snippets") {
+      items {
+        _id
+        lang
+        filename
+        code
+        author
+        lessonTitle
+        courseTitle
+        lessonSlug
+        courseSlug
+      }
+      hasMore
     }
   }
 `
@@ -103,10 +125,11 @@ class BarComponent extends Component {
     const { language, literal, code, filename, lesson, course } = this.props
 
     // Curso
-    const preCode = `
-// Snippet parte de la leccion: * ${lesson.title}
-// En el curso ~ ${course.title}
-// https://tecninja.io/app/curso/${course.slug}/${lesson.slug}
+    const preCode = `/*
+ * Snippet del curso ~ ${course.title}
+ * https://tecninja.io/app/curso/${course.slug}/${lesson.slug}
+ * ${moment().format('MMMM D YYYY, h:mm:ss a')}
+ */
 
 `
 
@@ -125,7 +148,23 @@ class BarComponent extends Component {
       variables: { input }
     })
 
-    console.log(res)
+    // Actualizar cache
+    try {
+      const {snippets} = this.props.client.readQuery({ query: SNIPPETS })
+      if (snippets) {
+        this.props.client.writeQuery({
+          query: SNIPPETS,
+          data: {
+            snippets: {
+              ...snippets,
+              items: [res.data.snippetCreate, ...snippets.items]
+            }
+          }
+        })
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   onCopy = () => {
@@ -136,10 +175,11 @@ class BarComponent extends Component {
 
   onDownload = () => {
     const { language, literal, code, filename, lesson, course } = this.props
-    const preCode = `
-// Snippet parte de la leccion: * ${lesson.title}
-// En el curso ~ ${course.title}
-// https://tecninja.io/app/curso/${course.slug}/${lesson.slug}
+    const preCode = `/*
+ * Snippet del curso ~ ${course.title}
+ * https://tecninja.io/app/curso/${course.slug}/${lesson.slug}
+ * ${moment().format('MMMM D YYYY, h:mm:ss a')}
+ */
 
 `
     const finalCode = preCode + (literal || code)

@@ -6,25 +6,7 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 import Highlight from 'react-highlight'
 import Modal from '../Modal'
 import Editor from './Editor'
-
-const SNIPPETS = gql`
-  query snippets($limit: Int, $offset: Int) {
-    snippets(limit: $limit, offset: $offset) @connection(key: "snippets") {
-      items {
-        _id
-        lang
-        filename
-        code
-        author
-        lessonTitle
-        courseTitle
-        lessonSlug
-        courseSlug
-      }
-      hasMore
-    }
-  }
-`
+import { SNIPPETS } from '../queries'
 
 const Anima = keyframes`
   0% {
@@ -55,7 +37,7 @@ const MainPanel = styled.div`
   height: 100%;
   width: 100%;
   position: relative;
-  z-index: 2000;
+  background-color: rgba(0,0,0,0.9);
 `
 
 const Snippets = styled.ul`
@@ -213,8 +195,9 @@ const LoadingBox = styled.div`
   flex-shrink: 0;
   justify-content: center;
   align-items: center;
-  position: absolute;
+  position: relative;
   bottom: 0;
+  z-index: 5000;
 `
 
 const Spinner = styled.img`
@@ -224,7 +207,11 @@ const Spinner = styled.img`
 class SnippetsComponent extends Component {
   state = { snippetInFocus: {}, showEditor: false }
 
-  setSnippetInFocus = (snippetInFocus) => this.setState({ snippetInFocus, showEditor: true })
+  setSnippetInFocus = (snippetInFocus) => {
+    document.getElementById('modal-root').style.display = 'block'
+    this.setState({ snippetInFocus, showEditor: true })
+    this.props.cancelTouch()
+  }
 
   componentDidUpdate (prevProps) {
     if (this.props.tab !== 'snippets' && this.state.showEditor) {
@@ -232,7 +219,11 @@ class SnippetsComponent extends Component {
     }
   }
 
-  hideEditor = () => this.setState({ showEditor: false })
+  hideEditor = () => {
+    document.getElementById('modal-root').style.display = 'none'
+    this.setState({ showEditor: false, snippetInFocus: {} })
+    this.props.activeTouch()
+  }
 
   render () {
     if (this.props.tab !== 'snippets') return null
@@ -241,6 +232,7 @@ class SnippetsComponent extends Component {
         <Panel>
           <Modal show={this.state.showEditor} >
             <Editor
+              onTouchStart={e => { e.stopPropagation(); e.preventDefault() }}
               snippet={this.state.snippetInFocus}
               hideEditor={this.hideEditor}
             />

@@ -7,6 +7,7 @@ const SnippetSchema = new mongoose.Schema({
     'default': shortid.generate
   },
   lang: { type: String, required: [true, 'El lang es requerido'] },
+  tech: { type: String, default: 'javascript' },
   filename: { type: String, required: [true, 'El filename es requerido'] },
   code: {
     type: String,

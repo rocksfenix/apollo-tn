@@ -64,13 +64,14 @@ const Panel = styled.div`
   display: ${p => p.show ? 'flex' : 'none'};
   animation: ${Anima} .4s ease-out;
   will-change: transform, opacity;
-  z-index: 1000;
-  margin-left: 355px;
+
+  @media (max-width: 900px) {
+    transform: ${p => p.show ? 'translateY(0%)' : 'notranslateY(100%)'};
+  }
 `
 
 const PanelComp = ({ show, children }) => (
   <Modal>
-    asdasdsadsa
     <Panel show={show}>
       { children }
     </Panel>

@@ -73,7 +73,11 @@ class App extends Component {
     course: {},
     lesson: {},
     courseSlug: null,
-    lessonSlug: null
+    lessonSlug: null,
+
+    // Se usa para cancelar los gestos touch
+    // se usa en snippets
+    activeTouch: true
   }
 
   componentWillMount = async () => {
@@ -86,7 +90,6 @@ class App extends Component {
       mainContent,
       tab,
       course,
-      // lesson,
       courseSlug,
       lessonSlug
     })
@@ -141,11 +144,19 @@ class App extends Component {
 
   // Se dispara con el gesto touch hacia left
   // Oculta la barra de navegaicon en mobil
-  goLeft = () => this.setState({ showMobileNav: true })
+  goLeft = () => {
+    if (this.state.activeTouch) {
+      this.setState({ showMobileNav: true })
+    }
+  }
 
   // Se dispara con el gesto touch hacia right
   // Muestra la barra de navegaicon en mobil
-  goRight = () => this.setState({ showMobileNav: false })
+  goRight = () => {
+    if (this.state.activeTouch) {
+      this.setState({ showMobileNav: false })
+    }
+  }
 
   // Al hacer click en navegacion
   // Se usa para recargar leccion en browser
@@ -193,21 +204,27 @@ class App extends Component {
     this.setState({ tab: this.state.mainContent })
   }
 
+  cancelTouch = () => {
+    this.state.activeTouch = false
+  }
+
+  activeTouch = () => {
+    this.state.activeTouch = true
+  }
+
   render () {
     const { isMobile, tab, course, showMobileNav, lessonSlug } = this.state
-
-    console.log(this.state)
 
     // show tools si tab es diferente de course y home
     let showTools = false
 
     if (!isMobile) {
       showTools = tab !== 'home' && tab !== 'course'
-    }
-
-    if (isMobile) {
+    } else {
       showTools = tab !== 'home' && tab !== 'course' && showMobileNav
     }
+
+    const showHistory = showTools || tab === 'history' || (tab === 'course' && course)
 
     return (
       <ReactSwipeEvents
@@ -218,6 +235,7 @@ class App extends Component {
 
         <Panel>
           <SeoHead title='Tecninja.io' />
+
           { course && tab !== 'home'
             ? <Course
               {...this.state}
@@ -229,8 +247,9 @@ class App extends Component {
               onSetAutoplay={this.onSetAutoplay}
               hideSidebar={this.hideSidebar}
             />
-            : <Home {...this.state} /> }
-          {/* Se muestra en desktop, o en mobile si esta en showMobileNav */}
+            : <Home {...this.state} />
+          }
+
           <Navegation
             {...this.state}
             show={!isMobile || showMobileNav}
@@ -249,11 +268,13 @@ class App extends Component {
             />
             <Snippets
               tab={tab}
+              cancelTouch={this.cancelTouch}
+              activeTouch={this.activeTouch}
             />
           </Toolbar>
 
           <History
-            show={showTools || tab === 'history' || (tab === 'course' && course)}
+            show={showHistory}
             isMobile={isMobile}
             tab={tab}
             showMobileNav={showMobileNav}

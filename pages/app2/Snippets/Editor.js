@@ -7,6 +7,10 @@ const SnippetDetailsBox = styled.div`
   height: 100%;
   overflow: hidden;
   background-color: #232323;
+
+  @media (max-width: 900px) {
+    width: 100%;
+  }
 `
 
 const SnippedDetailsCode = styled.div`
@@ -43,6 +47,7 @@ export default class extends Component {
 
   render () {
     if (process.browser) {
+      const width = window.innerWidth > 900 ? '100%' : '100%'
       return (
         <SnippetDetailsBox>
           <MenuBar
@@ -57,7 +62,7 @@ export default class extends Component {
               onChange={this.onChange}
               name='UNIQUE_ID_OF_DIV'
               fontSize={14}
-              width='100%'
+              width={width}
               height='100%'
               editorProps={{$blockScrolling: true}}
               value={this.state.code}

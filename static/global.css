@@ -26,6 +26,24 @@ html, body {
       background: #4ea6e0; 
   }
 }
+/*tn-modal-rool*/
+.tn-modal-root {
+  position: absolute;
+  display: none;
+  z-index: 5000;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  left: 355px;
+}
+
+@media (max-width: 900px) {
+  .tn-modal-root {
+    left: 0;
+    z-index: 5000;
+  }
+}
 
 strong {
   color: #675cfd;

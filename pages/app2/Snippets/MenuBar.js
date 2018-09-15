@@ -1,8 +1,10 @@
-import React from 'react'
+import React, {Component} from 'react'
 import styled from 'styled-components'
 import { Mutation } from 'react-apollo'
 import gql from 'graphql-tag'
 import { saveAs } from 'file-saver/FileSaver'
+import MenuMobile from './MenuMobile'
+import { SNIPPETS } from '../queries'
 
 const UPDATE_SNIPPET = gql`
   mutation snippetUpdate ($_id: ID!, $code: String!) {
@@ -40,6 +42,7 @@ const MenuBar = styled.div`
   width: 100%;
   height: 50px;
   background: #383838;
+  position: relative;
 `
 
 const Button = styled.button`
@@ -61,10 +64,29 @@ const Update = ({ snippet, code }) => (
   </Mutation>
 )
 
-const Delete = ({ snippet }) => (
+const Delete = ({ snippet, hideEditor }) => (
   <Mutation
     mutation={DELETE_SNIPPET}
     variables={{ _id: snippet._id }}
+    update={(cache, { data }) => {
+      // Actualizamos el cache de lecciones vistas
+      const { snippets } = cache.readQuery({ query: SNIPPETS })
+
+      // debugger
+
+      cache.writeQuery({
+        query: SNIPPETS,
+        data: {
+          snippets: {
+            ...snippets,
+            items: snippets.items.filter(s => s._id !== snippet._id)
+          }
+        }
+      })
+
+      // Cerramos el editor
+      hideEditor()
+    }}
   >
     {(snippetDelete, { data, loading, error }) => {
       if (loading) return <div>Loading</div>
@@ -87,20 +109,60 @@ const CloseEditor = ({ hideEditor }) => {
   return <Button onClick={hideEditor}>close</Button>
 }
 
+const CloseMobile = styled.button`
+  border: 0;
+  background: transparent;
+  color: #FFF;
+`
+
+const CloseEditorMobile = ({ hideEditor }) => {
+  return <CloseMobile onClick={hideEditor}><i className='icon-cross' /></CloseMobile>
+}
+
 const Cover = styled.img`
   width: 30px;
 `
 
-export default (props) => (
-  <MenuBar>
-    <Button>
-      <Cover src={`https://dxpdcvj89hnue.cloudfront.net/cover/${props.snippet.courseSlug}-s50`} />
-      {props.snippet.courseTitle} >
-      {props.snippet.lessonTitle}
-    </Button>
-    <Update {...props} />
-    <Download {...props} />
-    <Delete {...props} />
-    <CloseEditor {...props} />
-  </MenuBar>
-)
+const Desktop = styled.div`
+  display: none;
+  @media (min-width: 900px) {
+    display: block;
+  }
+`
+
+const Mobile = styled.div`
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 1em;
+  height: 100%;
+
+  @media (max-width: 900px) {
+    display: flex;
+  }
+`
+
+export default class extends Component {
+  render () {
+    return (
+      <MenuBar>
+        <Desktop>
+          <Button>
+            <Cover src={`https://dxpdcvj89hnue.cloudfront.net/cover/${this.props.snippet.courseSlug}-s50`} />
+            {this.props.snippet.courseTitle} >
+            {this.props.snippet.lessonTitle}
+          </Button>
+          <Update {...this.props} />
+          <Download {...this.props} />
+          <Delete {...this.props} />
+          <CloseEditor {...this.props} />
+        </Desktop>
+        <Mobile>
+          <MenuMobile />
+          <CloseEditorMobile {...this.props} />
+        </Mobile>
+
+      </MenuBar>
+    )
+  }
+}
