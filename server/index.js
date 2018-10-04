@@ -11,6 +11,7 @@ import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas'
 import { makeExecutableSchema } from 'graphql-tools'
 import formatError from './formatError'
 import { apolloUploadExpress } from 'apollo-upload-server'
+import ip from 'ip'
 
 // Subscriptions
 import { SubscriptionServer } from 'subscriptions-transport-ws'
@@ -220,6 +221,7 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true }).then(() => {
           MongoDB OK 🚀
           corriendo en MODO: ${process.env.NODE_ENV}
           corriendo en SAFE_ENV: ${process.env.SAFE_ENV}
+          GO: http://${ip.address()}:${PORT}
           OK: WS SUBSCRIPTIONS
           Server is Running at PORT: ${PORT}
       `)

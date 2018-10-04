@@ -255,7 +255,7 @@ class UserEditor extends Component {
           </Fields>
         </Subpanel>
         <Subpanel width='28%'>
-          <Tickets customer={this.state.user} />
+          c
         </Subpanel>
         <Subpanel width='28%' />
         <Notification

@@ -189,9 +189,11 @@ class ProPage extends React.Component {
           <Item>Acceso a todos los códigos de ejemplos</Item>
           <Item>Lecciones nuevas todas las semanas</Item>
           <Item>Transcripciones con ejemplos de código, imágenes y terminal.</Item>
-          <Item>Notas de Codigo</Item>
+          <Item>Notas de Codigo Snippets</Item>
           <Item>Soporte prioritario.</Item>
-          <Item>Mejora tu carrera</Item>
+          <Item>Incrementa tus habilidades</Item>
+          <Item>Actualizate y mejora tu confianza y experiencia</Item>
+          <Item>Mejora tu carrera ya.</Item>
         </Items>
 
         <Text>Sube ahora mismo a Ninja PRO y enterate porque la comunidad nos ama.</Text>
@@ -207,7 +209,7 @@ class ProPage extends React.Component {
         <SectionFAQS>
           <Question align='left'>Preguntas Frecuentes</Question>
           <Question>¿Puedo cancelar en cualquier momento?</Question>
-          <Answer>Claro, desde el menu de tu cuenta</Answer>
+          <Answer>Claro, desde el menu de tu cuenta, podrás seguir usando la cuenta PRO hasta que finalice el periodo</Answer>
           <Question>¿Ofrecen algun descuento?</Question>
           <Answer>Como lanzamiento hemos rebajado el precio de la suscripcion de $20 USD a $9.9 USD eso es el 51.5% de descuento</Answer>
           <Question>¿Cuántos cursos puedo ver por mes?</Question>

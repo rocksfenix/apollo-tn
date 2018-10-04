@@ -65,10 +65,10 @@ CourseSchema.index({ title: 'text', tech: 'text', category: 'text', description:
 CourseSchema.plugin(uniqueValidator, { message: 'is already taken.' })
 CourseSchema.plugin(slugify)
 
-CourseSchema.methods.getDataByRole = function (userRole) {
+CourseSchema.methods.getByRole = function (userRole) {
   let lessons = []
 
-  lessons = this.lessons.map(l => l.getDataByRole(userRole))
+  lessons = this.lessons.map(l => l.getByRole(userRole))
 
   if (userRole !== 'admin') {
     // Filtramos por publicadas

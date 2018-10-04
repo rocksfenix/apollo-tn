@@ -15,6 +15,7 @@ import Course from './Course'
 import Search from './Search'
 import SeoHead from '../../components/SeoHead'
 import Snippets from './Snippets'
+import Notes from './Notes'
 
 const Panel = styled.div`
   position: relative;
@@ -267,6 +268,11 @@ class App extends Component {
               onChangeCourse={this.onChangeCourse}
             />
             <Snippets
+              tab={tab}
+              cancelTouch={this.cancelTouch}
+              activeTouch={this.activeTouch}
+            />
+            <Notes
               tab={tab}
               cancelTouch={this.cancelTouch}
               activeTouch={this.activeTouch}
